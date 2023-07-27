@@ -20,11 +20,11 @@
            isNum, Lexer, isArray, ISOAdobeCharset, ExpertCharset,
            ExpertSubsetCharset, Util, DingbatsGlyphsUnicode */
 
-'use strict';
+"use strict";
 
 // Unicode Private Use Area
-var PRIVATE_USE_OFFSET_START = 0xE000;
-var PRIVATE_USE_OFFSET_END = 0xF8FF;
+var PRIVATE_USE_OFFSET_START = 0xe000;
+var PRIVATE_USE_OFFSET_END = 0xf8ff;
 var SKIP_PRIVATE_USE_RANGE_F000_TO_F01F = false;
 
 // PDF Glyph Space Units are one Thousandth of a TextSpace Unit
@@ -48,244 +48,1804 @@ var FontFlags = {
   Italic: 64,
   AllCap: 65536,
   SmallCap: 131072,
-  ForceBold: 262144
+  ForceBold: 262144,
 };
 
 var Encodings = {
-  ExpertEncoding: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    'space', 'exclamsmall', 'Hungarumlautsmall', '', 'dollaroldstyle',
-    'dollarsuperior', 'ampersandsmall', 'Acutesmall', 'parenleftsuperior',
-    'parenrightsuperior', 'twodotenleader', 'onedotenleader', 'comma',
-    'hyphen', 'period', 'fraction', 'zerooldstyle', 'oneoldstyle',
-    'twooldstyle', 'threeoldstyle', 'fouroldstyle', 'fiveoldstyle',
-    'sixoldstyle', 'sevenoldstyle', 'eightoldstyle', 'nineoldstyle', 'colon',
-    'semicolon', 'commasuperior', 'threequartersemdash', 'periodsuperior',
-    'questionsmall', '', 'asuperior', 'bsuperior', 'centsuperior', 'dsuperior',
-    'esuperior', '', '', 'isuperior', '', '', 'lsuperior', 'msuperior',
-    'nsuperior', 'osuperior', '', '', 'rsuperior', 'ssuperior', 'tsuperior',
-    '', 'ff', 'fi', 'fl', 'ffi', 'ffl', 'parenleftinferior', '',
-    'parenrightinferior', 'Circumflexsmall', 'hyphensuperior', 'Gravesmall',
-    'Asmall', 'Bsmall', 'Csmall', 'Dsmall', 'Esmall', 'Fsmall', 'Gsmall',
-    'Hsmall', 'Ismall', 'Jsmall', 'Ksmall', 'Lsmall', 'Msmall', 'Nsmall',
-    'Osmall', 'Psmall', 'Qsmall', 'Rsmall', 'Ssmall', 'Tsmall', 'Usmall',
-    'Vsmall', 'Wsmall', 'Xsmall', 'Ysmall', 'Zsmall', 'colonmonetary',
-    'onefitted', 'rupiah', 'Tildesmall', '', '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', 'exclamdownsmall', 'centoldstyle', 'Lslashsmall',
-    '', '', 'Scaronsmall', 'Zcaronsmall', 'Dieresissmall', 'Brevesmall',
-    'Caronsmall', '', 'Dotaccentsmall', '', '', 'Macronsmall', '', '',
-    'figuredash', 'hypheninferior', '', '', 'Ogoneksmall', 'Ringsmall',
-    'Cedillasmall', '', '', '', 'onequarter', 'onehalf', 'threequarters',
-    'questiondownsmall', 'oneeighth', 'threeeighths', 'fiveeighths',
-    'seveneighths', 'onethird', 'twothirds', '', '', 'zerosuperior',
-    'onesuperior', 'twosuperior', 'threesuperior', 'foursuperior',
-    'fivesuperior', 'sixsuperior', 'sevensuperior', 'eightsuperior',
-    'ninesuperior', 'zeroinferior', 'oneinferior', 'twoinferior',
-    'threeinferior', 'fourinferior', 'fiveinferior', 'sixinferior',
-    'seveninferior', 'eightinferior', 'nineinferior', 'centinferior',
-    'dollarinferior', 'periodinferior', 'commainferior', 'Agravesmall',
-    'Aacutesmall', 'Acircumflexsmall', 'Atildesmall', 'Adieresissmall',
-    'Aringsmall', 'AEsmall', 'Ccedillasmall', 'Egravesmall', 'Eacutesmall',
-    'Ecircumflexsmall', 'Edieresissmall', 'Igravesmall', 'Iacutesmall',
-    'Icircumflexsmall', 'Idieresissmall', 'Ethsmall', 'Ntildesmall',
-    'Ogravesmall', 'Oacutesmall', 'Ocircumflexsmall', 'Otildesmall',
-    'Odieresissmall', 'OEsmall', 'Oslashsmall', 'Ugravesmall', 'Uacutesmall',
-    'Ucircumflexsmall', 'Udieresissmall', 'Yacutesmall', 'Thornsmall',
-    'Ydieresissmall'],
-  MacExpertEncoding: ['', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    'space', 'exclamsmall', 'Hungarumlautsmall', 'centoldstyle',
-    'dollaroldstyle', 'dollarsuperior', 'ampersandsmall', 'Acutesmall',
-    'parenleftsuperior', 'parenrightsuperior', 'twodotenleader',
-    'onedotenleader', 'comma', 'hyphen', 'period', 'fraction', 'zerooldstyle',
-    'oneoldstyle', 'twooldstyle', 'threeoldstyle', 'fouroldstyle',
-    'fiveoldstyle', 'sixoldstyle', 'sevenoldstyle', 'eightoldstyle',
-    'nineoldstyle', 'colon', 'semicolon', '', 'threequartersemdash', '',
-    'questionsmall', '', '', '', '', 'Ethsmall', '', '', 'onequarter',
-    'onehalf', 'threequarters', 'oneeighth', 'threeeighths', 'fiveeighths',
-    'seveneighths', 'onethird', 'twothirds', '', '', '', '', '', '', 'ff',
-    'fi', 'fl', 'ffi', 'ffl', 'parenleftinferior', '', 'parenrightinferior',
-    'Circumflexsmall', 'hypheninferior', 'Gravesmall', 'Asmall', 'Bsmall',
-    'Csmall', 'Dsmall', 'Esmall', 'Fsmall', 'Gsmall', 'Hsmall', 'Ismall',
-    'Jsmall', 'Ksmall', 'Lsmall', 'Msmall', 'Nsmall', 'Osmall', 'Psmall',
-    'Qsmall', 'Rsmall', 'Ssmall', 'Tsmall', 'Usmall', 'Vsmall', 'Wsmall',
-    'Xsmall', 'Ysmall', 'Zsmall', 'colonmonetary', 'onefitted', 'rupiah',
-    'Tildesmall', '', '', 'asuperior', 'centsuperior', '', '', '', '',
-    'Aacutesmall', 'Agravesmall', 'Acircumflexsmall', 'Adieresissmall',
-    'Atildesmall', 'Aringsmall', 'Ccedillasmall', 'Eacutesmall', 'Egravesmall',
-    'Ecircumflexsmall', 'Edieresissmall', 'Iacutesmall', 'Igravesmall',
-    'Icircumflexsmall', 'Idieresissmall', 'Ntildesmall', 'Oacutesmall',
-    'Ogravesmall', 'Ocircumflexsmall', 'Odieresissmall', 'Otildesmall',
-    'Uacutesmall', 'Ugravesmall', 'Ucircumflexsmall', 'Udieresissmall', '',
-    'eightsuperior', 'fourinferior', 'threeinferior', 'sixinferior',
-    'eightinferior', 'seveninferior', 'Scaronsmall', '', 'centinferior',
-    'twoinferior', '', 'Dieresissmall', '', 'Caronsmall', 'osuperior',
-    'fiveinferior', '', 'commainferior', 'periodinferior', 'Yacutesmall', '',
-    'dollarinferior', '', 'Thornsmall', '', 'nineinferior', 'zeroinferior',
-    'Zcaronsmall', 'AEsmall', 'Oslashsmall', 'questiondownsmall',
-    'oneinferior', 'Lslashsmall', '', '', '', '', '', '', 'Cedillasmall', '',
-    '', '', '', '', 'OEsmall', 'figuredash', 'hyphensuperior', '', '', '', '',
-    'exclamdownsmall', '', 'Ydieresissmall', '', 'onesuperior', 'twosuperior',
-    'threesuperior', 'foursuperior', 'fivesuperior', 'sixsuperior',
-    'sevensuperior', 'ninesuperior', 'zerosuperior', '', 'esuperior',
-    'rsuperior', 'tsuperior', '', '', 'isuperior', 'ssuperior', 'dsuperior',
-    '', '', '', '', '', 'lsuperior', 'Ogoneksmall', 'Brevesmall',
-    'Macronsmall', 'bsuperior', 'nsuperior', 'msuperior', 'commasuperior',
-    'periodsuperior', 'Dotaccentsmall', 'Ringsmall'],
-  MacRomanEncoding: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    'space', 'exclam', 'quotedbl', 'numbersign', 'dollar', 'percent',
-    'ampersand', 'quotesingle', 'parenleft', 'parenright', 'asterisk', 'plus',
-    'comma', 'hyphen', 'period', 'slash', 'zero', 'one', 'two', 'three',
-    'four', 'five', 'six', 'seven', 'eight', 'nine', 'colon', 'semicolon',
-    'less', 'equal', 'greater', 'question', 'at', 'A', 'B', 'C', 'D', 'E', 'F',
-    'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
-    'V', 'W', 'X', 'Y', 'Z', 'bracketleft', 'backslash', 'bracketright',
-    'asciicircum', 'underscore', 'grave', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
-    'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-    'w', 'x', 'y', 'z', 'braceleft', 'bar', 'braceright', 'asciitilde', '',
-    'Adieresis', 'Aring', 'Ccedilla', 'Eacute', 'Ntilde', 'Odieresis',
-    'Udieresis', 'aacute', 'agrave', 'acircumflex', 'adieresis', 'atilde',
-    'aring', 'ccedilla', 'eacute', 'egrave', 'ecircumflex', 'edieresis',
-    'iacute', 'igrave', 'icircumflex', 'idieresis', 'ntilde', 'oacute',
-    'ograve', 'ocircumflex', 'odieresis', 'otilde', 'uacute', 'ugrave',
-    'ucircumflex', 'udieresis', 'dagger', 'degree', 'cent', 'sterling',
-    'section', 'bullet', 'paragraph', 'germandbls', 'registered', 'copyright',
-    'trademark', 'acute', 'dieresis', 'notequal', 'AE', 'Oslash', 'infinity',
-    'plusminus', 'lessequal', 'greaterequal', 'yen', 'mu', 'partialdiff',
-    'summation', 'product', 'pi', 'integral', 'ordfeminine', 'ordmasculine',
-    'Omega', 'ae', 'oslash', 'questiondown', 'exclamdown', 'logicalnot',
-    'radical', 'florin', 'approxequal', 'Delta', 'guillemotleft',
-    'guillemotright', 'ellipsis', 'space', 'Agrave', 'Atilde', 'Otilde', 'OE',
-    'oe', 'endash', 'emdash', 'quotedblleft', 'quotedblright', 'quoteleft',
-    'quoteright', 'divide', 'lozenge', 'ydieresis', 'Ydieresis', 'fraction',
-    'currency', 'guilsinglleft', 'guilsinglright', 'fi', 'fl', 'daggerdbl',
-    'periodcentered', 'quotesinglbase', 'quotedblbase', 'perthousand',
-    'Acircumflex', 'Ecircumflex', 'Aacute', 'Edieresis', 'Egrave', 'Iacute',
-    'Icircumflex', 'Idieresis', 'Igrave', 'Oacute', 'Ocircumflex', 'apple',
-    'Ograve', 'Uacute', 'Ucircumflex', 'Ugrave', 'dotlessi', 'circumflex',
-    'tilde', 'macron', 'breve', 'dotaccent', 'ring', 'cedilla', 'hungarumlaut',
-    'ogonek', 'caron'],
-  StandardEncoding: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    'space', 'exclam', 'quotedbl', 'numbersign', 'dollar', 'percent',
-    'ampersand', 'quoteright', 'parenleft', 'parenright', 'asterisk', 'plus',
-    'comma', 'hyphen', 'period', 'slash', 'zero', 'one', 'two', 'three',
-    'four', 'five', 'six', 'seven', 'eight', 'nine', 'colon', 'semicolon',
-    'less', 'equal', 'greater', 'question', 'at', 'A', 'B', 'C', 'D', 'E', 'F',
-    'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
-    'V', 'W', 'X', 'Y', 'Z', 'bracketleft', 'backslash', 'bracketright',
-    'asciicircum', 'underscore', 'quoteleft', 'a', 'b', 'c', 'd', 'e', 'f',
-    'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
-    'v', 'w', 'x', 'y', 'z', 'braceleft', 'bar', 'braceright', 'asciitilde',
-    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'exclamdown',
-    'cent', 'sterling', 'fraction', 'yen', 'florin', 'section', 'currency',
-    'quotesingle', 'quotedblleft', 'guillemotleft', 'guilsinglleft',
-    'guilsinglright', 'fi', 'fl', '', 'endash', 'dagger', 'daggerdbl',
-    'periodcentered', '', 'paragraph', 'bullet', 'quotesinglbase',
-    'quotedblbase', 'quotedblright', 'guillemotright', 'ellipsis',
-    'perthousand', '', 'questiondown', '', 'grave', 'acute', 'circumflex',
-    'tilde', 'macron', 'breve', 'dotaccent', 'dieresis', '', 'ring', 'cedilla',
-    '', 'hungarumlaut', 'ogonek', 'caron', 'emdash', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '', '', '', 'AE', '', 'ordfeminine', '', '',
-    '', '', 'Lslash', 'Oslash', 'OE', 'ordmasculine', '', '', '', '', '', 'ae',
-    '', '', '', 'dotlessi', '', '', 'lslash', 'oslash', 'oe', 'germandbls'],
-  WinAnsiEncoding: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    'space', 'exclam', 'quotedbl', 'numbersign', 'dollar', 'percent',
-    'ampersand', 'quotesingle', 'parenleft', 'parenright', 'asterisk', 'plus',
-    'comma', 'hyphen', 'period', 'slash', 'zero', 'one', 'two', 'three',
-    'four', 'five', 'six', 'seven', 'eight', 'nine', 'colon', 'semicolon',
-    'less', 'equal', 'greater', 'question', 'at', 'A', 'B', 'C', 'D', 'E', 'F',
-    'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
-    'V', 'W', 'X', 'Y', 'Z', 'bracketleft', 'backslash', 'bracketright',
-    'asciicircum', 'underscore', 'grave', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
-    'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-    'w', 'x', 'y', 'z', 'braceleft', 'bar', 'braceright', 'asciitilde',
-    'bullet', 'Euro', 'bullet', 'quotesinglbase', 'florin', 'quotedblbase',
-    'ellipsis', 'dagger', 'daggerdbl', 'circumflex', 'perthousand', 'Scaron',
-    'guilsinglleft', 'OE', 'bullet', 'Zcaron', 'bullet', 'bullet', 'quoteleft',
-    'quoteright', 'quotedblleft', 'quotedblright', 'bullet', 'endash',
-    'emdash', 'tilde', 'trademark', 'scaron', 'guilsinglright', 'oe', 'bullet',
-    'zcaron', 'Ydieresis', 'space', 'exclamdown', 'cent', 'sterling',
-    'currency', 'yen', 'brokenbar', 'section', 'dieresis', 'copyright',
-    'ordfeminine', 'guillemotleft', 'logicalnot', 'hyphen', 'registered',
-    'macron', 'degree', 'plusminus', 'twosuperior', 'threesuperior', 'acute',
-    'mu', 'paragraph', 'periodcentered', 'cedilla', 'onesuperior',
-    'ordmasculine', 'guillemotright', 'onequarter', 'onehalf', 'threequarters',
-    'questiondown', 'Agrave', 'Aacute', 'Acircumflex', 'Atilde', 'Adieresis',
-    'Aring', 'AE', 'Ccedilla', 'Egrave', 'Eacute', 'Ecircumflex', 'Edieresis',
-    'Igrave', 'Iacute', 'Icircumflex', 'Idieresis', 'Eth', 'Ntilde', 'Ograve',
-    'Oacute', 'Ocircumflex', 'Otilde', 'Odieresis', 'multiply', 'Oslash',
-    'Ugrave', 'Uacute', 'Ucircumflex', 'Udieresis', 'Yacute', 'Thorn',
-    'germandbls', 'agrave', 'aacute', 'acircumflex', 'atilde', 'adieresis',
-    'aring', 'ae', 'ccedilla', 'egrave', 'eacute', 'ecircumflex', 'edieresis',
-    'igrave', 'iacute', 'icircumflex', 'idieresis', 'eth', 'ntilde', 'ograve',
-    'oacute', 'ocircumflex', 'otilde', 'odieresis', 'divide', 'oslash',
-    'ugrave', 'uacute', 'ucircumflex', 'udieresis', 'yacute', 'thorn',
-    'ydieresis'],
-  SymbolSetEncoding: ['', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    'space', 'exclam', 'universal', 'numbersign', 'existential', 'percent',
-    'ampersand', 'suchthat', 'parenleft', 'parenright', 'asteriskmath', 'plus',
-    'comma', 'minus', 'period', 'slash', 'zero', 'one', 'two', 'three', 'four',
-    'five', 'six', 'seven', 'eight', 'nine', 'colon', 'semicolon', 'less',
-    'equal', 'greater', 'question', 'congruent', 'Alpha', 'Beta', 'Chi',
-    'Delta', 'Epsilon', 'Phi', 'Gamma', 'Eta', 'Iota', 'theta1', 'Kappa',
-    'Lambda', 'Mu', 'Nu', 'Omicron', 'Pi', 'Theta', 'Rho', 'Sigma', 'Tau',
-    'Upsilon', 'sigma1', 'Omega', 'Xi', 'Psi', 'Zeta', 'bracketleft',
-    'therefore', 'bracketright', 'perpendicular', 'underscore', 'radicalex',
-    'alpha', 'beta', 'chi', 'delta', 'epsilon', 'phi', 'gamma', 'eta', 'iota',
-    'phi1', 'kappa', 'lambda', 'mu', 'nu', 'omicron', 'pi', 'theta', 'rho',
-    'sigma', 'tau', 'upsilon', 'omega1', 'omega', 'xi', 'psi', 'zeta',
-    'braceleft', 'bar', 'braceright', 'similar', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', 'Euro', 'Upsilon1', 'minute', 'lessequal',
-    'fraction', 'infinity', 'florin', 'club', 'diamond', 'heart', 'spade',
-    'arrowboth', 'arrowleft', 'arrowup', 'arrowright', 'arrowdown', 'degree',
-    'plusminus', 'second', 'greaterequal', 'multiply', 'proportional',
-    'partialdiff', 'bullet', 'divide', 'notequal', 'equivalence',
-    'approxequal', 'ellipsis', 'arrowvertex', 'arrowhorizex', 'carriagereturn',
-    'aleph', 'Ifraktur', 'Rfraktur', 'weierstrass', 'circlemultiply',
-    'circleplus', 'emptyset', 'intersection', 'union', 'propersuperset',
-    'reflexsuperset', 'notsubset', 'propersubset', 'reflexsubset', 'element',
-    'notelement', 'angle', 'gradient', 'registerserif', 'copyrightserif',
-    'trademarkserif', 'product', 'radical', 'dotmath', 'logicalnot',
-    'logicaland', 'logicalor', 'arrowdblboth', 'arrowdblleft', 'arrowdblup',
-    'arrowdblright', 'arrowdbldown', 'lozenge', 'angleleft', 'registersans',
-    'copyrightsans', 'trademarksans', 'summation', 'parenlefttp',
-    'parenleftex', 'parenleftbt', 'bracketlefttp', 'bracketleftex',
-    'bracketleftbt', 'bracelefttp', 'braceleftmid', 'braceleftbt', 'braceex',
-    '', 'angleright', 'integral', 'integraltp', 'integralex', 'integralbt',
-    'parenrighttp', 'parenrightex', 'parenrightbt', 'bracketrighttp',
-    'bracketrightex', 'bracketrightbt', 'bracerighttp', 'bracerightmid',
-    'bracerightbt'],
-  ZapfDingbatsEncoding: ['', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-    'space', 'a1', 'a2', 'a202', 'a3', 'a4', 'a5', 'a119', 'a118', 'a117',
-    'a11', 'a12', 'a13', 'a14', 'a15', 'a16', 'a105', 'a17', 'a18', 'a19',
-    'a20', 'a21', 'a22', 'a23', 'a24', 'a25', 'a26', 'a27', 'a28', 'a6', 'a7',
-    'a8', 'a9', 'a10', 'a29', 'a30', 'a31', 'a32', 'a33', 'a34', 'a35', 'a36',
-    'a37', 'a38', 'a39', 'a40', 'a41', 'a42', 'a43', 'a44', 'a45', 'a46',
-    'a47', 'a48', 'a49', 'a50', 'a51', 'a52', 'a53', 'a54', 'a55', 'a56',
-    'a57', 'a58', 'a59', 'a60', 'a61', 'a62', 'a63', 'a64', 'a65', 'a66',
-    'a67', 'a68', 'a69', 'a70', 'a71', 'a72', 'a73', 'a74', 'a203', 'a75',
-    'a204', 'a76', 'a77', 'a78', 'a79', 'a81', 'a82', 'a83', 'a84', 'a97',
-    'a98', 'a99', 'a100', '', 'a89', 'a90', 'a93', 'a94', 'a91', 'a92', 'a205',
-    'a85', 'a206', 'a86', 'a87', 'a88', 'a95', 'a96', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '', '', '', '', '', '', 'a101', 'a102', 'a103',
-    'a104', 'a106', 'a107', 'a108', 'a112', 'a111', 'a110', 'a109', 'a120',
-    'a121', 'a122', 'a123', 'a124', 'a125', 'a126', 'a127', 'a128', 'a129',
-    'a130', 'a131', 'a132', 'a133', 'a134', 'a135', 'a136', 'a137', 'a138',
-    'a139', 'a140', 'a141', 'a142', 'a143', 'a144', 'a145', 'a146', 'a147',
-    'a148', 'a149', 'a150', 'a151', 'a152', 'a153', 'a154', 'a155', 'a156',
-    'a157', 'a158', 'a159', 'a160', 'a161', 'a163', 'a164', 'a196', 'a165',
-    'a192', 'a166', 'a167', 'a168', 'a169', 'a170', 'a171', 'a172', 'a173',
-    'a162', 'a174', 'a175', 'a176', 'a177', 'a178', 'a179', 'a193', 'a180',
-    'a199', 'a181', 'a200', 'a182', '', 'a201', 'a183', 'a184', 'a197', 'a185',
-    'a194', 'a198', 'a186', 'a195', 'a187', 'a188', 'a189', 'a190', 'a191']
+  ExpertEncoding: [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "space",
+    "exclamsmall",
+    "Hungarumlautsmall",
+    "",
+    "dollaroldstyle",
+    "dollarsuperior",
+    "ampersandsmall",
+    "Acutesmall",
+    "parenleftsuperior",
+    "parenrightsuperior",
+    "twodotenleader",
+    "onedotenleader",
+    "comma",
+    "hyphen",
+    "period",
+    "fraction",
+    "zerooldstyle",
+    "oneoldstyle",
+    "twooldstyle",
+    "threeoldstyle",
+    "fouroldstyle",
+    "fiveoldstyle",
+    "sixoldstyle",
+    "sevenoldstyle",
+    "eightoldstyle",
+    "nineoldstyle",
+    "colon",
+    "semicolon",
+    "commasuperior",
+    "threequartersemdash",
+    "periodsuperior",
+    "questionsmall",
+    "",
+    "asuperior",
+    "bsuperior",
+    "centsuperior",
+    "dsuperior",
+    "esuperior",
+    "",
+    "",
+    "isuperior",
+    "",
+    "",
+    "lsuperior",
+    "msuperior",
+    "nsuperior",
+    "osuperior",
+    "",
+    "",
+    "rsuperior",
+    "ssuperior",
+    "tsuperior",
+    "",
+    "ff",
+    "fi",
+    "fl",
+    "ffi",
+    "ffl",
+    "parenleftinferior",
+    "",
+    "parenrightinferior",
+    "Circumflexsmall",
+    "hyphensuperior",
+    "Gravesmall",
+    "Asmall",
+    "Bsmall",
+    "Csmall",
+    "Dsmall",
+    "Esmall",
+    "Fsmall",
+    "Gsmall",
+    "Hsmall",
+    "Ismall",
+    "Jsmall",
+    "Ksmall",
+    "Lsmall",
+    "Msmall",
+    "Nsmall",
+    "Osmall",
+    "Psmall",
+    "Qsmall",
+    "Rsmall",
+    "Ssmall",
+    "Tsmall",
+    "Usmall",
+    "Vsmall",
+    "Wsmall",
+    "Xsmall",
+    "Ysmall",
+    "Zsmall",
+    "colonmonetary",
+    "onefitted",
+    "rupiah",
+    "Tildesmall",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "exclamdownsmall",
+    "centoldstyle",
+    "Lslashsmall",
+    "",
+    "",
+    "Scaronsmall",
+    "Zcaronsmall",
+    "Dieresissmall",
+    "Brevesmall",
+    "Caronsmall",
+    "",
+    "Dotaccentsmall",
+    "",
+    "",
+    "Macronsmall",
+    "",
+    "",
+    "figuredash",
+    "hypheninferior",
+    "",
+    "",
+    "Ogoneksmall",
+    "Ringsmall",
+    "Cedillasmall",
+    "",
+    "",
+    "",
+    "onequarter",
+    "onehalf",
+    "threequarters",
+    "questiondownsmall",
+    "oneeighth",
+    "threeeighths",
+    "fiveeighths",
+    "seveneighths",
+    "onethird",
+    "twothirds",
+    "",
+    "",
+    "zerosuperior",
+    "onesuperior",
+    "twosuperior",
+    "threesuperior",
+    "foursuperior",
+    "fivesuperior",
+    "sixsuperior",
+    "sevensuperior",
+    "eightsuperior",
+    "ninesuperior",
+    "zeroinferior",
+    "oneinferior",
+    "twoinferior",
+    "threeinferior",
+    "fourinferior",
+    "fiveinferior",
+    "sixinferior",
+    "seveninferior",
+    "eightinferior",
+    "nineinferior",
+    "centinferior",
+    "dollarinferior",
+    "periodinferior",
+    "commainferior",
+    "Agravesmall",
+    "Aacutesmall",
+    "Acircumflexsmall",
+    "Atildesmall",
+    "Adieresissmall",
+    "Aringsmall",
+    "AEsmall",
+    "Ccedillasmall",
+    "Egravesmall",
+    "Eacutesmall",
+    "Ecircumflexsmall",
+    "Edieresissmall",
+    "Igravesmall",
+    "Iacutesmall",
+    "Icircumflexsmall",
+    "Idieresissmall",
+    "Ethsmall",
+    "Ntildesmall",
+    "Ogravesmall",
+    "Oacutesmall",
+    "Ocircumflexsmall",
+    "Otildesmall",
+    "Odieresissmall",
+    "OEsmall",
+    "Oslashsmall",
+    "Ugravesmall",
+    "Uacutesmall",
+    "Ucircumflexsmall",
+    "Udieresissmall",
+    "Yacutesmall",
+    "Thornsmall",
+    "Ydieresissmall",
+  ],
+  MacExpertEncoding: [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "space",
+    "exclamsmall",
+    "Hungarumlautsmall",
+    "centoldstyle",
+    "dollaroldstyle",
+    "dollarsuperior",
+    "ampersandsmall",
+    "Acutesmall",
+    "parenleftsuperior",
+    "parenrightsuperior",
+    "twodotenleader",
+    "onedotenleader",
+    "comma",
+    "hyphen",
+    "period",
+    "fraction",
+    "zerooldstyle",
+    "oneoldstyle",
+    "twooldstyle",
+    "threeoldstyle",
+    "fouroldstyle",
+    "fiveoldstyle",
+    "sixoldstyle",
+    "sevenoldstyle",
+    "eightoldstyle",
+    "nineoldstyle",
+    "colon",
+    "semicolon",
+    "",
+    "threequartersemdash",
+    "",
+    "questionsmall",
+    "",
+    "",
+    "",
+    "",
+    "Ethsmall",
+    "",
+    "",
+    "onequarter",
+    "onehalf",
+    "threequarters",
+    "oneeighth",
+    "threeeighths",
+    "fiveeighths",
+    "seveneighths",
+    "onethird",
+    "twothirds",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "ff",
+    "fi",
+    "fl",
+    "ffi",
+    "ffl",
+    "parenleftinferior",
+    "",
+    "parenrightinferior",
+    "Circumflexsmall",
+    "hypheninferior",
+    "Gravesmall",
+    "Asmall",
+    "Bsmall",
+    "Csmall",
+    "Dsmall",
+    "Esmall",
+    "Fsmall",
+    "Gsmall",
+    "Hsmall",
+    "Ismall",
+    "Jsmall",
+    "Ksmall",
+    "Lsmall",
+    "Msmall",
+    "Nsmall",
+    "Osmall",
+    "Psmall",
+    "Qsmall",
+    "Rsmall",
+    "Ssmall",
+    "Tsmall",
+    "Usmall",
+    "Vsmall",
+    "Wsmall",
+    "Xsmall",
+    "Ysmall",
+    "Zsmall",
+    "colonmonetary",
+    "onefitted",
+    "rupiah",
+    "Tildesmall",
+    "",
+    "",
+    "asuperior",
+    "centsuperior",
+    "",
+    "",
+    "",
+    "",
+    "Aacutesmall",
+    "Agravesmall",
+    "Acircumflexsmall",
+    "Adieresissmall",
+    "Atildesmall",
+    "Aringsmall",
+    "Ccedillasmall",
+    "Eacutesmall",
+    "Egravesmall",
+    "Ecircumflexsmall",
+    "Edieresissmall",
+    "Iacutesmall",
+    "Igravesmall",
+    "Icircumflexsmall",
+    "Idieresissmall",
+    "Ntildesmall",
+    "Oacutesmall",
+    "Ogravesmall",
+    "Ocircumflexsmall",
+    "Odieresissmall",
+    "Otildesmall",
+    "Uacutesmall",
+    "Ugravesmall",
+    "Ucircumflexsmall",
+    "Udieresissmall",
+    "",
+    "eightsuperior",
+    "fourinferior",
+    "threeinferior",
+    "sixinferior",
+    "eightinferior",
+    "seveninferior",
+    "Scaronsmall",
+    "",
+    "centinferior",
+    "twoinferior",
+    "",
+    "Dieresissmall",
+    "",
+    "Caronsmall",
+    "osuperior",
+    "fiveinferior",
+    "",
+    "commainferior",
+    "periodinferior",
+    "Yacutesmall",
+    "",
+    "dollarinferior",
+    "",
+    "Thornsmall",
+    "",
+    "nineinferior",
+    "zeroinferior",
+    "Zcaronsmall",
+    "AEsmall",
+    "Oslashsmall",
+    "questiondownsmall",
+    "oneinferior",
+    "Lslashsmall",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Cedillasmall",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "OEsmall",
+    "figuredash",
+    "hyphensuperior",
+    "",
+    "",
+    "",
+    "",
+    "exclamdownsmall",
+    "",
+    "Ydieresissmall",
+    "",
+    "onesuperior",
+    "twosuperior",
+    "threesuperior",
+    "foursuperior",
+    "fivesuperior",
+    "sixsuperior",
+    "sevensuperior",
+    "ninesuperior",
+    "zerosuperior",
+    "",
+    "esuperior",
+    "rsuperior",
+    "tsuperior",
+    "",
+    "",
+    "isuperior",
+    "ssuperior",
+    "dsuperior",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "lsuperior",
+    "Ogoneksmall",
+    "Brevesmall",
+    "Macronsmall",
+    "bsuperior",
+    "nsuperior",
+    "msuperior",
+    "commasuperior",
+    "periodsuperior",
+    "Dotaccentsmall",
+    "Ringsmall",
+  ],
+  MacRomanEncoding: [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "space",
+    "exclam",
+    "quotedbl",
+    "numbersign",
+    "dollar",
+    "percent",
+    "ampersand",
+    "quotesingle",
+    "parenleft",
+    "parenright",
+    "asterisk",
+    "plus",
+    "comma",
+    "hyphen",
+    "period",
+    "slash",
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "colon",
+    "semicolon",
+    "less",
+    "equal",
+    "greater",
+    "question",
+    "at",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "bracketleft",
+    "backslash",
+    "bracketright",
+    "asciicircum",
+    "underscore",
+    "grave",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+    "braceleft",
+    "bar",
+    "braceright",
+    "asciitilde",
+    "",
+    "Adieresis",
+    "Aring",
+    "Ccedilla",
+    "Eacute",
+    "Ntilde",
+    "Odieresis",
+    "Udieresis",
+    "aacute",
+    "agrave",
+    "acircumflex",
+    "adieresis",
+    "atilde",
+    "aring",
+    "ccedilla",
+    "eacute",
+    "egrave",
+    "ecircumflex",
+    "edieresis",
+    "iacute",
+    "igrave",
+    "icircumflex",
+    "idieresis",
+    "ntilde",
+    "oacute",
+    "ograve",
+    "ocircumflex",
+    "odieresis",
+    "otilde",
+    "uacute",
+    "ugrave",
+    "ucircumflex",
+    "udieresis",
+    "dagger",
+    "degree",
+    "cent",
+    "sterling",
+    "section",
+    "bullet",
+    "paragraph",
+    "germandbls",
+    "registered",
+    "copyright",
+    "trademark",
+    "acute",
+    "dieresis",
+    "notequal",
+    "AE",
+    "Oslash",
+    "infinity",
+    "plusminus",
+    "lessequal",
+    "greaterequal",
+    "yen",
+    "mu",
+    "partialdiff",
+    "summation",
+    "product",
+    "pi",
+    "integral",
+    "ordfeminine",
+    "ordmasculine",
+    "Omega",
+    "ae",
+    "oslash",
+    "questiondown",
+    "exclamdown",
+    "logicalnot",
+    "radical",
+    "florin",
+    "approxequal",
+    "Delta",
+    "guillemotleft",
+    "guillemotright",
+    "ellipsis",
+    "space",
+    "Agrave",
+    "Atilde",
+    "Otilde",
+    "OE",
+    "oe",
+    "endash",
+    "emdash",
+    "quotedblleft",
+    "quotedblright",
+    "quoteleft",
+    "quoteright",
+    "divide",
+    "lozenge",
+    "ydieresis",
+    "Ydieresis",
+    "fraction",
+    "currency",
+    "guilsinglleft",
+    "guilsinglright",
+    "fi",
+    "fl",
+    "daggerdbl",
+    "periodcentered",
+    "quotesinglbase",
+    "quotedblbase",
+    "perthousand",
+    "Acircumflex",
+    "Ecircumflex",
+    "Aacute",
+    "Edieresis",
+    "Egrave",
+    "Iacute",
+    "Icircumflex",
+    "Idieresis",
+    "Igrave",
+    "Oacute",
+    "Ocircumflex",
+    "apple",
+    "Ograve",
+    "Uacute",
+    "Ucircumflex",
+    "Ugrave",
+    "dotlessi",
+    "circumflex",
+    "tilde",
+    "macron",
+    "breve",
+    "dotaccent",
+    "ring",
+    "cedilla",
+    "hungarumlaut",
+    "ogonek",
+    "caron",
+  ],
+  StandardEncoding: [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "space",
+    "exclam",
+    "quotedbl",
+    "numbersign",
+    "dollar",
+    "percent",
+    "ampersand",
+    "quoteright",
+    "parenleft",
+    "parenright",
+    "asterisk",
+    "plus",
+    "comma",
+    "hyphen",
+    "period",
+    "slash",
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "colon",
+    "semicolon",
+    "less",
+    "equal",
+    "greater",
+    "question",
+    "at",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "bracketleft",
+    "backslash",
+    "bracketright",
+    "asciicircum",
+    "underscore",
+    "quoteleft",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+    "braceleft",
+    "bar",
+    "braceright",
+    "asciitilde",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "exclamdown",
+    "cent",
+    "sterling",
+    "fraction",
+    "yen",
+    "florin",
+    "section",
+    "currency",
+    "quotesingle",
+    "quotedblleft",
+    "guillemotleft",
+    "guilsinglleft",
+    "guilsinglright",
+    "fi",
+    "fl",
+    "",
+    "endash",
+    "dagger",
+    "daggerdbl",
+    "periodcentered",
+    "",
+    "paragraph",
+    "bullet",
+    "quotesinglbase",
+    "quotedblbase",
+    "quotedblright",
+    "guillemotright",
+    "ellipsis",
+    "perthousand",
+    "",
+    "questiondown",
+    "",
+    "grave",
+    "acute",
+    "circumflex",
+    "tilde",
+    "macron",
+    "breve",
+    "dotaccent",
+    "dieresis",
+    "",
+    "ring",
+    "cedilla",
+    "",
+    "hungarumlaut",
+    "ogonek",
+    "caron",
+    "emdash",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "AE",
+    "",
+    "ordfeminine",
+    "",
+    "",
+    "",
+    "",
+    "Lslash",
+    "Oslash",
+    "OE",
+    "ordmasculine",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "ae",
+    "",
+    "",
+    "",
+    "dotlessi",
+    "",
+    "",
+    "lslash",
+    "oslash",
+    "oe",
+    "germandbls",
+  ],
+  WinAnsiEncoding: [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "space",
+    "exclam",
+    "quotedbl",
+    "numbersign",
+    "dollar",
+    "percent",
+    "ampersand",
+    "quotesingle",
+    "parenleft",
+    "parenright",
+    "asterisk",
+    "plus",
+    "comma",
+    "hyphen",
+    "period",
+    "slash",
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "colon",
+    "semicolon",
+    "less",
+    "equal",
+    "greater",
+    "question",
+    "at",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "bracketleft",
+    "backslash",
+    "bracketright",
+    "asciicircum",
+    "underscore",
+    "grave",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+    "braceleft",
+    "bar",
+    "braceright",
+    "asciitilde",
+    "bullet",
+    "Euro",
+    "bullet",
+    "quotesinglbase",
+    "florin",
+    "quotedblbase",
+    "ellipsis",
+    "dagger",
+    "daggerdbl",
+    "circumflex",
+    "perthousand",
+    "Scaron",
+    "guilsinglleft",
+    "OE",
+    "bullet",
+    "Zcaron",
+    "bullet",
+    "bullet",
+    "quoteleft",
+    "quoteright",
+    "quotedblleft",
+    "quotedblright",
+    "bullet",
+    "endash",
+    "emdash",
+    "tilde",
+    "trademark",
+    "scaron",
+    "guilsinglright",
+    "oe",
+    "bullet",
+    "zcaron",
+    "Ydieresis",
+    "space",
+    "exclamdown",
+    "cent",
+    "sterling",
+    "currency",
+    "yen",
+    "brokenbar",
+    "section",
+    "dieresis",
+    "copyright",
+    "ordfeminine",
+    "guillemotleft",
+    "logicalnot",
+    "hyphen",
+    "registered",
+    "macron",
+    "degree",
+    "plusminus",
+    "twosuperior",
+    "threesuperior",
+    "acute",
+    "mu",
+    "paragraph",
+    "periodcentered",
+    "cedilla",
+    "onesuperior",
+    "ordmasculine",
+    "guillemotright",
+    "onequarter",
+    "onehalf",
+    "threequarters",
+    "questiondown",
+    "Agrave",
+    "Aacute",
+    "Acircumflex",
+    "Atilde",
+    "Adieresis",
+    "Aring",
+    "AE",
+    "Ccedilla",
+    "Egrave",
+    "Eacute",
+    "Ecircumflex",
+    "Edieresis",
+    "Igrave",
+    "Iacute",
+    "Icircumflex",
+    "Idieresis",
+    "Eth",
+    "Ntilde",
+    "Ograve",
+    "Oacute",
+    "Ocircumflex",
+    "Otilde",
+    "Odieresis",
+    "multiply",
+    "Oslash",
+    "Ugrave",
+    "Uacute",
+    "Ucircumflex",
+    "Udieresis",
+    "Yacute",
+    "Thorn",
+    "germandbls",
+    "agrave",
+    "aacute",
+    "acircumflex",
+    "atilde",
+    "adieresis",
+    "aring",
+    "ae",
+    "ccedilla",
+    "egrave",
+    "eacute",
+    "ecircumflex",
+    "edieresis",
+    "igrave",
+    "iacute",
+    "icircumflex",
+    "idieresis",
+    "eth",
+    "ntilde",
+    "ograve",
+    "oacute",
+    "ocircumflex",
+    "otilde",
+    "odieresis",
+    "divide",
+    "oslash",
+    "ugrave",
+    "uacute",
+    "ucircumflex",
+    "udieresis",
+    "yacute",
+    "thorn",
+    "ydieresis",
+  ],
+  SymbolSetEncoding: [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "space",
+    "exclam",
+    "universal",
+    "numbersign",
+    "existential",
+    "percent",
+    "ampersand",
+    "suchthat",
+    "parenleft",
+    "parenright",
+    "asteriskmath",
+    "plus",
+    "comma",
+    "minus",
+    "period",
+    "slash",
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "colon",
+    "semicolon",
+    "less",
+    "equal",
+    "greater",
+    "question",
+    "congruent",
+    "Alpha",
+    "Beta",
+    "Chi",
+    "Delta",
+    "Epsilon",
+    "Phi",
+    "Gamma",
+    "Eta",
+    "Iota",
+    "theta1",
+    "Kappa",
+    "Lambda",
+    "Mu",
+    "Nu",
+    "Omicron",
+    "Pi",
+    "Theta",
+    "Rho",
+    "Sigma",
+    "Tau",
+    "Upsilon",
+    "sigma1",
+    "Omega",
+    "Xi",
+    "Psi",
+    "Zeta",
+    "bracketleft",
+    "therefore",
+    "bracketright",
+    "perpendicular",
+    "underscore",
+    "radicalex",
+    "alpha",
+    "beta",
+    "chi",
+    "delta",
+    "epsilon",
+    "phi",
+    "gamma",
+    "eta",
+    "iota",
+    "phi1",
+    "kappa",
+    "lambda",
+    "mu",
+    "nu",
+    "omicron",
+    "pi",
+    "theta",
+    "rho",
+    "sigma",
+    "tau",
+    "upsilon",
+    "omega1",
+    "omega",
+    "xi",
+    "psi",
+    "zeta",
+    "braceleft",
+    "bar",
+    "braceright",
+    "similar",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Euro",
+    "Upsilon1",
+    "minute",
+    "lessequal",
+    "fraction",
+    "infinity",
+    "florin",
+    "club",
+    "diamond",
+    "heart",
+    "spade",
+    "arrowboth",
+    "arrowleft",
+    "arrowup",
+    "arrowright",
+    "arrowdown",
+    "degree",
+    "plusminus",
+    "second",
+    "greaterequal",
+    "multiply",
+    "proportional",
+    "partialdiff",
+    "bullet",
+    "divide",
+    "notequal",
+    "equivalence",
+    "approxequal",
+    "ellipsis",
+    "arrowvertex",
+    "arrowhorizex",
+    "carriagereturn",
+    "aleph",
+    "Ifraktur",
+    "Rfraktur",
+    "weierstrass",
+    "circlemultiply",
+    "circleplus",
+    "emptyset",
+    "intersection",
+    "union",
+    "propersuperset",
+    "reflexsuperset",
+    "notsubset",
+    "propersubset",
+    "reflexsubset",
+    "element",
+    "notelement",
+    "angle",
+    "gradient",
+    "registerserif",
+    "copyrightserif",
+    "trademarkserif",
+    "product",
+    "radical",
+    "dotmath",
+    "logicalnot",
+    "logicaland",
+    "logicalor",
+    "arrowdblboth",
+    "arrowdblleft",
+    "arrowdblup",
+    "arrowdblright",
+    "arrowdbldown",
+    "lozenge",
+    "angleleft",
+    "registersans",
+    "copyrightsans",
+    "trademarksans",
+    "summation",
+    "parenlefttp",
+    "parenleftex",
+    "parenleftbt",
+    "bracketlefttp",
+    "bracketleftex",
+    "bracketleftbt",
+    "bracelefttp",
+    "braceleftmid",
+    "braceleftbt",
+    "braceex",
+    "",
+    "angleright",
+    "integral",
+    "integraltp",
+    "integralex",
+    "integralbt",
+    "parenrighttp",
+    "parenrightex",
+    "parenrightbt",
+    "bracketrighttp",
+    "bracketrightex",
+    "bracketrightbt",
+    "bracerighttp",
+    "bracerightmid",
+    "bracerightbt",
+  ],
+  ZapfDingbatsEncoding: [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "space",
+    "a1",
+    "a2",
+    "a202",
+    "a3",
+    "a4",
+    "a5",
+    "a119",
+    "a118",
+    "a117",
+    "a11",
+    "a12",
+    "a13",
+    "a14",
+    "a15",
+    "a16",
+    "a105",
+    "a17",
+    "a18",
+    "a19",
+    "a20",
+    "a21",
+    "a22",
+    "a23",
+    "a24",
+    "a25",
+    "a26",
+    "a27",
+    "a28",
+    "a6",
+    "a7",
+    "a8",
+    "a9",
+    "a10",
+    "a29",
+    "a30",
+    "a31",
+    "a32",
+    "a33",
+    "a34",
+    "a35",
+    "a36",
+    "a37",
+    "a38",
+    "a39",
+    "a40",
+    "a41",
+    "a42",
+    "a43",
+    "a44",
+    "a45",
+    "a46",
+    "a47",
+    "a48",
+    "a49",
+    "a50",
+    "a51",
+    "a52",
+    "a53",
+    "a54",
+    "a55",
+    "a56",
+    "a57",
+    "a58",
+    "a59",
+    "a60",
+    "a61",
+    "a62",
+    "a63",
+    "a64",
+    "a65",
+    "a66",
+    "a67",
+    "a68",
+    "a69",
+    "a70",
+    "a71",
+    "a72",
+    "a73",
+    "a74",
+    "a203",
+    "a75",
+    "a204",
+    "a76",
+    "a77",
+    "a78",
+    "a79",
+    "a81",
+    "a82",
+    "a83",
+    "a84",
+    "a97",
+    "a98",
+    "a99",
+    "a100",
+    "",
+    "a89",
+    "a90",
+    "a93",
+    "a94",
+    "a91",
+    "a92",
+    "a205",
+    "a85",
+    "a206",
+    "a86",
+    "a87",
+    "a88",
+    "a95",
+    "a96",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "a101",
+    "a102",
+    "a103",
+    "a104",
+    "a106",
+    "a107",
+    "a108",
+    "a112",
+    "a111",
+    "a110",
+    "a109",
+    "a120",
+    "a121",
+    "a122",
+    "a123",
+    "a124",
+    "a125",
+    "a126",
+    "a127",
+    "a128",
+    "a129",
+    "a130",
+    "a131",
+    "a132",
+    "a133",
+    "a134",
+    "a135",
+    "a136",
+    "a137",
+    "a138",
+    "a139",
+    "a140",
+    "a141",
+    "a142",
+    "a143",
+    "a144",
+    "a145",
+    "a146",
+    "a147",
+    "a148",
+    "a149",
+    "a150",
+    "a151",
+    "a152",
+    "a153",
+    "a154",
+    "a155",
+    "a156",
+    "a157",
+    "a158",
+    "a159",
+    "a160",
+    "a161",
+    "a163",
+    "a164",
+    "a196",
+    "a165",
+    "a192",
+    "a166",
+    "a167",
+    "a168",
+    "a169",
+    "a170",
+    "a171",
+    "a172",
+    "a173",
+    "a162",
+    "a174",
+    "a175",
+    "a176",
+    "a177",
+    "a178",
+    "a179",
+    "a193",
+    "a180",
+    "a199",
+    "a181",
+    "a200",
+    "a182",
+    "",
+    "a201",
+    "a183",
+    "a184",
+    "a197",
+    "a185",
+    "a194",
+    "a198",
+    "a186",
+    "a195",
+    "a187",
+    "a188",
+    "a189",
+    "a190",
+    "a191",
+  ],
 };
 
 /**
@@ -293,54 +1853,54 @@ var Encodings = {
  * fonts and their acronyms.
  */
 var stdFontMap = {
-  'ArialNarrow': 'Helvetica',
-  'ArialNarrow-Bold': 'Helvetica-Bold',
-  'ArialNarrow-BoldItalic': 'Helvetica-BoldOblique',
-  'ArialNarrow-Italic': 'Helvetica-Oblique',
-  'ArialBlack': 'Helvetica',
-  'ArialBlack-Bold': 'Helvetica-Bold',
-  'ArialBlack-BoldItalic': 'Helvetica-BoldOblique',
-  'ArialBlack-Italic': 'Helvetica-Oblique',
-  'Arial': 'Helvetica',
-  'Arial-Bold': 'Helvetica-Bold',
-  'Arial-BoldItalic': 'Helvetica-BoldOblique',
-  'Arial-Italic': 'Helvetica-Oblique',
-  'Arial-BoldItalicMT': 'Helvetica-BoldOblique',
-  'Arial-BoldMT': 'Helvetica-Bold',
-  'Arial-ItalicMT': 'Helvetica-Oblique',
-  'ArialMT': 'Helvetica',
-  'Courier-Bold': 'Courier-Bold',
-  'Courier-BoldItalic': 'Courier-BoldOblique',
-  'Courier-Italic': 'Courier-Oblique',
-  'CourierNew': 'Courier',
-  'CourierNew-Bold': 'Courier-Bold',
-  'CourierNew-BoldItalic': 'Courier-BoldOblique',
-  'CourierNew-Italic': 'Courier-Oblique',
-  'CourierNewPS-BoldItalicMT': 'Courier-BoldOblique',
-  'CourierNewPS-BoldMT': 'Courier-Bold',
-  'CourierNewPS-ItalicMT': 'Courier-Oblique',
-  'CourierNewPSMT': 'Courier',
-  'Helvetica-Bold': 'Helvetica-Bold',
-  'Helvetica-BoldItalic': 'Helvetica-BoldOblique',
-  'Helvetica-Italic': 'Helvetica-Oblique',
-  'Symbol-Bold': 'Symbol',
-  'Symbol-BoldItalic': 'Symbol',
-  'Symbol-Italic': 'Symbol',
-  'TimesNewRoman': 'Times-Roman',
-  'TimesNewRoman-Bold': 'Times-Bold',
-  'TimesNewRoman-BoldItalic': 'Times-BoldItalic',
-  'TimesNewRoman-Italic': 'Times-Italic',
-  'TimesNewRomanPS': 'Times-Roman',
-  'TimesNewRomanPS-Bold': 'Times-Bold',
-  'TimesNewRomanPS-BoldItalic': 'Times-BoldItalic',
-  'TimesNewRomanPS-BoldItalicMT': 'Times-BoldItalic',
-  'TimesNewRomanPS-BoldMT': 'Times-Bold',
-  'TimesNewRomanPS-Italic': 'Times-Italic',
-  'TimesNewRomanPS-ItalicMT': 'Times-Italic',
-  'TimesNewRomanPSMT': 'Times-Roman',
-  'TimesNewRomanPSMT-Bold': 'Times-Bold',
-  'TimesNewRomanPSMT-BoldItalic': 'Times-BoldItalic',
-  'TimesNewRomanPSMT-Italic': 'Times-Italic'
+  ArialNarrow: "Helvetica",
+  "ArialNarrow-Bold": "Helvetica-Bold",
+  "ArialNarrow-BoldItalic": "Helvetica-BoldOblique",
+  "ArialNarrow-Italic": "Helvetica-Oblique",
+  ArialBlack: "Helvetica",
+  "ArialBlack-Bold": "Helvetica-Bold",
+  "ArialBlack-BoldItalic": "Helvetica-BoldOblique",
+  "ArialBlack-Italic": "Helvetica-Oblique",
+  Arial: "Helvetica",
+  "Arial-Bold": "Helvetica-Bold",
+  "Arial-BoldItalic": "Helvetica-BoldOblique",
+  "Arial-Italic": "Helvetica-Oblique",
+  "Arial-BoldItalicMT": "Helvetica-BoldOblique",
+  "Arial-BoldMT": "Helvetica-Bold",
+  "Arial-ItalicMT": "Helvetica-Oblique",
+  ArialMT: "Helvetica",
+  "Courier-Bold": "Courier-Bold",
+  "Courier-BoldItalic": "Courier-BoldOblique",
+  "Courier-Italic": "Courier-Oblique",
+  CourierNew: "Courier",
+  "CourierNew-Bold": "Courier-Bold",
+  "CourierNew-BoldItalic": "Courier-BoldOblique",
+  "CourierNew-Italic": "Courier-Oblique",
+  "CourierNewPS-BoldItalicMT": "Courier-BoldOblique",
+  "CourierNewPS-BoldMT": "Courier-Bold",
+  "CourierNewPS-ItalicMT": "Courier-Oblique",
+  CourierNewPSMT: "Courier",
+  "Helvetica-Bold": "Helvetica-Bold",
+  "Helvetica-BoldItalic": "Helvetica-BoldOblique",
+  "Helvetica-Italic": "Helvetica-Oblique",
+  "Symbol-Bold": "Symbol",
+  "Symbol-BoldItalic": "Symbol",
+  "Symbol-Italic": "Symbol",
+  TimesNewRoman: "Times-Roman",
+  "TimesNewRoman-Bold": "Times-Bold",
+  "TimesNewRoman-BoldItalic": "Times-BoldItalic",
+  "TimesNewRoman-Italic": "Times-Italic",
+  TimesNewRomanPS: "Times-Roman",
+  "TimesNewRomanPS-Bold": "Times-Bold",
+  "TimesNewRomanPS-BoldItalic": "Times-BoldItalic",
+  "TimesNewRomanPS-BoldItalicMT": "Times-BoldItalic",
+  "TimesNewRomanPS-BoldMT": "Times-Bold",
+  "TimesNewRomanPS-Italic": "Times-Italic",
+  "TimesNewRomanPS-ItalicMT": "Times-Italic",
+  TimesNewRomanPSMT: "Times-Roman",
+  "TimesNewRomanPSMT-Bold": "Times-Bold",
+  "TimesNewRomanPSMT-BoldItalic": "Times-BoldItalic",
+  "TimesNewRomanPSMT-Italic": "Times-Italic",
 };
 
 /**
@@ -348,359 +1908,997 @@ var stdFontMap = {
  * fonts without glyph data.
  */
 var nonStdFontMap = {
-  'ComicSansMS': 'Comic Sans MS',
-  'ComicSansMS-Bold': 'Comic Sans MS-Bold',
-  'ComicSansMS-BoldItalic': 'Comic Sans MS-BoldItalic',
-  'ComicSansMS-Italic': 'Comic Sans MS-Italic',
-  'LucidaConsole': 'Courier',
-  'LucidaConsole-Bold': 'Courier-Bold',
-  'LucidaConsole-BoldItalic': 'Courier-BoldOblique',
-  'LucidaConsole-Italic': 'Courier-Oblique',
-  'MS-Gothic': 'MS Gothic',
-  'MS-Gothic-Bold': 'MS Gothic-Bold',
-  'MS-Gothic-BoldItalic': 'MS Gothic-BoldItalic',
-  'MS-Gothic-Italic': 'MS Gothic-Italic',
-  'MS-Mincho': 'MS Mincho',
-  'MS-Mincho-Bold': 'MS Mincho-Bold',
-  'MS-Mincho-BoldItalic': 'MS Mincho-BoldItalic',
-  'MS-Mincho-Italic': 'MS Mincho-Italic',
-  'MS-PGothic': 'MS PGothic',
-  'MS-PGothic-Bold': 'MS PGothic-Bold',
-  'MS-PGothic-BoldItalic': 'MS PGothic-BoldItalic',
-  'MS-PGothic-Italic': 'MS PGothic-Italic',
-  'MS-PMincho': 'MS PMincho',
-  'MS-PMincho-Bold': 'MS PMincho-Bold',
-  'MS-PMincho-BoldItalic': 'MS PMincho-BoldItalic',
-  'MS-PMincho-Italic': 'MS PMincho-Italic'
+  ComicSansMS: "Comic Sans MS",
+  "ComicSansMS-Bold": "Comic Sans MS-Bold",
+  "ComicSansMS-BoldItalic": "Comic Sans MS-BoldItalic",
+  "ComicSansMS-Italic": "Comic Sans MS-Italic",
+  LucidaConsole: "Courier",
+  "LucidaConsole-Bold": "Courier-Bold",
+  "LucidaConsole-BoldItalic": "Courier-BoldOblique",
+  "LucidaConsole-Italic": "Courier-Oblique",
+  "MS-Gothic": "MS Gothic",
+  "MS-Gothic-Bold": "MS Gothic-Bold",
+  "MS-Gothic-BoldItalic": "MS Gothic-BoldItalic",
+  "MS-Gothic-Italic": "MS Gothic-Italic",
+  "MS-Mincho": "MS Mincho",
+  "MS-Mincho-Bold": "MS Mincho-Bold",
+  "MS-Mincho-BoldItalic": "MS Mincho-BoldItalic",
+  "MS-Mincho-Italic": "MS Mincho-Italic",
+  "MS-PGothic": "MS PGothic",
+  "MS-PGothic-Bold": "MS PGothic-Bold",
+  "MS-PGothic-BoldItalic": "MS PGothic-BoldItalic",
+  "MS-PGothic-Italic": "MS PGothic-Italic",
+  "MS-PMincho": "MS PMincho",
+  "MS-PMincho-Bold": "MS PMincho-Bold",
+  "MS-PMincho-BoldItalic": "MS PMincho-BoldItalic",
+  "MS-PMincho-Italic": "MS PMincho-Italic",
 };
 
 var serifFonts = {
-  'Adobe Jenson': true, 'Adobe Text': true, 'Albertus': true,
-  'Aldus': true, 'Alexandria': true, 'Algerian': true,
-  'American Typewriter': true, 'Antiqua': true, 'Apex': true,
-  'Arno': true, 'Aster': true, 'Aurora': true,
-  'Baskerville': true, 'Bell': true, 'Bembo': true,
-  'Bembo Schoolbook': true, 'Benguiat': true, 'Berkeley Old Style': true,
-  'Bernhard Modern': true, 'Berthold City': true, 'Bodoni': true,
-  'Bauer Bodoni': true, 'Book Antiqua': true, 'Bookman': true,
-  'Bordeaux Roman': true, 'Californian FB': true, 'Calisto': true,
-  'Calvert': true, 'Capitals': true, 'Cambria': true,
-  'Cartier': true, 'Caslon': true, 'Catull': true,
-  'Centaur': true, 'Century Old Style': true, 'Century Schoolbook': true,
-  'Chaparral': true, 'Charis SIL': true, 'Cheltenham': true,
-  'Cholla Slab': true, 'Clarendon': true, 'Clearface': true,
-  'Cochin': true, 'Colonna': true, 'Computer Modern': true,
-  'Concrete Roman': true, 'Constantia': true, 'Cooper Black': true,
-  'Corona': true, 'Ecotype': true, 'Egyptienne': true,
-  'Elephant': true, 'Excelsior': true, 'Fairfield': true,
-  'FF Scala': true, 'Folkard': true, 'Footlight': true,
-  'FreeSerif': true, 'Friz Quadrata': true, 'Garamond': true,
-  'Gentium': true, 'Georgia': true, 'Gloucester': true,
-  'Goudy Old Style': true, 'Goudy Schoolbook': true, 'Goudy Pro Font': true,
-  'Granjon': true, 'Guardian Egyptian': true, 'Heather': true,
-  'Hercules': true, 'High Tower Text': true, 'Hiroshige': true,
-  'Hoefler Text': true, 'Humana Serif': true, 'Imprint': true,
-  'Ionic No. 5': true, 'Janson': true, 'Joanna': true,
-  'Korinna': true, 'Lexicon': true, 'Liberation Serif': true,
-  'Linux Libertine': true, 'Literaturnaya': true, 'Lucida': true,
-  'Lucida Bright': true, 'Melior': true, 'Memphis': true,
-  'Miller': true, 'Minion': true, 'Modern': true,
-  'Mona Lisa': true, 'Mrs Eaves': true, 'MS Serif': true,
-  'Museo Slab': true, 'New York': true, 'Nimbus Roman': true,
-  'NPS Rawlinson Roadway': true, 'Palatino': true, 'Perpetua': true,
-  'Plantin': true, 'Plantin Schoolbook': true, 'Playbill': true,
-  'Poor Richard': true, 'Rawlinson Roadway': true, 'Renault': true,
-  'Requiem': true, 'Rockwell': true, 'Roman': true,
-  'Rotis Serif': true, 'Sabon': true, 'Scala': true,
-  'Seagull': true, 'Sistina': true, 'Souvenir': true,
-  'STIX': true, 'Stone Informal': true, 'Stone Serif': true,
-  'Sylfaen': true, 'Times': true, 'Trajan': true,
-  'Trinité': true, 'Trump Mediaeval': true, 'Utopia': true,
-  'Vale Type': true, 'Bitstream Vera': true, 'Vera Serif': true,
-  'Versailles': true, 'Wanted': true, 'Weiss': true,
-  'Wide Latin': true, 'Windsor': true, 'XITS': true
+  "Adobe Jenson": true,
+  "Adobe Text": true,
+  Albertus: true,
+  Aldus: true,
+  Alexandria: true,
+  Algerian: true,
+  "American Typewriter": true,
+  Antiqua: true,
+  Apex: true,
+  Arno: true,
+  Aster: true,
+  Aurora: true,
+  Baskerville: true,
+  Bell: true,
+  Bembo: true,
+  "Bembo Schoolbook": true,
+  Benguiat: true,
+  "Berkeley Old Style": true,
+  "Bernhard Modern": true,
+  "Berthold City": true,
+  Bodoni: true,
+  "Bauer Bodoni": true,
+  "Book Antiqua": true,
+  Bookman: true,
+  "Bordeaux Roman": true,
+  "Californian FB": true,
+  Calisto: true,
+  Calvert: true,
+  Capitals: true,
+  Cambria: true,
+  Cartier: true,
+  Caslon: true,
+  Catull: true,
+  Centaur: true,
+  "Century Old Style": true,
+  "Century Schoolbook": true,
+  Chaparral: true,
+  "Charis SIL": true,
+  Cheltenham: true,
+  "Cholla Slab": true,
+  Clarendon: true,
+  Clearface: true,
+  Cochin: true,
+  Colonna: true,
+  "Computer Modern": true,
+  "Concrete Roman": true,
+  Constantia: true,
+  "Cooper Black": true,
+  Corona: true,
+  Ecotype: true,
+  Egyptienne: true,
+  Elephant: true,
+  Excelsior: true,
+  Fairfield: true,
+  "FF Scala": true,
+  Folkard: true,
+  Footlight: true,
+  FreeSerif: true,
+  "Friz Quadrata": true,
+  Garamond: true,
+  Gentium: true,
+  Georgia: true,
+  Gloucester: true,
+  "Goudy Old Style": true,
+  "Goudy Schoolbook": true,
+  "Goudy Pro Font": true,
+  Granjon: true,
+  "Guardian Egyptian": true,
+  Heather: true,
+  Hercules: true,
+  "High Tower Text": true,
+  Hiroshige: true,
+  "Hoefler Text": true,
+  "Humana Serif": true,
+  Imprint: true,
+  "Ionic No. 5": true,
+  Janson: true,
+  Joanna: true,
+  Korinna: true,
+  Lexicon: true,
+  "Liberation Serif": true,
+  "Linux Libertine": true,
+  Literaturnaya: true,
+  Lucida: true,
+  "Lucida Bright": true,
+  Melior: true,
+  Memphis: true,
+  Miller: true,
+  Minion: true,
+  Modern: true,
+  "Mona Lisa": true,
+  "Mrs Eaves": true,
+  "MS Serif": true,
+  "Museo Slab": true,
+  "New York": true,
+  "Nimbus Roman": true,
+  "NPS Rawlinson Roadway": true,
+  Palatino: true,
+  Perpetua: true,
+  Plantin: true,
+  "Plantin Schoolbook": true,
+  Playbill: true,
+  "Poor Richard": true,
+  "Rawlinson Roadway": true,
+  Renault: true,
+  Requiem: true,
+  Rockwell: true,
+  Roman: true,
+  "Rotis Serif": true,
+  Sabon: true,
+  Scala: true,
+  Seagull: true,
+  Sistina: true,
+  Souvenir: true,
+  STIX: true,
+  "Stone Informal": true,
+  "Stone Serif": true,
+  Sylfaen: true,
+  Times: true,
+  Trajan: true,
+  Trinité: true,
+  "Trump Mediaeval": true,
+  Utopia: true,
+  "Vale Type": true,
+  "Bitstream Vera": true,
+  "Vera Serif": true,
+  Versailles: true,
+  Wanted: true,
+  Weiss: true,
+  "Wide Latin": true,
+  Windsor: true,
+  XITS: true,
 };
 
 var symbolsFonts = {
-  'Dingbats': true, 'Symbol': true, 'ZapfDingbats': true
+  Dingbats: true,
+  Symbol: true,
+  ZapfDingbats: true,
 };
 
 // Glyph map for well-known standard fonts. Sometimes Ghostscript uses CID fonts
 // but does not embed the CID to GID mapping. The mapping is incomplete for all
 // glyphs, but common for some set of the standard fonts.
 var GlyphMapForStandardFonts = {
-  '2': 10, '3': 32, '4': 33, '5': 34, '6': 35, '7': 36, '8': 37, '9': 38,
-  '10': 39, '11': 40, '12': 41, '13': 42, '14': 43, '15': 44, '16': 45,
-  '17': 46, '18': 47, '19': 48, '20': 49, '21': 50, '22': 51, '23': 52,
-  '24': 53, '25': 54, '26': 55, '27': 56, '28': 57, '29': 58, '30': 894,
-  '31': 60, '32': 61, '33': 62, '34': 63, '35': 64, '36': 65, '37': 66,
-  '38': 67, '39': 68, '40': 69, '41': 70, '42': 71, '43': 72, '44': 73,
-  '45': 74, '46': 75, '47': 76, '48': 77, '49': 78, '50': 79, '51': 80,
-  '52': 81, '53': 82, '54': 83, '55': 84, '56': 85, '57': 86, '58': 87,
-  '59': 88, '60': 89, '61': 90, '62': 91, '63': 92, '64': 93, '65': 94,
-  '66': 95, '67': 96, '68': 97, '69': 98, '70': 99, '71': 100, '72': 101,
-  '73': 102, '74': 103, '75': 104, '76': 105, '77': 106, '78': 107, '79': 108,
-  '80': 109, '81': 110, '82': 111, '83': 112, '84': 113, '85': 114, '86': 115,
-  '87': 116, '88': 117, '89': 118, '90': 119, '91': 120, '92': 121, '93': 122,
-  '94': 123, '95': 124, '96': 125, '97': 126, '98': 196, '99': 197, '100': 199,
-  '101': 201, '102': 209, '103': 214, '104': 220, '105': 225, '106': 224,
-  '107': 226, '108': 228, '109': 227, '110': 229, '111': 231, '112': 233,
-  '113': 232, '114': 234, '115': 235, '116': 237, '117': 236, '118': 238,
-  '119': 239, '120': 241, '121': 243, '122': 242, '123': 244, '124': 246,
-  '125': 245, '126': 250, '127': 249, '128': 251, '129': 252, '130': 8224,
-  '131': 176, '132': 162, '133': 163, '134': 167, '135': 8226, '136': 182,
-  '137': 223, '138': 174, '139': 169, '140': 8482, '141': 180, '142': 168,
-  '143': 8800, '144': 198, '145': 216, '146': 8734, '147': 177, '148': 8804,
-  '149': 8805, '150': 165, '151': 181, '152': 8706, '153': 8721, '154': 8719,
-  '156': 8747, '157': 170, '158': 186, '159': 8486, '160': 230, '161': 248,
-  '162': 191, '163': 161, '164': 172, '165': 8730, '166': 402, '167': 8776,
-  '168': 8710, '169': 171, '170': 187, '171': 8230, '210': 218, '223': 711,
-  '224': 321, '225': 322, '227': 353, '229': 382, '234': 253, '252': 263,
-  '253': 268, '254': 269, '258': 258, '260': 260, '261': 261, '265': 280,
-  '266': 281, '268': 283, '269': 313, '275': 323, '276': 324, '278': 328,
-  '284': 345, '285': 346, '286': 347, '292': 367, '295': 377, '296': 378,
-  '298': 380, '305': 963,
-  '306': 964, '307': 966, '308': 8215, '309': 8252, '310': 8319, '311': 8359,
-  '312': 8592, '313': 8593, '337': 9552, '493': 1039, '494': 1040, '705': 1524,
-  '706': 8362, '710': 64288, '711': 64298, '759': 1617, '761': 1776,
-  '763': 1778, '775': 1652, '777': 1764, '778': 1780, '779': 1781, '780': 1782,
-  '782': 771, '783': 64726, '786': 8363, '788': 8532, '790': 768, '791': 769,
-  '792': 768, '795': 803, '797': 64336, '798': 64337, '799': 64342,
-  '800': 64343, '801': 64344, '802': 64345, '803': 64362, '804': 64363,
-  '805': 64364, '2424': 7821, '2425': 7822, '2426': 7823, '2427': 7824,
-  '2428': 7825, '2429': 7826, '2430': 7827, '2433': 7682, '2678': 8045,
-  '2679': 8046, '2830': 1552, '2838': 686, '2840': 751, '2842': 753,
-  '2843': 754, '2844': 755, '2846': 757, '2856': 767, '2857': 848, '2858': 849,
-  '2862': 853, '2863': 854, '2864': 855, '2865': 861, '2866': 862, '2906': 7460,
-  '2908': 7462, '2909': 7463, '2910': 7464, '2912': 7466, '2913': 7467,
-  '2914': 7468, '2916': 7470, '2917': 7471, '2918': 7472, '2920': 7474,
-  '2921': 7475, '2922': 7476, '2924': 7478, '2925': 7479, '2926': 7480,
-  '2928': 7482, '2929': 7483, '2930': 7484, '2932': 7486, '2933': 7487,
-  '2934': 7488, '2936': 7490, '2937': 7491, '2938': 7492, '2940': 7494,
-  '2941': 7495, '2942': 7496, '2944': 7498, '2946': 7500, '2948': 7502,
-  '2950': 7504, '2951': 7505, '2952': 7506, '2954': 7508, '2955': 7509,
-  '2956': 7510, '2958': 7512, '2959': 7513, '2960': 7514, '2962': 7516,
-  '2963': 7517, '2964': 7518, '2966': 7520, '2967': 7521, '2968': 7522,
-  '2970': 7524, '2971': 7525, '2972': 7526, '2974': 7528, '2975': 7529,
-  '2976': 7530, '2978': 1537, '2979': 1538, '2980': 1539, '2982': 1549,
-  '2983': 1551, '2984': 1552, '2986': 1554, '2987': 1555, '2988': 1556,
-  '2990': 1623, '2991': 1624, '2995': 1775, '2999': 1791, '3002': 64290,
-  '3003': 64291, '3004': 64292, '3006': 64294, '3007': 64295, '3008': 64296,
-  '3011': 1900, '3014': 8223, '3015': 8244, '3017': 7532, '3018': 7533,
-  '3019': 7534, '3075': 7590, '3076': 7591, '3079': 7594, '3080': 7595,
-  '3083': 7598, '3084': 7599, '3087': 7602, '3088': 7603, '3091': 7606,
-  '3092': 7607, '3095': 7610, '3096': 7611, '3099': 7614, '3100': 7615,
-  '3103': 7618, '3104': 7619, '3107': 8337, '3108': 8338, '3116': 1884,
-  '3119': 1885, '3120': 1885, '3123': 1886, '3124': 1886, '3127': 1887,
-  '3128': 1887, '3131': 1888, '3132': 1888, '3135': 1889, '3136': 1889,
-  '3139': 1890, '3140': 1890, '3143': 1891, '3144': 1891, '3147': 1892,
-  '3148': 1892, '3153': 580, '3154': 581, '3157': 584, '3158': 585, '3161': 588,
-  '3162': 589, '3165': 891, '3166': 892, '3169': 1274, '3170': 1275,
-  '3173': 1278, '3174': 1279, '3181': 7622, '3182': 7623, '3282': 11799,
-  '3316': 578, '3379': 42785, '3393': 1159, '3416': 8377
+  2: 10,
+  3: 32,
+  4: 33,
+  5: 34,
+  6: 35,
+  7: 36,
+  8: 37,
+  9: 38,
+  10: 39,
+  11: 40,
+  12: 41,
+  13: 42,
+  14: 43,
+  15: 44,
+  16: 45,
+  17: 46,
+  18: 47,
+  19: 48,
+  20: 49,
+  21: 50,
+  22: 51,
+  23: 52,
+  24: 53,
+  25: 54,
+  26: 55,
+  27: 56,
+  28: 57,
+  29: 58,
+  30: 894,
+  31: 60,
+  32: 61,
+  33: 62,
+  34: 63,
+  35: 64,
+  36: 65,
+  37: 66,
+  38: 67,
+  39: 68,
+  40: 69,
+  41: 70,
+  42: 71,
+  43: 72,
+  44: 73,
+  45: 74,
+  46: 75,
+  47: 76,
+  48: 77,
+  49: 78,
+  50: 79,
+  51: 80,
+  52: 81,
+  53: 82,
+  54: 83,
+  55: 84,
+  56: 85,
+  57: 86,
+  58: 87,
+  59: 88,
+  60: 89,
+  61: 90,
+  62: 91,
+  63: 92,
+  64: 93,
+  65: 94,
+  66: 95,
+  67: 96,
+  68: 97,
+  69: 98,
+  70: 99,
+  71: 100,
+  72: 101,
+  73: 102,
+  74: 103,
+  75: 104,
+  76: 105,
+  77: 106,
+  78: 107,
+  79: 108,
+  80: 109,
+  81: 110,
+  82: 111,
+  83: 112,
+  84: 113,
+  85: 114,
+  86: 115,
+  87: 116,
+  88: 117,
+  89: 118,
+  90: 119,
+  91: 120,
+  92: 121,
+  93: 122,
+  94: 123,
+  95: 124,
+  96: 125,
+  97: 126,
+  98: 196,
+  99: 197,
+  100: 199,
+  101: 201,
+  102: 209,
+  103: 214,
+  104: 220,
+  105: 225,
+  106: 224,
+  107: 226,
+  108: 228,
+  109: 227,
+  110: 229,
+  111: 231,
+  112: 233,
+  113: 232,
+  114: 234,
+  115: 235,
+  116: 237,
+  117: 236,
+  118: 238,
+  119: 239,
+  120: 241,
+  121: 243,
+  122: 242,
+  123: 244,
+  124: 246,
+  125: 245,
+  126: 250,
+  127: 249,
+  128: 251,
+  129: 252,
+  130: 8224,
+  131: 176,
+  132: 162,
+  133: 163,
+  134: 167,
+  135: 8226,
+  136: 182,
+  137: 223,
+  138: 174,
+  139: 169,
+  140: 8482,
+  141: 180,
+  142: 168,
+  143: 8800,
+  144: 198,
+  145: 216,
+  146: 8734,
+  147: 177,
+  148: 8804,
+  149: 8805,
+  150: 165,
+  151: 181,
+  152: 8706,
+  153: 8721,
+  154: 8719,
+  156: 8747,
+  157: 170,
+  158: 186,
+  159: 8486,
+  160: 230,
+  161: 248,
+  162: 191,
+  163: 161,
+  164: 172,
+  165: 8730,
+  166: 402,
+  167: 8776,
+  168: 8710,
+  169: 171,
+  170: 187,
+  171: 8230,
+  210: 218,
+  223: 711,
+  224: 321,
+  225: 322,
+  227: 353,
+  229: 382,
+  234: 253,
+  252: 263,
+  253: 268,
+  254: 269,
+  258: 258,
+  260: 260,
+  261: 261,
+  265: 280,
+  266: 281,
+  268: 283,
+  269: 313,
+  275: 323,
+  276: 324,
+  278: 328,
+  284: 345,
+  285: 346,
+  286: 347,
+  292: 367,
+  295: 377,
+  296: 378,
+  298: 380,
+  305: 963,
+  306: 964,
+  307: 966,
+  308: 8215,
+  309: 8252,
+  310: 8319,
+  311: 8359,
+  312: 8592,
+  313: 8593,
+  337: 9552,
+  493: 1039,
+  494: 1040,
+  705: 1524,
+  706: 8362,
+  710: 64288,
+  711: 64298,
+  759: 1617,
+  761: 1776,
+  763: 1778,
+  775: 1652,
+  777: 1764,
+  778: 1780,
+  779: 1781,
+  780: 1782,
+  782: 771,
+  783: 64726,
+  786: 8363,
+  788: 8532,
+  790: 768,
+  791: 769,
+  792: 768,
+  795: 803,
+  797: 64336,
+  798: 64337,
+  799: 64342,
+  800: 64343,
+  801: 64344,
+  802: 64345,
+  803: 64362,
+  804: 64363,
+  805: 64364,
+  2424: 7821,
+  2425: 7822,
+  2426: 7823,
+  2427: 7824,
+  2428: 7825,
+  2429: 7826,
+  2430: 7827,
+  2433: 7682,
+  2678: 8045,
+  2679: 8046,
+  2830: 1552,
+  2838: 686,
+  2840: 751,
+  2842: 753,
+  2843: 754,
+  2844: 755,
+  2846: 757,
+  2856: 767,
+  2857: 848,
+  2858: 849,
+  2862: 853,
+  2863: 854,
+  2864: 855,
+  2865: 861,
+  2866: 862,
+  2906: 7460,
+  2908: 7462,
+  2909: 7463,
+  2910: 7464,
+  2912: 7466,
+  2913: 7467,
+  2914: 7468,
+  2916: 7470,
+  2917: 7471,
+  2918: 7472,
+  2920: 7474,
+  2921: 7475,
+  2922: 7476,
+  2924: 7478,
+  2925: 7479,
+  2926: 7480,
+  2928: 7482,
+  2929: 7483,
+  2930: 7484,
+  2932: 7486,
+  2933: 7487,
+  2934: 7488,
+  2936: 7490,
+  2937: 7491,
+  2938: 7492,
+  2940: 7494,
+  2941: 7495,
+  2942: 7496,
+  2944: 7498,
+  2946: 7500,
+  2948: 7502,
+  2950: 7504,
+  2951: 7505,
+  2952: 7506,
+  2954: 7508,
+  2955: 7509,
+  2956: 7510,
+  2958: 7512,
+  2959: 7513,
+  2960: 7514,
+  2962: 7516,
+  2963: 7517,
+  2964: 7518,
+  2966: 7520,
+  2967: 7521,
+  2968: 7522,
+  2970: 7524,
+  2971: 7525,
+  2972: 7526,
+  2974: 7528,
+  2975: 7529,
+  2976: 7530,
+  2978: 1537,
+  2979: 1538,
+  2980: 1539,
+  2982: 1549,
+  2983: 1551,
+  2984: 1552,
+  2986: 1554,
+  2987: 1555,
+  2988: 1556,
+  2990: 1623,
+  2991: 1624,
+  2995: 1775,
+  2999: 1791,
+  3002: 64290,
+  3003: 64291,
+  3004: 64292,
+  3006: 64294,
+  3007: 64295,
+  3008: 64296,
+  3011: 1900,
+  3014: 8223,
+  3015: 8244,
+  3017: 7532,
+  3018: 7533,
+  3019: 7534,
+  3075: 7590,
+  3076: 7591,
+  3079: 7594,
+  3080: 7595,
+  3083: 7598,
+  3084: 7599,
+  3087: 7602,
+  3088: 7603,
+  3091: 7606,
+  3092: 7607,
+  3095: 7610,
+  3096: 7611,
+  3099: 7614,
+  3100: 7615,
+  3103: 7618,
+  3104: 7619,
+  3107: 8337,
+  3108: 8338,
+  3116: 1884,
+  3119: 1885,
+  3120: 1885,
+  3123: 1886,
+  3124: 1886,
+  3127: 1887,
+  3128: 1887,
+  3131: 1888,
+  3132: 1888,
+  3135: 1889,
+  3136: 1889,
+  3139: 1890,
+  3140: 1890,
+  3143: 1891,
+  3144: 1891,
+  3147: 1892,
+  3148: 1892,
+  3153: 580,
+  3154: 581,
+  3157: 584,
+  3158: 585,
+  3161: 588,
+  3162: 589,
+  3165: 891,
+  3166: 892,
+  3169: 1274,
+  3170: 1275,
+  3173: 1278,
+  3174: 1279,
+  3181: 7622,
+  3182: 7623,
+  3282: 11799,
+  3316: 578,
+  3379: 42785,
+  3393: 1159,
+  3416: 8377,
 };
 
 // Some characters, e.g. copyrightserif, are mapped to the private use area and
 // might not be displayed using standard fonts. Mapping/hacking well-known chars
 // to the similar equivalents in the normal characters range.
 var SpecialPUASymbols = {
-  '63721': 0x00A9, // copyrightsans (0xF8E9) => copyright
-  '63193': 0x00A9, // copyrightserif (0xF6D9) => copyright
-  '63720': 0x00AE, // registersans (0xF8E8) => registered
-  '63194': 0x00AE, // registerserif (0xF6DA) => registered
-  '63722': 0x2122, // trademarksans (0xF8EA) => trademark
-  '63195': 0x2122, // trademarkserif (0xF6DB) => trademark
-  '63729': 0x23A7, // bracelefttp (0xF8F1)
-  '63730': 0x23A8, // braceleftmid (0xF8F2)
-  '63731': 0x23A9, // braceleftbt (0xF8F3)
-  '63740': 0x23AB, // bracerighttp (0xF8FC)
-  '63741': 0x23AC, // bracerightmid (0xF8FD)
-  '63742': 0x23AD, // bracerightmid (0xF8FE)
-  '63726': 0x23A1, // bracketlefttp (0xF8EE)
-  '63727': 0x23A2, // bracketleftex (0xF8EF)
-  '63728': 0x23A3, // bracketleftbt (0xF8F0)
-  '63737': 0x23A4, // bracketrighttp (0xF8F9)
-  '63738': 0x23A5, // bracketrightex (0xF8FA)
-  '63739': 0x23A6, // bracketrightbt (0xF8FB)
-  '63723': 0x239B, // parenlefttp (0xF8EB)
-  '63724': 0x239C, // parenleftex (0xF8EC)
-  '63725': 0x239D, // parenleftbt (0xF8ED)
-  '63734': 0x239E, // parenrighttp (0xF8F6)
-  '63735': 0x239F, // parenrightex (0xF8F7)
-  '63736': 0x23A0, // parenrightbt (0xF8F8)
+  63721: 0x00a9, // copyrightsans (0xF8E9) => copyright
+  63193: 0x00a9, // copyrightserif (0xF6D9) => copyright
+  63720: 0x00ae, // registersans (0xF8E8) => registered
+  63194: 0x00ae, // registerserif (0xF6DA) => registered
+  63722: 0x2122, // trademarksans (0xF8EA) => trademark
+  63195: 0x2122, // trademarkserif (0xF6DB) => trademark
+  63729: 0x23a7, // bracelefttp (0xF8F1)
+  63730: 0x23a8, // braceleftmid (0xF8F2)
+  63731: 0x23a9, // braceleftbt (0xF8F3)
+  63740: 0x23ab, // bracerighttp (0xF8FC)
+  63741: 0x23ac, // bracerightmid (0xF8FD)
+  63742: 0x23ad, // bracerightmid (0xF8FE)
+  63726: 0x23a1, // bracketlefttp (0xF8EE)
+  63727: 0x23a2, // bracketleftex (0xF8EF)
+  63728: 0x23a3, // bracketleftbt (0xF8F0)
+  63737: 0x23a4, // bracketrighttp (0xF8F9)
+  63738: 0x23a5, // bracketrightex (0xF8FA)
+  63739: 0x23a6, // bracketrightbt (0xF8FB)
+  63723: 0x239b, // parenlefttp (0xF8EB)
+  63724: 0x239c, // parenleftex (0xF8EC)
+  63725: 0x239d, // parenleftbt (0xF8ED)
+  63734: 0x239e, // parenrighttp (0xF8F6)
+  63735: 0x239f, // parenrightex (0xF8F7)
+  63736: 0x23a0, // parenrightbt (0xF8F8)
 };
 function mapSpecialUnicodeValues(code) {
-  if (code >= 0xFFF0 && code <= 0xFFFF) { // Specials unicode block.
+  if (code >= 0xfff0 && code <= 0xffff) {
+    // Specials unicode block.
     return 0;
-  } else if (code >= 0xF600 && code <= 0xF8FF) {
-    return (SpecialPUASymbols[code] || code);
+  } else if (code >= 0xf600 && code <= 0xf8ff) {
+    return SpecialPUASymbols[code] || code;
   }
   return code;
 }
 
 var UnicodeRanges = [
-  { 'begin': 0x0000, 'end': 0x007F }, // Basic Latin
-  { 'begin': 0x0080, 'end': 0x00FF }, // Latin-1 Supplement
-  { 'begin': 0x0100, 'end': 0x017F }, // Latin Extended-A
-  { 'begin': 0x0180, 'end': 0x024F }, // Latin Extended-B
-  { 'begin': 0x0250, 'end': 0x02AF }, // IPA Extensions
-  { 'begin': 0x02B0, 'end': 0x02FF }, // Spacing Modifier Letters
-  { 'begin': 0x0300, 'end': 0x036F }, // Combining Diacritical Marks
-  { 'begin': 0x0370, 'end': 0x03FF }, // Greek and Coptic
-  { 'begin': 0x2C80, 'end': 0x2CFF }, // Coptic
-  { 'begin': 0x0400, 'end': 0x04FF }, // Cyrillic
-  { 'begin': 0x0530, 'end': 0x058F }, // Armenian
-  { 'begin': 0x0590, 'end': 0x05FF }, // Hebrew
-  { 'begin': 0xA500, 'end': 0xA63F }, // Vai
-  { 'begin': 0x0600, 'end': 0x06FF }, // Arabic
-  { 'begin': 0x07C0, 'end': 0x07FF }, // NKo
-  { 'begin': 0x0900, 'end': 0x097F }, // Devanagari
-  { 'begin': 0x0980, 'end': 0x09FF }, // Bengali
-  { 'begin': 0x0A00, 'end': 0x0A7F }, // Gurmukhi
-  { 'begin': 0x0A80, 'end': 0x0AFF }, // Gujarati
-  { 'begin': 0x0B00, 'end': 0x0B7F }, // Oriya
-  { 'begin': 0x0B80, 'end': 0x0BFF }, // Tamil
-  { 'begin': 0x0C00, 'end': 0x0C7F }, // Telugu
-  { 'begin': 0x0C80, 'end': 0x0CFF }, // Kannada
-  { 'begin': 0x0D00, 'end': 0x0D7F }, // Malayalam
-  { 'begin': 0x0E00, 'end': 0x0E7F }, // Thai
-  { 'begin': 0x0E80, 'end': 0x0EFF }, // Lao
-  { 'begin': 0x10A0, 'end': 0x10FF }, // Georgian
-  { 'begin': 0x1B00, 'end': 0x1B7F }, // Balinese
-  { 'begin': 0x1100, 'end': 0x11FF }, // Hangul Jamo
-  { 'begin': 0x1E00, 'end': 0x1EFF }, // Latin Extended Additional
-  { 'begin': 0x1F00, 'end': 0x1FFF }, // Greek Extended
-  { 'begin': 0x2000, 'end': 0x206F }, // General Punctuation
-  { 'begin': 0x2070, 'end': 0x209F }, // Superscripts And Subscripts
-  { 'begin': 0x20A0, 'end': 0x20CF }, // Currency Symbol
-  { 'begin': 0x20D0, 'end': 0x20FF }, // Combining Diacritical Marks For Symbols
-  { 'begin': 0x2100, 'end': 0x214F }, // Letterlike Symbols
-  { 'begin': 0x2150, 'end': 0x218F }, // Number Forms
-  { 'begin': 0x2190, 'end': 0x21FF }, // Arrows
-  { 'begin': 0x2200, 'end': 0x22FF }, // Mathematical Operators
-  { 'begin': 0x2300, 'end': 0x23FF }, // Miscellaneous Technical
-  { 'begin': 0x2400, 'end': 0x243F }, // Control Pictures
-  { 'begin': 0x2440, 'end': 0x245F }, // Optical Character Recognition
-  { 'begin': 0x2460, 'end': 0x24FF }, // Enclosed Alphanumerics
-  { 'begin': 0x2500, 'end': 0x257F }, // Box Drawing
-  { 'begin': 0x2580, 'end': 0x259F }, // Block Elements
-  { 'begin': 0x25A0, 'end': 0x25FF }, // Geometric Shapes
-  { 'begin': 0x2600, 'end': 0x26FF }, // Miscellaneous Symbols
-  { 'begin': 0x2700, 'end': 0x27BF }, // Dingbats
-  { 'begin': 0x3000, 'end': 0x303F }, // CJK Symbols And Punctuation
-  { 'begin': 0x3040, 'end': 0x309F }, // Hiragana
-  { 'begin': 0x30A0, 'end': 0x30FF }, // Katakana
-  { 'begin': 0x3100, 'end': 0x312F }, // Bopomofo
-  { 'begin': 0x3130, 'end': 0x318F }, // Hangul Compatibility Jamo
-  { 'begin': 0xA840, 'end': 0xA87F }, // Phags-pa
-  { 'begin': 0x3200, 'end': 0x32FF }, // Enclosed CJK Letters And Months
-  { 'begin': 0x3300, 'end': 0x33FF }, // CJK Compatibility
-  { 'begin': 0xAC00, 'end': 0xD7AF }, // Hangul Syllables
-  { 'begin': 0xD800, 'end': 0xDFFF }, // Non-Plane 0 *
-  { 'begin': 0x10900, 'end': 0x1091F }, // Phoenicia
-  { 'begin': 0x4E00, 'end': 0x9FFF }, // CJK Unified Ideographs
-  { 'begin': 0xE000, 'end': 0xF8FF }, // Private Use Area (plane 0)
-  { 'begin': 0x31C0, 'end': 0x31EF }, // CJK Strokes
-  { 'begin': 0xFB00, 'end': 0xFB4F }, // Alphabetic Presentation Forms
-  { 'begin': 0xFB50, 'end': 0xFDFF }, // Arabic Presentation Forms-A
-  { 'begin': 0xFE20, 'end': 0xFE2F }, // Combining Half Marks
-  { 'begin': 0xFE10, 'end': 0xFE1F }, // Vertical Forms
-  { 'begin': 0xFE50, 'end': 0xFE6F }, // Small Form Variants
-  { 'begin': 0xFE70, 'end': 0xFEFF }, // Arabic Presentation Forms-B
-  { 'begin': 0xFF00, 'end': 0xFFEF }, // Halfwidth And Fullwidth Forms
-  { 'begin': 0xFFF0, 'end': 0xFFFF }, // Specials
-  { 'begin': 0x0F00, 'end': 0x0FFF }, // Tibetan
-  { 'begin': 0x0700, 'end': 0x074F }, // Syriac
-  { 'begin': 0x0780, 'end': 0x07BF }, // Thaana
-  { 'begin': 0x0D80, 'end': 0x0DFF }, // Sinhala
-  { 'begin': 0x1000, 'end': 0x109F }, // Myanmar
-  { 'begin': 0x1200, 'end': 0x137F }, // Ethiopic
-  { 'begin': 0x13A0, 'end': 0x13FF }, // Cherokee
-  { 'begin': 0x1400, 'end': 0x167F }, // Unified Canadian Aboriginal Syllabics
-  { 'begin': 0x1680, 'end': 0x169F }, // Ogham
-  { 'begin': 0x16A0, 'end': 0x16FF }, // Runic
-  { 'begin': 0x1780, 'end': 0x17FF }, // Khmer
-  { 'begin': 0x1800, 'end': 0x18AF }, // Mongolian
-  { 'begin': 0x2800, 'end': 0x28FF }, // Braille Patterns
-  { 'begin': 0xA000, 'end': 0xA48F }, // Yi Syllables
-  { 'begin': 0x1700, 'end': 0x171F }, // Tagalog
-  { 'begin': 0x10300, 'end': 0x1032F }, // Old Italic
-  { 'begin': 0x10330, 'end': 0x1034F }, // Gothic
-  { 'begin': 0x10400, 'end': 0x1044F }, // Deseret
-  { 'begin': 0x1D000, 'end': 0x1D0FF }, // Byzantine Musical Symbols
-  { 'begin': 0x1D400, 'end': 0x1D7FF }, // Mathematical Alphanumeric Symbols
-  { 'begin': 0xFF000, 'end': 0xFFFFD }, // Private Use (plane 15)
-  { 'begin': 0xFE00, 'end': 0xFE0F }, // Variation Selectors
-  { 'begin': 0xE0000, 'end': 0xE007F }, // Tags
-  { 'begin': 0x1900, 'end': 0x194F }, // Limbu
-  { 'begin': 0x1950, 'end': 0x197F }, // Tai Le
-  { 'begin': 0x1980, 'end': 0x19DF }, // New Tai Lue
-  { 'begin': 0x1A00, 'end': 0x1A1F }, // Buginese
-  { 'begin': 0x2C00, 'end': 0x2C5F }, // Glagolitic
-  { 'begin': 0x2D30, 'end': 0x2D7F }, // Tifinagh
-  { 'begin': 0x4DC0, 'end': 0x4DFF }, // Yijing Hexagram Symbols
-  { 'begin': 0xA800, 'end': 0xA82F }, // Syloti Nagri
-  { 'begin': 0x10000, 'end': 0x1007F }, // Linear B Syllabary
-  { 'begin': 0x10140, 'end': 0x1018F }, // Ancient Greek Numbers
-  { 'begin': 0x10380, 'end': 0x1039F }, // Ugaritic
-  { 'begin': 0x103A0, 'end': 0x103DF }, // Old Persian
-  { 'begin': 0x10450, 'end': 0x1047F }, // Shavian
-  { 'begin': 0x10480, 'end': 0x104AF }, // Osmanya
-  { 'begin': 0x10800, 'end': 0x1083F }, // Cypriot Syllabary
-  { 'begin': 0x10A00, 'end': 0x10A5F }, // Kharoshthi
-  { 'begin': 0x1D300, 'end': 0x1D35F }, // Tai Xuan Jing Symbols
-  { 'begin': 0x12000, 'end': 0x123FF }, // Cuneiform
-  { 'begin': 0x1D360, 'end': 0x1D37F }, // Counting Rod Numerals
-  { 'begin': 0x1B80, 'end': 0x1BBF }, // Sundanese
-  { 'begin': 0x1C00, 'end': 0x1C4F }, // Lepcha
-  { 'begin': 0x1C50, 'end': 0x1C7F }, // Ol Chiki
-  { 'begin': 0xA880, 'end': 0xA8DF }, // Saurashtra
-  { 'begin': 0xA900, 'end': 0xA92F }, // Kayah Li
-  { 'begin': 0xA930, 'end': 0xA95F }, // Rejang
-  { 'begin': 0xAA00, 'end': 0xAA5F }, // Cham
-  { 'begin': 0x10190, 'end': 0x101CF }, // Ancient Symbols
-  { 'begin': 0x101D0, 'end': 0x101FF }, // Phaistos Disc
-  { 'begin': 0x102A0, 'end': 0x102DF }, // Carian
-  { 'begin': 0x1F030, 'end': 0x1F09F }  // Domino Tiles
+  { begin: 0x0000, end: 0x007f }, // Basic Latin
+  { begin: 0x0080, end: 0x00ff }, // Latin-1 Supplement
+  { begin: 0x0100, end: 0x017f }, // Latin Extended-A
+  { begin: 0x0180, end: 0x024f }, // Latin Extended-B
+  { begin: 0x0250, end: 0x02af }, // IPA Extensions
+  { begin: 0x02b0, end: 0x02ff }, // Spacing Modifier Letters
+  { begin: 0x0300, end: 0x036f }, // Combining Diacritical Marks
+  { begin: 0x0370, end: 0x03ff }, // Greek and Coptic
+  { begin: 0x2c80, end: 0x2cff }, // Coptic
+  { begin: 0x0400, end: 0x04ff }, // Cyrillic
+  { begin: 0x0530, end: 0x058f }, // Armenian
+  { begin: 0x0590, end: 0x05ff }, // Hebrew
+  { begin: 0xa500, end: 0xa63f }, // Vai
+  { begin: 0x0600, end: 0x06ff }, // Arabic
+  { begin: 0x07c0, end: 0x07ff }, // NKo
+  { begin: 0x0900, end: 0x097f }, // Devanagari
+  { begin: 0x0980, end: 0x09ff }, // Bengali
+  { begin: 0x0a00, end: 0x0a7f }, // Gurmukhi
+  { begin: 0x0a80, end: 0x0aff }, // Gujarati
+  { begin: 0x0b00, end: 0x0b7f }, // Oriya
+  { begin: 0x0b80, end: 0x0bff }, // Tamil
+  { begin: 0x0c00, end: 0x0c7f }, // Telugu
+  { begin: 0x0c80, end: 0x0cff }, // Kannada
+  { begin: 0x0d00, end: 0x0d7f }, // Malayalam
+  { begin: 0x0e00, end: 0x0e7f }, // Thai
+  { begin: 0x0e80, end: 0x0eff }, // Lao
+  { begin: 0x10a0, end: 0x10ff }, // Georgian
+  { begin: 0x1b00, end: 0x1b7f }, // Balinese
+  { begin: 0x1100, end: 0x11ff }, // Hangul Jamo
+  { begin: 0x1e00, end: 0x1eff }, // Latin Extended Additional
+  { begin: 0x1f00, end: 0x1fff }, // Greek Extended
+  { begin: 0x2000, end: 0x206f }, // General Punctuation
+  { begin: 0x2070, end: 0x209f }, // Superscripts And Subscripts
+  { begin: 0x20a0, end: 0x20cf }, // Currency Symbol
+  { begin: 0x20d0, end: 0x20ff }, // Combining Diacritical Marks For Symbols
+  { begin: 0x2100, end: 0x214f }, // Letterlike Symbols
+  { begin: 0x2150, end: 0x218f }, // Number Forms
+  { begin: 0x2190, end: 0x21ff }, // Arrows
+  { begin: 0x2200, end: 0x22ff }, // Mathematical Operators
+  { begin: 0x2300, end: 0x23ff }, // Miscellaneous Technical
+  { begin: 0x2400, end: 0x243f }, // Control Pictures
+  { begin: 0x2440, end: 0x245f }, // Optical Character Recognition
+  { begin: 0x2460, end: 0x24ff }, // Enclosed Alphanumerics
+  { begin: 0x2500, end: 0x257f }, // Box Drawing
+  { begin: 0x2580, end: 0x259f }, // Block Elements
+  { begin: 0x25a0, end: 0x25ff }, // Geometric Shapes
+  { begin: 0x2600, end: 0x26ff }, // Miscellaneous Symbols
+  { begin: 0x2700, end: 0x27bf }, // Dingbats
+  { begin: 0x3000, end: 0x303f }, // CJK Symbols And Punctuation
+  { begin: 0x3040, end: 0x309f }, // Hiragana
+  { begin: 0x30a0, end: 0x30ff }, // Katakana
+  { begin: 0x3100, end: 0x312f }, // Bopomofo
+  { begin: 0x3130, end: 0x318f }, // Hangul Compatibility Jamo
+  { begin: 0xa840, end: 0xa87f }, // Phags-pa
+  { begin: 0x3200, end: 0x32ff }, // Enclosed CJK Letters And Months
+  { begin: 0x3300, end: 0x33ff }, // CJK Compatibility
+  { begin: 0xac00, end: 0xd7af }, // Hangul Syllables
+  { begin: 0xd800, end: 0xdfff }, // Non-Plane 0 *
+  { begin: 0x10900, end: 0x1091f }, // Phoenicia
+  { begin: 0x4e00, end: 0x9fff }, // CJK Unified Ideographs
+  { begin: 0xe000, end: 0xf8ff }, // Private Use Area (plane 0)
+  { begin: 0x31c0, end: 0x31ef }, // CJK Strokes
+  { begin: 0xfb00, end: 0xfb4f }, // Alphabetic Presentation Forms
+  { begin: 0xfb50, end: 0xfdff }, // Arabic Presentation Forms-A
+  { begin: 0xfe20, end: 0xfe2f }, // Combining Half Marks
+  { begin: 0xfe10, end: 0xfe1f }, // Vertical Forms
+  { begin: 0xfe50, end: 0xfe6f }, // Small Form Variants
+  { begin: 0xfe70, end: 0xfeff }, // Arabic Presentation Forms-B
+  { begin: 0xff00, end: 0xffef }, // Halfwidth And Fullwidth Forms
+  { begin: 0xfff0, end: 0xffff }, // Specials
+  { begin: 0x0f00, end: 0x0fff }, // Tibetan
+  { begin: 0x0700, end: 0x074f }, // Syriac
+  { begin: 0x0780, end: 0x07bf }, // Thaana
+  { begin: 0x0d80, end: 0x0dff }, // Sinhala
+  { begin: 0x1000, end: 0x109f }, // Myanmar
+  { begin: 0x1200, end: 0x137f }, // Ethiopic
+  { begin: 0x13a0, end: 0x13ff }, // Cherokee
+  { begin: 0x1400, end: 0x167f }, // Unified Canadian Aboriginal Syllabics
+  { begin: 0x1680, end: 0x169f }, // Ogham
+  { begin: 0x16a0, end: 0x16ff }, // Runic
+  { begin: 0x1780, end: 0x17ff }, // Khmer
+  { begin: 0x1800, end: 0x18af }, // Mongolian
+  { begin: 0x2800, end: 0x28ff }, // Braille Patterns
+  { begin: 0xa000, end: 0xa48f }, // Yi Syllables
+  { begin: 0x1700, end: 0x171f }, // Tagalog
+  { begin: 0x10300, end: 0x1032f }, // Old Italic
+  { begin: 0x10330, end: 0x1034f }, // Gothic
+  { begin: 0x10400, end: 0x1044f }, // Deseret
+  { begin: 0x1d000, end: 0x1d0ff }, // Byzantine Musical Symbols
+  { begin: 0x1d400, end: 0x1d7ff }, // Mathematical Alphanumeric Symbols
+  { begin: 0xff000, end: 0xffffd }, // Private Use (plane 15)
+  { begin: 0xfe00, end: 0xfe0f }, // Variation Selectors
+  { begin: 0xe0000, end: 0xe007f }, // Tags
+  { begin: 0x1900, end: 0x194f }, // Limbu
+  { begin: 0x1950, end: 0x197f }, // Tai Le
+  { begin: 0x1980, end: 0x19df }, // New Tai Lue
+  { begin: 0x1a00, end: 0x1a1f }, // Buginese
+  { begin: 0x2c00, end: 0x2c5f }, // Glagolitic
+  { begin: 0x2d30, end: 0x2d7f }, // Tifinagh
+  { begin: 0x4dc0, end: 0x4dff }, // Yijing Hexagram Symbols
+  { begin: 0xa800, end: 0xa82f }, // Syloti Nagri
+  { begin: 0x10000, end: 0x1007f }, // Linear B Syllabary
+  { begin: 0x10140, end: 0x1018f }, // Ancient Greek Numbers
+  { begin: 0x10380, end: 0x1039f }, // Ugaritic
+  { begin: 0x103a0, end: 0x103df }, // Old Persian
+  { begin: 0x10450, end: 0x1047f }, // Shavian
+  { begin: 0x10480, end: 0x104af }, // Osmanya
+  { begin: 0x10800, end: 0x1083f }, // Cypriot Syllabary
+  { begin: 0x10a00, end: 0x10a5f }, // Kharoshthi
+  { begin: 0x1d300, end: 0x1d35f }, // Tai Xuan Jing Symbols
+  { begin: 0x12000, end: 0x123ff }, // Cuneiform
+  { begin: 0x1d360, end: 0x1d37f }, // Counting Rod Numerals
+  { begin: 0x1b80, end: 0x1bbf }, // Sundanese
+  { begin: 0x1c00, end: 0x1c4f }, // Lepcha
+  { begin: 0x1c50, end: 0x1c7f }, // Ol Chiki
+  { begin: 0xa880, end: 0xa8df }, // Saurashtra
+  { begin: 0xa900, end: 0xa92f }, // Kayah Li
+  { begin: 0xa930, end: 0xa95f }, // Rejang
+  { begin: 0xaa00, end: 0xaa5f }, // Cham
+  { begin: 0x10190, end: 0x101cf }, // Ancient Symbols
+  { begin: 0x101d0, end: 0x101ff }, // Phaistos Disc
+  { begin: 0x102a0, end: 0x102df }, // Carian
+  { begin: 0x1f030, end: 0x1f09f }, // Domino Tiles
 ];
 
 var MacStandardGlyphOrdering = [
-  '.notdef', '.null', 'nonmarkingreturn', 'space', 'exclam', 'quotedbl',
-  'numbersign', 'dollar', 'percent', 'ampersand', 'quotesingle', 'parenleft',
-  'parenright', 'asterisk', 'plus', 'comma', 'hyphen', 'period', 'slash',
-  'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
-  'nine', 'colon', 'semicolon', 'less', 'equal', 'greater', 'question', 'at',
-  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
-  'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'bracketleft',
-  'backslash', 'bracketright', 'asciicircum', 'underscore', 'grave', 'a', 'b',
-  'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
-  'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'braceleft', 'bar', 'braceright',
-  'asciitilde', 'Adieresis', 'Aring', 'Ccedilla', 'Eacute', 'Ntilde',
-  'Odieresis', 'Udieresis', 'aacute', 'agrave', 'acircumflex', 'adieresis',
-  'atilde', 'aring', 'ccedilla', 'eacute', 'egrave', 'ecircumflex', 'edieresis',
-  'iacute', 'igrave', 'icircumflex', 'idieresis', 'ntilde', 'oacute', 'ograve',
-  'ocircumflex', 'odieresis', 'otilde', 'uacute', 'ugrave', 'ucircumflex',
-  'udieresis', 'dagger', 'degree', 'cent', 'sterling', 'section', 'bullet',
-  'paragraph', 'germandbls', 'registered', 'copyright', 'trademark', 'acute',
-  'dieresis', 'notequal', 'AE', 'Oslash', 'infinity', 'plusminus', 'lessequal',
-  'greaterequal', 'yen', 'mu', 'partialdiff', 'summation', 'product', 'pi',
-  'integral', 'ordfeminine', 'ordmasculine', 'Omega', 'ae', 'oslash',
-  'questiondown', 'exclamdown', 'logicalnot', 'radical', 'florin',
-  'approxequal', 'Delta', 'guillemotleft', 'guillemotright', 'ellipsis',
-  'nonbreakingspace', 'Agrave', 'Atilde', 'Otilde', 'OE', 'oe', 'endash',
-  'emdash', 'quotedblleft', 'quotedblright', 'quoteleft', 'quoteright',
-  'divide', 'lozenge', 'ydieresis', 'Ydieresis', 'fraction', 'currency',
-  'guilsinglleft', 'guilsinglright', 'fi', 'fl', 'daggerdbl', 'periodcentered',
-  'quotesinglbase', 'quotedblbase', 'perthousand', 'Acircumflex',
-  'Ecircumflex', 'Aacute', 'Edieresis', 'Egrave', 'Iacute', 'Icircumflex',
-  'Idieresis', 'Igrave', 'Oacute', 'Ocircumflex', 'apple', 'Ograve', 'Uacute',
-  'Ucircumflex', 'Ugrave', 'dotlessi', 'circumflex', 'tilde', 'macron',
-  'breve', 'dotaccent', 'ring', 'cedilla', 'hungarumlaut', 'ogonek', 'caron',
-  'Lslash', 'lslash', 'Scaron', 'scaron', 'Zcaron', 'zcaron', 'brokenbar',
-  'Eth', 'eth', 'Yacute', 'yacute', 'Thorn', 'thorn', 'minus', 'multiply',
-  'onesuperior', 'twosuperior', 'threesuperior', 'onehalf', 'onequarter',
-  'threequarters', 'franc', 'Gbreve', 'gbreve', 'Idotaccent', 'Scedilla',
-  'scedilla', 'Cacute', 'cacute', 'Ccaron', 'ccaron', 'dcroat'];
+  ".notdef",
+  ".null",
+  "nonmarkingreturn",
+  "space",
+  "exclam",
+  "quotedbl",
+  "numbersign",
+  "dollar",
+  "percent",
+  "ampersand",
+  "quotesingle",
+  "parenleft",
+  "parenright",
+  "asterisk",
+  "plus",
+  "comma",
+  "hyphen",
+  "period",
+  "slash",
+  "zero",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "colon",
+  "semicolon",
+  "less",
+  "equal",
+  "greater",
+  "question",
+  "at",
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "U",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z",
+  "bracketleft",
+  "backslash",
+  "bracketright",
+  "asciicircum",
+  "underscore",
+  "grave",
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k",
+  "l",
+  "m",
+  "n",
+  "o",
+  "p",
+  "q",
+  "r",
+  "s",
+  "t",
+  "u",
+  "v",
+  "w",
+  "x",
+  "y",
+  "z",
+  "braceleft",
+  "bar",
+  "braceright",
+  "asciitilde",
+  "Adieresis",
+  "Aring",
+  "Ccedilla",
+  "Eacute",
+  "Ntilde",
+  "Odieresis",
+  "Udieresis",
+  "aacute",
+  "agrave",
+  "acircumflex",
+  "adieresis",
+  "atilde",
+  "aring",
+  "ccedilla",
+  "eacute",
+  "egrave",
+  "ecircumflex",
+  "edieresis",
+  "iacute",
+  "igrave",
+  "icircumflex",
+  "idieresis",
+  "ntilde",
+  "oacute",
+  "ograve",
+  "ocircumflex",
+  "odieresis",
+  "otilde",
+  "uacute",
+  "ugrave",
+  "ucircumflex",
+  "udieresis",
+  "dagger",
+  "degree",
+  "cent",
+  "sterling",
+  "section",
+  "bullet",
+  "paragraph",
+  "germandbls",
+  "registered",
+  "copyright",
+  "trademark",
+  "acute",
+  "dieresis",
+  "notequal",
+  "AE",
+  "Oslash",
+  "infinity",
+  "plusminus",
+  "lessequal",
+  "greaterequal",
+  "yen",
+  "mu",
+  "partialdiff",
+  "summation",
+  "product",
+  "pi",
+  "integral",
+  "ordfeminine",
+  "ordmasculine",
+  "Omega",
+  "ae",
+  "oslash",
+  "questiondown",
+  "exclamdown",
+  "logicalnot",
+  "radical",
+  "florin",
+  "approxequal",
+  "Delta",
+  "guillemotleft",
+  "guillemotright",
+  "ellipsis",
+  "nonbreakingspace",
+  "Agrave",
+  "Atilde",
+  "Otilde",
+  "OE",
+  "oe",
+  "endash",
+  "emdash",
+  "quotedblleft",
+  "quotedblright",
+  "quoteleft",
+  "quoteright",
+  "divide",
+  "lozenge",
+  "ydieresis",
+  "Ydieresis",
+  "fraction",
+  "currency",
+  "guilsinglleft",
+  "guilsinglright",
+  "fi",
+  "fl",
+  "daggerdbl",
+  "periodcentered",
+  "quotesinglbase",
+  "quotedblbase",
+  "perthousand",
+  "Acircumflex",
+  "Ecircumflex",
+  "Aacute",
+  "Edieresis",
+  "Egrave",
+  "Iacute",
+  "Icircumflex",
+  "Idieresis",
+  "Igrave",
+  "Oacute",
+  "Ocircumflex",
+  "apple",
+  "Ograve",
+  "Uacute",
+  "Ucircumflex",
+  "Ugrave",
+  "dotlessi",
+  "circumflex",
+  "tilde",
+  "macron",
+  "breve",
+  "dotaccent",
+  "ring",
+  "cedilla",
+  "hungarumlaut",
+  "ogonek",
+  "caron",
+  "Lslash",
+  "lslash",
+  "Scaron",
+  "scaron",
+  "Zcaron",
+  "zcaron",
+  "brokenbar",
+  "Eth",
+  "eth",
+  "Yacute",
+  "yacute",
+  "Thorn",
+  "thorn",
+  "minus",
+  "multiply",
+  "onesuperior",
+  "twosuperior",
+  "threesuperior",
+  "onehalf",
+  "onequarter",
+  "threequarters",
+  "franc",
+  "Gbreve",
+  "gbreve",
+  "Idotaccent",
+  "Scedilla",
+  "scedilla",
+  "Cacute",
+  "cacute",
+  "Ccaron",
+  "ccaron",
+  "dcroat",
+];
 
 function getUnicodeRangeFor(value) {
   for (var i = 0, ii = UnicodeRanges.length; i < ii; i++) {
@@ -727,1383 +2925,1383 @@ function isRTLRangeFor(value) {
 // The normalization table is obtained by filtering the Unicode characters
 // database with <compat> entries.
 var NormalizedUnicodes = {
-  '\u00A8': '\u0020\u0308',
-  '\u00AF': '\u0020\u0304',
-  '\u00B4': '\u0020\u0301',
-  '\u00B5': '\u03BC',
-  '\u00B8': '\u0020\u0327',
-  '\u0132': '\u0049\u004A',
-  '\u0133': '\u0069\u006A',
-  '\u013F': '\u004C\u00B7',
-  '\u0140': '\u006C\u00B7',
-  '\u0149': '\u02BC\u006E',
-  '\u017F': '\u0073',
-  '\u01C4': '\u0044\u017D',
-  '\u01C5': '\u0044\u017E',
-  '\u01C6': '\u0064\u017E',
-  '\u01C7': '\u004C\u004A',
-  '\u01C8': '\u004C\u006A',
-  '\u01C9': '\u006C\u006A',
-  '\u01CA': '\u004E\u004A',
-  '\u01CB': '\u004E\u006A',
-  '\u01CC': '\u006E\u006A',
-  '\u01F1': '\u0044\u005A',
-  '\u01F2': '\u0044\u007A',
-  '\u01F3': '\u0064\u007A',
-  '\u02D8': '\u0020\u0306',
-  '\u02D9': '\u0020\u0307',
-  '\u02DA': '\u0020\u030A',
-  '\u02DB': '\u0020\u0328',
-  '\u02DC': '\u0020\u0303',
-  '\u02DD': '\u0020\u030B',
-  '\u037A': '\u0020\u0345',
-  '\u0384': '\u0020\u0301',
-  '\u03D0': '\u03B2',
-  '\u03D1': '\u03B8',
-  '\u03D2': '\u03A5',
-  '\u03D5': '\u03C6',
-  '\u03D6': '\u03C0',
-  '\u03F0': '\u03BA',
-  '\u03F1': '\u03C1',
-  '\u03F2': '\u03C2',
-  '\u03F4': '\u0398',
-  '\u03F5': '\u03B5',
-  '\u03F9': '\u03A3',
-  '\u0587': '\u0565\u0582',
-  '\u0675': '\u0627\u0674',
-  '\u0676': '\u0648\u0674',
-  '\u0677': '\u06C7\u0674',
-  '\u0678': '\u064A\u0674',
-  '\u0E33': '\u0E4D\u0E32',
-  '\u0EB3': '\u0ECD\u0EB2',
-  '\u0EDC': '\u0EAB\u0E99',
-  '\u0EDD': '\u0EAB\u0EA1',
-  '\u0F77': '\u0FB2\u0F81',
-  '\u0F79': '\u0FB3\u0F81',
-  '\u1E9A': '\u0061\u02BE',
-  '\u1FBD': '\u0020\u0313',
-  '\u1FBF': '\u0020\u0313',
-  '\u1FC0': '\u0020\u0342',
-  '\u1FFE': '\u0020\u0314',
-  '\u2002': '\u0020',
-  '\u2003': '\u0020',
-  '\u2004': '\u0020',
-  '\u2005': '\u0020',
-  '\u2006': '\u0020',
-  '\u2008': '\u0020',
-  '\u2009': '\u0020',
-  '\u200A': '\u0020',
-  '\u2017': '\u0020\u0333',
-  '\u2024': '\u002E',
-  '\u2025': '\u002E\u002E',
-  '\u2026': '\u002E\u002E\u002E',
-  '\u2033': '\u2032\u2032',
-  '\u2034': '\u2032\u2032\u2032',
-  '\u2036': '\u2035\u2035',
-  '\u2037': '\u2035\u2035\u2035',
-  '\u203C': '\u0021\u0021',
-  '\u203E': '\u0020\u0305',
-  '\u2047': '\u003F\u003F',
-  '\u2048': '\u003F\u0021',
-  '\u2049': '\u0021\u003F',
-  '\u2057': '\u2032\u2032\u2032\u2032',
-  '\u205F': '\u0020',
-  '\u20A8': '\u0052\u0073',
-  '\u2100': '\u0061\u002F\u0063',
-  '\u2101': '\u0061\u002F\u0073',
-  '\u2103': '\u00B0\u0043',
-  '\u2105': '\u0063\u002F\u006F',
-  '\u2106': '\u0063\u002F\u0075',
-  '\u2107': '\u0190',
-  '\u2109': '\u00B0\u0046',
-  '\u2116': '\u004E\u006F',
-  '\u2121': '\u0054\u0045\u004C',
-  '\u2135': '\u05D0',
-  '\u2136': '\u05D1',
-  '\u2137': '\u05D2',
-  '\u2138': '\u05D3',
-  '\u213B': '\u0046\u0041\u0058',
-  '\u2160': '\u0049',
-  '\u2161': '\u0049\u0049',
-  '\u2162': '\u0049\u0049\u0049',
-  '\u2163': '\u0049\u0056',
-  '\u2164': '\u0056',
-  '\u2165': '\u0056\u0049',
-  '\u2166': '\u0056\u0049\u0049',
-  '\u2167': '\u0056\u0049\u0049\u0049',
-  '\u2168': '\u0049\u0058',
-  '\u2169': '\u0058',
-  '\u216A': '\u0058\u0049',
-  '\u216B': '\u0058\u0049\u0049',
-  '\u216C': '\u004C',
-  '\u216D': '\u0043',
-  '\u216E': '\u0044',
-  '\u216F': '\u004D',
-  '\u2170': '\u0069',
-  '\u2171': '\u0069\u0069',
-  '\u2172': '\u0069\u0069\u0069',
-  '\u2173': '\u0069\u0076',
-  '\u2174': '\u0076',
-  '\u2175': '\u0076\u0069',
-  '\u2176': '\u0076\u0069\u0069',
-  '\u2177': '\u0076\u0069\u0069\u0069',
-  '\u2178': '\u0069\u0078',
-  '\u2179': '\u0078',
-  '\u217A': '\u0078\u0069',
-  '\u217B': '\u0078\u0069\u0069',
-  '\u217C': '\u006C',
-  '\u217D': '\u0063',
-  '\u217E': '\u0064',
-  '\u217F': '\u006D',
-  '\u222C': '\u222B\u222B',
-  '\u222D': '\u222B\u222B\u222B',
-  '\u222F': '\u222E\u222E',
-  '\u2230': '\u222E\u222E\u222E',
-  '\u2474': '\u0028\u0031\u0029',
-  '\u2475': '\u0028\u0032\u0029',
-  '\u2476': '\u0028\u0033\u0029',
-  '\u2477': '\u0028\u0034\u0029',
-  '\u2478': '\u0028\u0035\u0029',
-  '\u2479': '\u0028\u0036\u0029',
-  '\u247A': '\u0028\u0037\u0029',
-  '\u247B': '\u0028\u0038\u0029',
-  '\u247C': '\u0028\u0039\u0029',
-  '\u247D': '\u0028\u0031\u0030\u0029',
-  '\u247E': '\u0028\u0031\u0031\u0029',
-  '\u247F': '\u0028\u0031\u0032\u0029',
-  '\u2480': '\u0028\u0031\u0033\u0029',
-  '\u2481': '\u0028\u0031\u0034\u0029',
-  '\u2482': '\u0028\u0031\u0035\u0029',
-  '\u2483': '\u0028\u0031\u0036\u0029',
-  '\u2484': '\u0028\u0031\u0037\u0029',
-  '\u2485': '\u0028\u0031\u0038\u0029',
-  '\u2486': '\u0028\u0031\u0039\u0029',
-  '\u2487': '\u0028\u0032\u0030\u0029',
-  '\u2488': '\u0031\u002E',
-  '\u2489': '\u0032\u002E',
-  '\u248A': '\u0033\u002E',
-  '\u248B': '\u0034\u002E',
-  '\u248C': '\u0035\u002E',
-  '\u248D': '\u0036\u002E',
-  '\u248E': '\u0037\u002E',
-  '\u248F': '\u0038\u002E',
-  '\u2490': '\u0039\u002E',
-  '\u2491': '\u0031\u0030\u002E',
-  '\u2492': '\u0031\u0031\u002E',
-  '\u2493': '\u0031\u0032\u002E',
-  '\u2494': '\u0031\u0033\u002E',
-  '\u2495': '\u0031\u0034\u002E',
-  '\u2496': '\u0031\u0035\u002E',
-  '\u2497': '\u0031\u0036\u002E',
-  '\u2498': '\u0031\u0037\u002E',
-  '\u2499': '\u0031\u0038\u002E',
-  '\u249A': '\u0031\u0039\u002E',
-  '\u249B': '\u0032\u0030\u002E',
-  '\u249C': '\u0028\u0061\u0029',
-  '\u249D': '\u0028\u0062\u0029',
-  '\u249E': '\u0028\u0063\u0029',
-  '\u249F': '\u0028\u0064\u0029',
-  '\u24A0': '\u0028\u0065\u0029',
-  '\u24A1': '\u0028\u0066\u0029',
-  '\u24A2': '\u0028\u0067\u0029',
-  '\u24A3': '\u0028\u0068\u0029',
-  '\u24A4': '\u0028\u0069\u0029',
-  '\u24A5': '\u0028\u006A\u0029',
-  '\u24A6': '\u0028\u006B\u0029',
-  '\u24A7': '\u0028\u006C\u0029',
-  '\u24A8': '\u0028\u006D\u0029',
-  '\u24A9': '\u0028\u006E\u0029',
-  '\u24AA': '\u0028\u006F\u0029',
-  '\u24AB': '\u0028\u0070\u0029',
-  '\u24AC': '\u0028\u0071\u0029',
-  '\u24AD': '\u0028\u0072\u0029',
-  '\u24AE': '\u0028\u0073\u0029',
-  '\u24AF': '\u0028\u0074\u0029',
-  '\u24B0': '\u0028\u0075\u0029',
-  '\u24B1': '\u0028\u0076\u0029',
-  '\u24B2': '\u0028\u0077\u0029',
-  '\u24B3': '\u0028\u0078\u0029',
-  '\u24B4': '\u0028\u0079\u0029',
-  '\u24B5': '\u0028\u007A\u0029',
-  '\u2A0C': '\u222B\u222B\u222B\u222B',
-  '\u2A74': '\u003A\u003A\u003D',
-  '\u2A75': '\u003D\u003D',
-  '\u2A76': '\u003D\u003D\u003D',
-  '\u2E9F': '\u6BCD',
-  '\u2EF3': '\u9F9F',
-  '\u2F00': '\u4E00',
-  '\u2F01': '\u4E28',
-  '\u2F02': '\u4E36',
-  '\u2F03': '\u4E3F',
-  '\u2F04': '\u4E59',
-  '\u2F05': '\u4E85',
-  '\u2F06': '\u4E8C',
-  '\u2F07': '\u4EA0',
-  '\u2F08': '\u4EBA',
-  '\u2F09': '\u513F',
-  '\u2F0A': '\u5165',
-  '\u2F0B': '\u516B',
-  '\u2F0C': '\u5182',
-  '\u2F0D': '\u5196',
-  '\u2F0E': '\u51AB',
-  '\u2F0F': '\u51E0',
-  '\u2F10': '\u51F5',
-  '\u2F11': '\u5200',
-  '\u2F12': '\u529B',
-  '\u2F13': '\u52F9',
-  '\u2F14': '\u5315',
-  '\u2F15': '\u531A',
-  '\u2F16': '\u5338',
-  '\u2F17': '\u5341',
-  '\u2F18': '\u535C',
-  '\u2F19': '\u5369',
-  '\u2F1A': '\u5382',
-  '\u2F1B': '\u53B6',
-  '\u2F1C': '\u53C8',
-  '\u2F1D': '\u53E3',
-  '\u2F1E': '\u56D7',
-  '\u2F1F': '\u571F',
-  '\u2F20': '\u58EB',
-  '\u2F21': '\u5902',
-  '\u2F22': '\u590A',
-  '\u2F23': '\u5915',
-  '\u2F24': '\u5927',
-  '\u2F25': '\u5973',
-  '\u2F26': '\u5B50',
-  '\u2F27': '\u5B80',
-  '\u2F28': '\u5BF8',
-  '\u2F29': '\u5C0F',
-  '\u2F2A': '\u5C22',
-  '\u2F2B': '\u5C38',
-  '\u2F2C': '\u5C6E',
-  '\u2F2D': '\u5C71',
-  '\u2F2E': '\u5DDB',
-  '\u2F2F': '\u5DE5',
-  '\u2F30': '\u5DF1',
-  '\u2F31': '\u5DFE',
-  '\u2F32': '\u5E72',
-  '\u2F33': '\u5E7A',
-  '\u2F34': '\u5E7F',
-  '\u2F35': '\u5EF4',
-  '\u2F36': '\u5EFE',
-  '\u2F37': '\u5F0B',
-  '\u2F38': '\u5F13',
-  '\u2F39': '\u5F50',
-  '\u2F3A': '\u5F61',
-  '\u2F3B': '\u5F73',
-  '\u2F3C': '\u5FC3',
-  '\u2F3D': '\u6208',
-  '\u2F3E': '\u6236',
-  '\u2F3F': '\u624B',
-  '\u2F40': '\u652F',
-  '\u2F41': '\u6534',
-  '\u2F42': '\u6587',
-  '\u2F43': '\u6597',
-  '\u2F44': '\u65A4',
-  '\u2F45': '\u65B9',
-  '\u2F46': '\u65E0',
-  '\u2F47': '\u65E5',
-  '\u2F48': '\u66F0',
-  '\u2F49': '\u6708',
-  '\u2F4A': '\u6728',
-  '\u2F4B': '\u6B20',
-  '\u2F4C': '\u6B62',
-  '\u2F4D': '\u6B79',
-  '\u2F4E': '\u6BB3',
-  '\u2F4F': '\u6BCB',
-  '\u2F50': '\u6BD4',
-  '\u2F51': '\u6BDB',
-  '\u2F52': '\u6C0F',
-  '\u2F53': '\u6C14',
-  '\u2F54': '\u6C34',
-  '\u2F55': '\u706B',
-  '\u2F56': '\u722A',
-  '\u2F57': '\u7236',
-  '\u2F58': '\u723B',
-  '\u2F59': '\u723F',
-  '\u2F5A': '\u7247',
-  '\u2F5B': '\u7259',
-  '\u2F5C': '\u725B',
-  '\u2F5D': '\u72AC',
-  '\u2F5E': '\u7384',
-  '\u2F5F': '\u7389',
-  '\u2F60': '\u74DC',
-  '\u2F61': '\u74E6',
-  '\u2F62': '\u7518',
-  '\u2F63': '\u751F',
-  '\u2F64': '\u7528',
-  '\u2F65': '\u7530',
-  '\u2F66': '\u758B',
-  '\u2F67': '\u7592',
-  '\u2F68': '\u7676',
-  '\u2F69': '\u767D',
-  '\u2F6A': '\u76AE',
-  '\u2F6B': '\u76BF',
-  '\u2F6C': '\u76EE',
-  '\u2F6D': '\u77DB',
-  '\u2F6E': '\u77E2',
-  '\u2F6F': '\u77F3',
-  '\u2F70': '\u793A',
-  '\u2F71': '\u79B8',
-  '\u2F72': '\u79BE',
-  '\u2F73': '\u7A74',
-  '\u2F74': '\u7ACB',
-  '\u2F75': '\u7AF9',
-  '\u2F76': '\u7C73',
-  '\u2F77': '\u7CF8',
-  '\u2F78': '\u7F36',
-  '\u2F79': '\u7F51',
-  '\u2F7A': '\u7F8A',
-  '\u2F7B': '\u7FBD',
-  '\u2F7C': '\u8001',
-  '\u2F7D': '\u800C',
-  '\u2F7E': '\u8012',
-  '\u2F7F': '\u8033',
-  '\u2F80': '\u807F',
-  '\u2F81': '\u8089',
-  '\u2F82': '\u81E3',
-  '\u2F83': '\u81EA',
-  '\u2F84': '\u81F3',
-  '\u2F85': '\u81FC',
-  '\u2F86': '\u820C',
-  '\u2F87': '\u821B',
-  '\u2F88': '\u821F',
-  '\u2F89': '\u826E',
-  '\u2F8A': '\u8272',
-  '\u2F8B': '\u8278',
-  '\u2F8C': '\u864D',
-  '\u2F8D': '\u866B',
-  '\u2F8E': '\u8840',
-  '\u2F8F': '\u884C',
-  '\u2F90': '\u8863',
-  '\u2F91': '\u897E',
-  '\u2F92': '\u898B',
-  '\u2F93': '\u89D2',
-  '\u2F94': '\u8A00',
-  '\u2F95': '\u8C37',
-  '\u2F96': '\u8C46',
-  '\u2F97': '\u8C55',
-  '\u2F98': '\u8C78',
-  '\u2F99': '\u8C9D',
-  '\u2F9A': '\u8D64',
-  '\u2F9B': '\u8D70',
-  '\u2F9C': '\u8DB3',
-  '\u2F9D': '\u8EAB',
-  '\u2F9E': '\u8ECA',
-  '\u2F9F': '\u8F9B',
-  '\u2FA0': '\u8FB0',
-  '\u2FA1': '\u8FB5',
-  '\u2FA2': '\u9091',
-  '\u2FA3': '\u9149',
-  '\u2FA4': '\u91C6',
-  '\u2FA5': '\u91CC',
-  '\u2FA6': '\u91D1',
-  '\u2FA7': '\u9577',
-  '\u2FA8': '\u9580',
-  '\u2FA9': '\u961C',
-  '\u2FAA': '\u96B6',
-  '\u2FAB': '\u96B9',
-  '\u2FAC': '\u96E8',
-  '\u2FAD': '\u9751',
-  '\u2FAE': '\u975E',
-  '\u2FAF': '\u9762',
-  '\u2FB0': '\u9769',
-  '\u2FB1': '\u97CB',
-  '\u2FB2': '\u97ED',
-  '\u2FB3': '\u97F3',
-  '\u2FB4': '\u9801',
-  '\u2FB5': '\u98A8',
-  '\u2FB6': '\u98DB',
-  '\u2FB7': '\u98DF',
-  '\u2FB8': '\u9996',
-  '\u2FB9': '\u9999',
-  '\u2FBA': '\u99AC',
-  '\u2FBB': '\u9AA8',
-  '\u2FBC': '\u9AD8',
-  '\u2FBD': '\u9ADF',
-  '\u2FBE': '\u9B25',
-  '\u2FBF': '\u9B2F',
-  '\u2FC0': '\u9B32',
-  '\u2FC1': '\u9B3C',
-  '\u2FC2': '\u9B5A',
-  '\u2FC3': '\u9CE5',
-  '\u2FC4': '\u9E75',
-  '\u2FC5': '\u9E7F',
-  '\u2FC6': '\u9EA5',
-  '\u2FC7': '\u9EBB',
-  '\u2FC8': '\u9EC3',
-  '\u2FC9': '\u9ECD',
-  '\u2FCA': '\u9ED1',
-  '\u2FCB': '\u9EF9',
-  '\u2FCC': '\u9EFD',
-  '\u2FCD': '\u9F0E',
-  '\u2FCE': '\u9F13',
-  '\u2FCF': '\u9F20',
-  '\u2FD0': '\u9F3B',
-  '\u2FD1': '\u9F4A',
-  '\u2FD2': '\u9F52',
-  '\u2FD3': '\u9F8D',
-  '\u2FD4': '\u9F9C',
-  '\u2FD5': '\u9FA0',
-  '\u3036': '\u3012',
-  '\u3038': '\u5341',
-  '\u3039': '\u5344',
-  '\u303A': '\u5345',
-  '\u309B': '\u0020\u3099',
-  '\u309C': '\u0020\u309A',
-  '\u3131': '\u1100',
-  '\u3132': '\u1101',
-  '\u3133': '\u11AA',
-  '\u3134': '\u1102',
-  '\u3135': '\u11AC',
-  '\u3136': '\u11AD',
-  '\u3137': '\u1103',
-  '\u3138': '\u1104',
-  '\u3139': '\u1105',
-  '\u313A': '\u11B0',
-  '\u313B': '\u11B1',
-  '\u313C': '\u11B2',
-  '\u313D': '\u11B3',
-  '\u313E': '\u11B4',
-  '\u313F': '\u11B5',
-  '\u3140': '\u111A',
-  '\u3141': '\u1106',
-  '\u3142': '\u1107',
-  '\u3143': '\u1108',
-  '\u3144': '\u1121',
-  '\u3145': '\u1109',
-  '\u3146': '\u110A',
-  '\u3147': '\u110B',
-  '\u3148': '\u110C',
-  '\u3149': '\u110D',
-  '\u314A': '\u110E',
-  '\u314B': '\u110F',
-  '\u314C': '\u1110',
-  '\u314D': '\u1111',
-  '\u314E': '\u1112',
-  '\u314F': '\u1161',
-  '\u3150': '\u1162',
-  '\u3151': '\u1163',
-  '\u3152': '\u1164',
-  '\u3153': '\u1165',
-  '\u3154': '\u1166',
-  '\u3155': '\u1167',
-  '\u3156': '\u1168',
-  '\u3157': '\u1169',
-  '\u3158': '\u116A',
-  '\u3159': '\u116B',
-  '\u315A': '\u116C',
-  '\u315B': '\u116D',
-  '\u315C': '\u116E',
-  '\u315D': '\u116F',
-  '\u315E': '\u1170',
-  '\u315F': '\u1171',
-  '\u3160': '\u1172',
-  '\u3161': '\u1173',
-  '\u3162': '\u1174',
-  '\u3163': '\u1175',
-  '\u3164': '\u1160',
-  '\u3165': '\u1114',
-  '\u3166': '\u1115',
-  '\u3167': '\u11C7',
-  '\u3168': '\u11C8',
-  '\u3169': '\u11CC',
-  '\u316A': '\u11CE',
-  '\u316B': '\u11D3',
-  '\u316C': '\u11D7',
-  '\u316D': '\u11D9',
-  '\u316E': '\u111C',
-  '\u316F': '\u11DD',
-  '\u3170': '\u11DF',
-  '\u3171': '\u111D',
-  '\u3172': '\u111E',
-  '\u3173': '\u1120',
-  '\u3174': '\u1122',
-  '\u3175': '\u1123',
-  '\u3176': '\u1127',
-  '\u3177': '\u1129',
-  '\u3178': '\u112B',
-  '\u3179': '\u112C',
-  '\u317A': '\u112D',
-  '\u317B': '\u112E',
-  '\u317C': '\u112F',
-  '\u317D': '\u1132',
-  '\u317E': '\u1136',
-  '\u317F': '\u1140',
-  '\u3180': '\u1147',
-  '\u3181': '\u114C',
-  '\u3182': '\u11F1',
-  '\u3183': '\u11F2',
-  '\u3184': '\u1157',
-  '\u3185': '\u1158',
-  '\u3186': '\u1159',
-  '\u3187': '\u1184',
-  '\u3188': '\u1185',
-  '\u3189': '\u1188',
-  '\u318A': '\u1191',
-  '\u318B': '\u1192',
-  '\u318C': '\u1194',
-  '\u318D': '\u119E',
-  '\u318E': '\u11A1',
-  '\u3200': '\u0028\u1100\u0029',
-  '\u3201': '\u0028\u1102\u0029',
-  '\u3202': '\u0028\u1103\u0029',
-  '\u3203': '\u0028\u1105\u0029',
-  '\u3204': '\u0028\u1106\u0029',
-  '\u3205': '\u0028\u1107\u0029',
-  '\u3206': '\u0028\u1109\u0029',
-  '\u3207': '\u0028\u110B\u0029',
-  '\u3208': '\u0028\u110C\u0029',
-  '\u3209': '\u0028\u110E\u0029',
-  '\u320A': '\u0028\u110F\u0029',
-  '\u320B': '\u0028\u1110\u0029',
-  '\u320C': '\u0028\u1111\u0029',
-  '\u320D': '\u0028\u1112\u0029',
-  '\u320E': '\u0028\u1100\u1161\u0029',
-  '\u320F': '\u0028\u1102\u1161\u0029',
-  '\u3210': '\u0028\u1103\u1161\u0029',
-  '\u3211': '\u0028\u1105\u1161\u0029',
-  '\u3212': '\u0028\u1106\u1161\u0029',
-  '\u3213': '\u0028\u1107\u1161\u0029',
-  '\u3214': '\u0028\u1109\u1161\u0029',
-  '\u3215': '\u0028\u110B\u1161\u0029',
-  '\u3216': '\u0028\u110C\u1161\u0029',
-  '\u3217': '\u0028\u110E\u1161\u0029',
-  '\u3218': '\u0028\u110F\u1161\u0029',
-  '\u3219': '\u0028\u1110\u1161\u0029',
-  '\u321A': '\u0028\u1111\u1161\u0029',
-  '\u321B': '\u0028\u1112\u1161\u0029',
-  '\u321C': '\u0028\u110C\u116E\u0029',
-  '\u321D': '\u0028\u110B\u1169\u110C\u1165\u11AB\u0029',
-  '\u321E': '\u0028\u110B\u1169\u1112\u116E\u0029',
-  '\u3220': '\u0028\u4E00\u0029',
-  '\u3221': '\u0028\u4E8C\u0029',
-  '\u3222': '\u0028\u4E09\u0029',
-  '\u3223': '\u0028\u56DB\u0029',
-  '\u3224': '\u0028\u4E94\u0029',
-  '\u3225': '\u0028\u516D\u0029',
-  '\u3226': '\u0028\u4E03\u0029',
-  '\u3227': '\u0028\u516B\u0029',
-  '\u3228': '\u0028\u4E5D\u0029',
-  '\u3229': '\u0028\u5341\u0029',
-  '\u322A': '\u0028\u6708\u0029',
-  '\u322B': '\u0028\u706B\u0029',
-  '\u322C': '\u0028\u6C34\u0029',
-  '\u322D': '\u0028\u6728\u0029',
-  '\u322E': '\u0028\u91D1\u0029',
-  '\u322F': '\u0028\u571F\u0029',
-  '\u3230': '\u0028\u65E5\u0029',
-  '\u3231': '\u0028\u682A\u0029',
-  '\u3232': '\u0028\u6709\u0029',
-  '\u3233': '\u0028\u793E\u0029',
-  '\u3234': '\u0028\u540D\u0029',
-  '\u3235': '\u0028\u7279\u0029',
-  '\u3236': '\u0028\u8CA1\u0029',
-  '\u3237': '\u0028\u795D\u0029',
-  '\u3238': '\u0028\u52B4\u0029',
-  '\u3239': '\u0028\u4EE3\u0029',
-  '\u323A': '\u0028\u547C\u0029',
-  '\u323B': '\u0028\u5B66\u0029',
-  '\u323C': '\u0028\u76E3\u0029',
-  '\u323D': '\u0028\u4F01\u0029',
-  '\u323E': '\u0028\u8CC7\u0029',
-  '\u323F': '\u0028\u5354\u0029',
-  '\u3240': '\u0028\u796D\u0029',
-  '\u3241': '\u0028\u4F11\u0029',
-  '\u3242': '\u0028\u81EA\u0029',
-  '\u3243': '\u0028\u81F3\u0029',
-  '\u32C0': '\u0031\u6708',
-  '\u32C1': '\u0032\u6708',
-  '\u32C2': '\u0033\u6708',
-  '\u32C3': '\u0034\u6708',
-  '\u32C4': '\u0035\u6708',
-  '\u32C5': '\u0036\u6708',
-  '\u32C6': '\u0037\u6708',
-  '\u32C7': '\u0038\u6708',
-  '\u32C8': '\u0039\u6708',
-  '\u32C9': '\u0031\u0030\u6708',
-  '\u32CA': '\u0031\u0031\u6708',
-  '\u32CB': '\u0031\u0032\u6708',
-  '\u3358': '\u0030\u70B9',
-  '\u3359': '\u0031\u70B9',
-  '\u335A': '\u0032\u70B9',
-  '\u335B': '\u0033\u70B9',
-  '\u335C': '\u0034\u70B9',
-  '\u335D': '\u0035\u70B9',
-  '\u335E': '\u0036\u70B9',
-  '\u335F': '\u0037\u70B9',
-  '\u3360': '\u0038\u70B9',
-  '\u3361': '\u0039\u70B9',
-  '\u3362': '\u0031\u0030\u70B9',
-  '\u3363': '\u0031\u0031\u70B9',
-  '\u3364': '\u0031\u0032\u70B9',
-  '\u3365': '\u0031\u0033\u70B9',
-  '\u3366': '\u0031\u0034\u70B9',
-  '\u3367': '\u0031\u0035\u70B9',
-  '\u3368': '\u0031\u0036\u70B9',
-  '\u3369': '\u0031\u0037\u70B9',
-  '\u336A': '\u0031\u0038\u70B9',
-  '\u336B': '\u0031\u0039\u70B9',
-  '\u336C': '\u0032\u0030\u70B9',
-  '\u336D': '\u0032\u0031\u70B9',
-  '\u336E': '\u0032\u0032\u70B9',
-  '\u336F': '\u0032\u0033\u70B9',
-  '\u3370': '\u0032\u0034\u70B9',
-  '\u33E0': '\u0031\u65E5',
-  '\u33E1': '\u0032\u65E5',
-  '\u33E2': '\u0033\u65E5',
-  '\u33E3': '\u0034\u65E5',
-  '\u33E4': '\u0035\u65E5',
-  '\u33E5': '\u0036\u65E5',
-  '\u33E6': '\u0037\u65E5',
-  '\u33E7': '\u0038\u65E5',
-  '\u33E8': '\u0039\u65E5',
-  '\u33E9': '\u0031\u0030\u65E5',
-  '\u33EA': '\u0031\u0031\u65E5',
-  '\u33EB': '\u0031\u0032\u65E5',
-  '\u33EC': '\u0031\u0033\u65E5',
-  '\u33ED': '\u0031\u0034\u65E5',
-  '\u33EE': '\u0031\u0035\u65E5',
-  '\u33EF': '\u0031\u0036\u65E5',
-  '\u33F0': '\u0031\u0037\u65E5',
-  '\u33F1': '\u0031\u0038\u65E5',
-  '\u33F2': '\u0031\u0039\u65E5',
-  '\u33F3': '\u0032\u0030\u65E5',
-  '\u33F4': '\u0032\u0031\u65E5',
-  '\u33F5': '\u0032\u0032\u65E5',
-  '\u33F6': '\u0032\u0033\u65E5',
-  '\u33F7': '\u0032\u0034\u65E5',
-  '\u33F8': '\u0032\u0035\u65E5',
-  '\u33F9': '\u0032\u0036\u65E5',
-  '\u33FA': '\u0032\u0037\u65E5',
-  '\u33FB': '\u0032\u0038\u65E5',
-  '\u33FC': '\u0032\u0039\u65E5',
-  '\u33FD': '\u0033\u0030\u65E5',
-  '\u33FE': '\u0033\u0031\u65E5',
-  '\uFB00': '\u0066\u0066',
-  '\uFB01': '\u0066\u0069',
-  '\uFB02': '\u0066\u006C',
-  '\uFB03': '\u0066\u0066\u0069',
-  '\uFB04': '\u0066\u0066\u006C',
-  '\uFB05': '\u017F\u0074',
-  '\uFB06': '\u0073\u0074',
-  '\uFB13': '\u0574\u0576',
-  '\uFB14': '\u0574\u0565',
-  '\uFB15': '\u0574\u056B',
-  '\uFB16': '\u057E\u0576',
-  '\uFB17': '\u0574\u056D',
-  '\uFB4F': '\u05D0\u05DC',
-  '\uFB50': '\u0671',
-  '\uFB51': '\u0671',
-  '\uFB52': '\u067B',
-  '\uFB53': '\u067B',
-  '\uFB54': '\u067B',
-  '\uFB55': '\u067B',
-  '\uFB56': '\u067E',
-  '\uFB57': '\u067E',
-  '\uFB58': '\u067E',
-  '\uFB59': '\u067E',
-  '\uFB5A': '\u0680',
-  '\uFB5B': '\u0680',
-  '\uFB5C': '\u0680',
-  '\uFB5D': '\u0680',
-  '\uFB5E': '\u067A',
-  '\uFB5F': '\u067A',
-  '\uFB60': '\u067A',
-  '\uFB61': '\u067A',
-  '\uFB62': '\u067F',
-  '\uFB63': '\u067F',
-  '\uFB64': '\u067F',
-  '\uFB65': '\u067F',
-  '\uFB66': '\u0679',
-  '\uFB67': '\u0679',
-  '\uFB68': '\u0679',
-  '\uFB69': '\u0679',
-  '\uFB6A': '\u06A4',
-  '\uFB6B': '\u06A4',
-  '\uFB6C': '\u06A4',
-  '\uFB6D': '\u06A4',
-  '\uFB6E': '\u06A6',
-  '\uFB6F': '\u06A6',
-  '\uFB70': '\u06A6',
-  '\uFB71': '\u06A6',
-  '\uFB72': '\u0684',
-  '\uFB73': '\u0684',
-  '\uFB74': '\u0684',
-  '\uFB75': '\u0684',
-  '\uFB76': '\u0683',
-  '\uFB77': '\u0683',
-  '\uFB78': '\u0683',
-  '\uFB79': '\u0683',
-  '\uFB7A': '\u0686',
-  '\uFB7B': '\u0686',
-  '\uFB7C': '\u0686',
-  '\uFB7D': '\u0686',
-  '\uFB7E': '\u0687',
-  '\uFB7F': '\u0687',
-  '\uFB80': '\u0687',
-  '\uFB81': '\u0687',
-  '\uFB82': '\u068D',
-  '\uFB83': '\u068D',
-  '\uFB84': '\u068C',
-  '\uFB85': '\u068C',
-  '\uFB86': '\u068E',
-  '\uFB87': '\u068E',
-  '\uFB88': '\u0688',
-  '\uFB89': '\u0688',
-  '\uFB8A': '\u0698',
-  '\uFB8B': '\u0698',
-  '\uFB8C': '\u0691',
-  '\uFB8D': '\u0691',
-  '\uFB8E': '\u06A9',
-  '\uFB8F': '\u06A9',
-  '\uFB90': '\u06A9',
-  '\uFB91': '\u06A9',
-  '\uFB92': '\u06AF',
-  '\uFB93': '\u06AF',
-  '\uFB94': '\u06AF',
-  '\uFB95': '\u06AF',
-  '\uFB96': '\u06B3',
-  '\uFB97': '\u06B3',
-  '\uFB98': '\u06B3',
-  '\uFB99': '\u06B3',
-  '\uFB9A': '\u06B1',
-  '\uFB9B': '\u06B1',
-  '\uFB9C': '\u06B1',
-  '\uFB9D': '\u06B1',
-  '\uFB9E': '\u06BA',
-  '\uFB9F': '\u06BA',
-  '\uFBA0': '\u06BB',
-  '\uFBA1': '\u06BB',
-  '\uFBA2': '\u06BB',
-  '\uFBA3': '\u06BB',
-  '\uFBA4': '\u06C0',
-  '\uFBA5': '\u06C0',
-  '\uFBA6': '\u06C1',
-  '\uFBA7': '\u06C1',
-  '\uFBA8': '\u06C1',
-  '\uFBA9': '\u06C1',
-  '\uFBAA': '\u06BE',
-  '\uFBAB': '\u06BE',
-  '\uFBAC': '\u06BE',
-  '\uFBAD': '\u06BE',
-  '\uFBAE': '\u06D2',
-  '\uFBAF': '\u06D2',
-  '\uFBB0': '\u06D3',
-  '\uFBB1': '\u06D3',
-  '\uFBD3': '\u06AD',
-  '\uFBD4': '\u06AD',
-  '\uFBD5': '\u06AD',
-  '\uFBD6': '\u06AD',
-  '\uFBD7': '\u06C7',
-  '\uFBD8': '\u06C7',
-  '\uFBD9': '\u06C6',
-  '\uFBDA': '\u06C6',
-  '\uFBDB': '\u06C8',
-  '\uFBDC': '\u06C8',
-  '\uFBDD': '\u0677',
-  '\uFBDE': '\u06CB',
-  '\uFBDF': '\u06CB',
-  '\uFBE0': '\u06C5',
-  '\uFBE1': '\u06C5',
-  '\uFBE2': '\u06C9',
-  '\uFBE3': '\u06C9',
-  '\uFBE4': '\u06D0',
-  '\uFBE5': '\u06D0',
-  '\uFBE6': '\u06D0',
-  '\uFBE7': '\u06D0',
-  '\uFBE8': '\u0649',
-  '\uFBE9': '\u0649',
-  '\uFBEA': '\u0626\u0627',
-  '\uFBEB': '\u0626\u0627',
-  '\uFBEC': '\u0626\u06D5',
-  '\uFBED': '\u0626\u06D5',
-  '\uFBEE': '\u0626\u0648',
-  '\uFBEF': '\u0626\u0648',
-  '\uFBF0': '\u0626\u06C7',
-  '\uFBF1': '\u0626\u06C7',
-  '\uFBF2': '\u0626\u06C6',
-  '\uFBF3': '\u0626\u06C6',
-  '\uFBF4': '\u0626\u06C8',
-  '\uFBF5': '\u0626\u06C8',
-  '\uFBF6': '\u0626\u06D0',
-  '\uFBF7': '\u0626\u06D0',
-  '\uFBF8': '\u0626\u06D0',
-  '\uFBF9': '\u0626\u0649',
-  '\uFBFA': '\u0626\u0649',
-  '\uFBFB': '\u0626\u0649',
-  '\uFBFC': '\u06CC',
-  '\uFBFD': '\u06CC',
-  '\uFBFE': '\u06CC',
-  '\uFBFF': '\u06CC',
-  '\uFC00': '\u0626\u062C',
-  '\uFC01': '\u0626\u062D',
-  '\uFC02': '\u0626\u0645',
-  '\uFC03': '\u0626\u0649',
-  '\uFC04': '\u0626\u064A',
-  '\uFC05': '\u0628\u062C',
-  '\uFC06': '\u0628\u062D',
-  '\uFC07': '\u0628\u062E',
-  '\uFC08': '\u0628\u0645',
-  '\uFC09': '\u0628\u0649',
-  '\uFC0A': '\u0628\u064A',
-  '\uFC0B': '\u062A\u062C',
-  '\uFC0C': '\u062A\u062D',
-  '\uFC0D': '\u062A\u062E',
-  '\uFC0E': '\u062A\u0645',
-  '\uFC0F': '\u062A\u0649',
-  '\uFC10': '\u062A\u064A',
-  '\uFC11': '\u062B\u062C',
-  '\uFC12': '\u062B\u0645',
-  '\uFC13': '\u062B\u0649',
-  '\uFC14': '\u062B\u064A',
-  '\uFC15': '\u062C\u062D',
-  '\uFC16': '\u062C\u0645',
-  '\uFC17': '\u062D\u062C',
-  '\uFC18': '\u062D\u0645',
-  '\uFC19': '\u062E\u062C',
-  '\uFC1A': '\u062E\u062D',
-  '\uFC1B': '\u062E\u0645',
-  '\uFC1C': '\u0633\u062C',
-  '\uFC1D': '\u0633\u062D',
-  '\uFC1E': '\u0633\u062E',
-  '\uFC1F': '\u0633\u0645',
-  '\uFC20': '\u0635\u062D',
-  '\uFC21': '\u0635\u0645',
-  '\uFC22': '\u0636\u062C',
-  '\uFC23': '\u0636\u062D',
-  '\uFC24': '\u0636\u062E',
-  '\uFC25': '\u0636\u0645',
-  '\uFC26': '\u0637\u062D',
-  '\uFC27': '\u0637\u0645',
-  '\uFC28': '\u0638\u0645',
-  '\uFC29': '\u0639\u062C',
-  '\uFC2A': '\u0639\u0645',
-  '\uFC2B': '\u063A\u062C',
-  '\uFC2C': '\u063A\u0645',
-  '\uFC2D': '\u0641\u062C',
-  '\uFC2E': '\u0641\u062D',
-  '\uFC2F': '\u0641\u062E',
-  '\uFC30': '\u0641\u0645',
-  '\uFC31': '\u0641\u0649',
-  '\uFC32': '\u0641\u064A',
-  '\uFC33': '\u0642\u062D',
-  '\uFC34': '\u0642\u0645',
-  '\uFC35': '\u0642\u0649',
-  '\uFC36': '\u0642\u064A',
-  '\uFC37': '\u0643\u0627',
-  '\uFC38': '\u0643\u062C',
-  '\uFC39': '\u0643\u062D',
-  '\uFC3A': '\u0643\u062E',
-  '\uFC3B': '\u0643\u0644',
-  '\uFC3C': '\u0643\u0645',
-  '\uFC3D': '\u0643\u0649',
-  '\uFC3E': '\u0643\u064A',
-  '\uFC3F': '\u0644\u062C',
-  '\uFC40': '\u0644\u062D',
-  '\uFC41': '\u0644\u062E',
-  '\uFC42': '\u0644\u0645',
-  '\uFC43': '\u0644\u0649',
-  '\uFC44': '\u0644\u064A',
-  '\uFC45': '\u0645\u062C',
-  '\uFC46': '\u0645\u062D',
-  '\uFC47': '\u0645\u062E',
-  '\uFC48': '\u0645\u0645',
-  '\uFC49': '\u0645\u0649',
-  '\uFC4A': '\u0645\u064A',
-  '\uFC4B': '\u0646\u062C',
-  '\uFC4C': '\u0646\u062D',
-  '\uFC4D': '\u0646\u062E',
-  '\uFC4E': '\u0646\u0645',
-  '\uFC4F': '\u0646\u0649',
-  '\uFC50': '\u0646\u064A',
-  '\uFC51': '\u0647\u062C',
-  '\uFC52': '\u0647\u0645',
-  '\uFC53': '\u0647\u0649',
-  '\uFC54': '\u0647\u064A',
-  '\uFC55': '\u064A\u062C',
-  '\uFC56': '\u064A\u062D',
-  '\uFC57': '\u064A\u062E',
-  '\uFC58': '\u064A\u0645',
-  '\uFC59': '\u064A\u0649',
-  '\uFC5A': '\u064A\u064A',
-  '\uFC5B': '\u0630\u0670',
-  '\uFC5C': '\u0631\u0670',
-  '\uFC5D': '\u0649\u0670',
-  '\uFC5E': '\u0020\u064C\u0651',
-  '\uFC5F': '\u0020\u064D\u0651',
-  '\uFC60': '\u0020\u064E\u0651',
-  '\uFC61': '\u0020\u064F\u0651',
-  '\uFC62': '\u0020\u0650\u0651',
-  '\uFC63': '\u0020\u0651\u0670',
-  '\uFC64': '\u0626\u0631',
-  '\uFC65': '\u0626\u0632',
-  '\uFC66': '\u0626\u0645',
-  '\uFC67': '\u0626\u0646',
-  '\uFC68': '\u0626\u0649',
-  '\uFC69': '\u0626\u064A',
-  '\uFC6A': '\u0628\u0631',
-  '\uFC6B': '\u0628\u0632',
-  '\uFC6C': '\u0628\u0645',
-  '\uFC6D': '\u0628\u0646',
-  '\uFC6E': '\u0628\u0649',
-  '\uFC6F': '\u0628\u064A',
-  '\uFC70': '\u062A\u0631',
-  '\uFC71': '\u062A\u0632',
-  '\uFC72': '\u062A\u0645',
-  '\uFC73': '\u062A\u0646',
-  '\uFC74': '\u062A\u0649',
-  '\uFC75': '\u062A\u064A',
-  '\uFC76': '\u062B\u0631',
-  '\uFC77': '\u062B\u0632',
-  '\uFC78': '\u062B\u0645',
-  '\uFC79': '\u062B\u0646',
-  '\uFC7A': '\u062B\u0649',
-  '\uFC7B': '\u062B\u064A',
-  '\uFC7C': '\u0641\u0649',
-  '\uFC7D': '\u0641\u064A',
-  '\uFC7E': '\u0642\u0649',
-  '\uFC7F': '\u0642\u064A',
-  '\uFC80': '\u0643\u0627',
-  '\uFC81': '\u0643\u0644',
-  '\uFC82': '\u0643\u0645',
-  '\uFC83': '\u0643\u0649',
-  '\uFC84': '\u0643\u064A',
-  '\uFC85': '\u0644\u0645',
-  '\uFC86': '\u0644\u0649',
-  '\uFC87': '\u0644\u064A',
-  '\uFC88': '\u0645\u0627',
-  '\uFC89': '\u0645\u0645',
-  '\uFC8A': '\u0646\u0631',
-  '\uFC8B': '\u0646\u0632',
-  '\uFC8C': '\u0646\u0645',
-  '\uFC8D': '\u0646\u0646',
-  '\uFC8E': '\u0646\u0649',
-  '\uFC8F': '\u0646\u064A',
-  '\uFC90': '\u0649\u0670',
-  '\uFC91': '\u064A\u0631',
-  '\uFC92': '\u064A\u0632',
-  '\uFC93': '\u064A\u0645',
-  '\uFC94': '\u064A\u0646',
-  '\uFC95': '\u064A\u0649',
-  '\uFC96': '\u064A\u064A',
-  '\uFC97': '\u0626\u062C',
-  '\uFC98': '\u0626\u062D',
-  '\uFC99': '\u0626\u062E',
-  '\uFC9A': '\u0626\u0645',
-  '\uFC9B': '\u0626\u0647',
-  '\uFC9C': '\u0628\u062C',
-  '\uFC9D': '\u0628\u062D',
-  '\uFC9E': '\u0628\u062E',
-  '\uFC9F': '\u0628\u0645',
-  '\uFCA0': '\u0628\u0647',
-  '\uFCA1': '\u062A\u062C',
-  '\uFCA2': '\u062A\u062D',
-  '\uFCA3': '\u062A\u062E',
-  '\uFCA4': '\u062A\u0645',
-  '\uFCA5': '\u062A\u0647',
-  '\uFCA6': '\u062B\u0645',
-  '\uFCA7': '\u062C\u062D',
-  '\uFCA8': '\u062C\u0645',
-  '\uFCA9': '\u062D\u062C',
-  '\uFCAA': '\u062D\u0645',
-  '\uFCAB': '\u062E\u062C',
-  '\uFCAC': '\u062E\u0645',
-  '\uFCAD': '\u0633\u062C',
-  '\uFCAE': '\u0633\u062D',
-  '\uFCAF': '\u0633\u062E',
-  '\uFCB0': '\u0633\u0645',
-  '\uFCB1': '\u0635\u062D',
-  '\uFCB2': '\u0635\u062E',
-  '\uFCB3': '\u0635\u0645',
-  '\uFCB4': '\u0636\u062C',
-  '\uFCB5': '\u0636\u062D',
-  '\uFCB6': '\u0636\u062E',
-  '\uFCB7': '\u0636\u0645',
-  '\uFCB8': '\u0637\u062D',
-  '\uFCB9': '\u0638\u0645',
-  '\uFCBA': '\u0639\u062C',
-  '\uFCBB': '\u0639\u0645',
-  '\uFCBC': '\u063A\u062C',
-  '\uFCBD': '\u063A\u0645',
-  '\uFCBE': '\u0641\u062C',
-  '\uFCBF': '\u0641\u062D',
-  '\uFCC0': '\u0641\u062E',
-  '\uFCC1': '\u0641\u0645',
-  '\uFCC2': '\u0642\u062D',
-  '\uFCC3': '\u0642\u0645',
-  '\uFCC4': '\u0643\u062C',
-  '\uFCC5': '\u0643\u062D',
-  '\uFCC6': '\u0643\u062E',
-  '\uFCC7': '\u0643\u0644',
-  '\uFCC8': '\u0643\u0645',
-  '\uFCC9': '\u0644\u062C',
-  '\uFCCA': '\u0644\u062D',
-  '\uFCCB': '\u0644\u062E',
-  '\uFCCC': '\u0644\u0645',
-  '\uFCCD': '\u0644\u0647',
-  '\uFCCE': '\u0645\u062C',
-  '\uFCCF': '\u0645\u062D',
-  '\uFCD0': '\u0645\u062E',
-  '\uFCD1': '\u0645\u0645',
-  '\uFCD2': '\u0646\u062C',
-  '\uFCD3': '\u0646\u062D',
-  '\uFCD4': '\u0646\u062E',
-  '\uFCD5': '\u0646\u0645',
-  '\uFCD6': '\u0646\u0647',
-  '\uFCD7': '\u0647\u062C',
-  '\uFCD8': '\u0647\u0645',
-  '\uFCD9': '\u0647\u0670',
-  '\uFCDA': '\u064A\u062C',
-  '\uFCDB': '\u064A\u062D',
-  '\uFCDC': '\u064A\u062E',
-  '\uFCDD': '\u064A\u0645',
-  '\uFCDE': '\u064A\u0647',
-  '\uFCDF': '\u0626\u0645',
-  '\uFCE0': '\u0626\u0647',
-  '\uFCE1': '\u0628\u0645',
-  '\uFCE2': '\u0628\u0647',
-  '\uFCE3': '\u062A\u0645',
-  '\uFCE4': '\u062A\u0647',
-  '\uFCE5': '\u062B\u0645',
-  '\uFCE6': '\u062B\u0647',
-  '\uFCE7': '\u0633\u0645',
-  '\uFCE8': '\u0633\u0647',
-  '\uFCE9': '\u0634\u0645',
-  '\uFCEA': '\u0634\u0647',
-  '\uFCEB': '\u0643\u0644',
-  '\uFCEC': '\u0643\u0645',
-  '\uFCED': '\u0644\u0645',
-  '\uFCEE': '\u0646\u0645',
-  '\uFCEF': '\u0646\u0647',
-  '\uFCF0': '\u064A\u0645',
-  '\uFCF1': '\u064A\u0647',
-  '\uFCF2': '\u0640\u064E\u0651',
-  '\uFCF3': '\u0640\u064F\u0651',
-  '\uFCF4': '\u0640\u0650\u0651',
-  '\uFCF5': '\u0637\u0649',
-  '\uFCF6': '\u0637\u064A',
-  '\uFCF7': '\u0639\u0649',
-  '\uFCF8': '\u0639\u064A',
-  '\uFCF9': '\u063A\u0649',
-  '\uFCFA': '\u063A\u064A',
-  '\uFCFB': '\u0633\u0649',
-  '\uFCFC': '\u0633\u064A',
-  '\uFCFD': '\u0634\u0649',
-  '\uFCFE': '\u0634\u064A',
-  '\uFCFF': '\u062D\u0649',
-  '\uFD00': '\u062D\u064A',
-  '\uFD01': '\u062C\u0649',
-  '\uFD02': '\u062C\u064A',
-  '\uFD03': '\u062E\u0649',
-  '\uFD04': '\u062E\u064A',
-  '\uFD05': '\u0635\u0649',
-  '\uFD06': '\u0635\u064A',
-  '\uFD07': '\u0636\u0649',
-  '\uFD08': '\u0636\u064A',
-  '\uFD09': '\u0634\u062C',
-  '\uFD0A': '\u0634\u062D',
-  '\uFD0B': '\u0634\u062E',
-  '\uFD0C': '\u0634\u0645',
-  '\uFD0D': '\u0634\u0631',
-  '\uFD0E': '\u0633\u0631',
-  '\uFD0F': '\u0635\u0631',
-  '\uFD10': '\u0636\u0631',
-  '\uFD11': '\u0637\u0649',
-  '\uFD12': '\u0637\u064A',
-  '\uFD13': '\u0639\u0649',
-  '\uFD14': '\u0639\u064A',
-  '\uFD15': '\u063A\u0649',
-  '\uFD16': '\u063A\u064A',
-  '\uFD17': '\u0633\u0649',
-  '\uFD18': '\u0633\u064A',
-  '\uFD19': '\u0634\u0649',
-  '\uFD1A': '\u0634\u064A',
-  '\uFD1B': '\u062D\u0649',
-  '\uFD1C': '\u062D\u064A',
-  '\uFD1D': '\u062C\u0649',
-  '\uFD1E': '\u062C\u064A',
-  '\uFD1F': '\u062E\u0649',
-  '\uFD20': '\u062E\u064A',
-  '\uFD21': '\u0635\u0649',
-  '\uFD22': '\u0635\u064A',
-  '\uFD23': '\u0636\u0649',
-  '\uFD24': '\u0636\u064A',
-  '\uFD25': '\u0634\u062C',
-  '\uFD26': '\u0634\u062D',
-  '\uFD27': '\u0634\u062E',
-  '\uFD28': '\u0634\u0645',
-  '\uFD29': '\u0634\u0631',
-  '\uFD2A': '\u0633\u0631',
-  '\uFD2B': '\u0635\u0631',
-  '\uFD2C': '\u0636\u0631',
-  '\uFD2D': '\u0634\u062C',
-  '\uFD2E': '\u0634\u062D',
-  '\uFD2F': '\u0634\u062E',
-  '\uFD30': '\u0634\u0645',
-  '\uFD31': '\u0633\u0647',
-  '\uFD32': '\u0634\u0647',
-  '\uFD33': '\u0637\u0645',
-  '\uFD34': '\u0633\u062C',
-  '\uFD35': '\u0633\u062D',
-  '\uFD36': '\u0633\u062E',
-  '\uFD37': '\u0634\u062C',
-  '\uFD38': '\u0634\u062D',
-  '\uFD39': '\u0634\u062E',
-  '\uFD3A': '\u0637\u0645',
-  '\uFD3B': '\u0638\u0645',
-  '\uFD3C': '\u0627\u064B',
-  '\uFD3D': '\u0627\u064B',
-  '\uFD50': '\u062A\u062C\u0645',
-  '\uFD51': '\u062A\u062D\u062C',
-  '\uFD52': '\u062A\u062D\u062C',
-  '\uFD53': '\u062A\u062D\u0645',
-  '\uFD54': '\u062A\u062E\u0645',
-  '\uFD55': '\u062A\u0645\u062C',
-  '\uFD56': '\u062A\u0645\u062D',
-  '\uFD57': '\u062A\u0645\u062E',
-  '\uFD58': '\u062C\u0645\u062D',
-  '\uFD59': '\u062C\u0645\u062D',
-  '\uFD5A': '\u062D\u0645\u064A',
-  '\uFD5B': '\u062D\u0645\u0649',
-  '\uFD5C': '\u0633\u062D\u062C',
-  '\uFD5D': '\u0633\u062C\u062D',
-  '\uFD5E': '\u0633\u062C\u0649',
-  '\uFD5F': '\u0633\u0645\u062D',
-  '\uFD60': '\u0633\u0645\u062D',
-  '\uFD61': '\u0633\u0645\u062C',
-  '\uFD62': '\u0633\u0645\u0645',
-  '\uFD63': '\u0633\u0645\u0645',
-  '\uFD64': '\u0635\u062D\u062D',
-  '\uFD65': '\u0635\u062D\u062D',
-  '\uFD66': '\u0635\u0645\u0645',
-  '\uFD67': '\u0634\u062D\u0645',
-  '\uFD68': '\u0634\u062D\u0645',
-  '\uFD69': '\u0634\u062C\u064A',
-  '\uFD6A': '\u0634\u0645\u062E',
-  '\uFD6B': '\u0634\u0645\u062E',
-  '\uFD6C': '\u0634\u0645\u0645',
-  '\uFD6D': '\u0634\u0645\u0645',
-  '\uFD6E': '\u0636\u062D\u0649',
-  '\uFD6F': '\u0636\u062E\u0645',
-  '\uFD70': '\u0636\u062E\u0645',
-  '\uFD71': '\u0637\u0645\u062D',
-  '\uFD72': '\u0637\u0645\u062D',
-  '\uFD73': '\u0637\u0645\u0645',
-  '\uFD74': '\u0637\u0645\u064A',
-  '\uFD75': '\u0639\u062C\u0645',
-  '\uFD76': '\u0639\u0645\u0645',
-  '\uFD77': '\u0639\u0645\u0645',
-  '\uFD78': '\u0639\u0645\u0649',
-  '\uFD79': '\u063A\u0645\u0645',
-  '\uFD7A': '\u063A\u0645\u064A',
-  '\uFD7B': '\u063A\u0645\u0649',
-  '\uFD7C': '\u0641\u062E\u0645',
-  '\uFD7D': '\u0641\u062E\u0645',
-  '\uFD7E': '\u0642\u0645\u062D',
-  '\uFD7F': '\u0642\u0645\u0645',
-  '\uFD80': '\u0644\u062D\u0645',
-  '\uFD81': '\u0644\u062D\u064A',
-  '\uFD82': '\u0644\u062D\u0649',
-  '\uFD83': '\u0644\u062C\u062C',
-  '\uFD84': '\u0644\u062C\u062C',
-  '\uFD85': '\u0644\u062E\u0645',
-  '\uFD86': '\u0644\u062E\u0645',
-  '\uFD87': '\u0644\u0645\u062D',
-  '\uFD88': '\u0644\u0645\u062D',
-  '\uFD89': '\u0645\u062D\u062C',
-  '\uFD8A': '\u0645\u062D\u0645',
-  '\uFD8B': '\u0645\u062D\u064A',
-  '\uFD8C': '\u0645\u062C\u062D',
-  '\uFD8D': '\u0645\u062C\u0645',
-  '\uFD8E': '\u0645\u062E\u062C',
-  '\uFD8F': '\u0645\u062E\u0645',
-  '\uFD92': '\u0645\u062C\u062E',
-  '\uFD93': '\u0647\u0645\u062C',
-  '\uFD94': '\u0647\u0645\u0645',
-  '\uFD95': '\u0646\u062D\u0645',
-  '\uFD96': '\u0646\u062D\u0649',
-  '\uFD97': '\u0646\u062C\u0645',
-  '\uFD98': '\u0646\u062C\u0645',
-  '\uFD99': '\u0646\u062C\u0649',
-  '\uFD9A': '\u0646\u0645\u064A',
-  '\uFD9B': '\u0646\u0645\u0649',
-  '\uFD9C': '\u064A\u0645\u0645',
-  '\uFD9D': '\u064A\u0645\u0645',
-  '\uFD9E': '\u0628\u062E\u064A',
-  '\uFD9F': '\u062A\u062C\u064A',
-  '\uFDA0': '\u062A\u062C\u0649',
-  '\uFDA1': '\u062A\u062E\u064A',
-  '\uFDA2': '\u062A\u062E\u0649',
-  '\uFDA3': '\u062A\u0645\u064A',
-  '\uFDA4': '\u062A\u0645\u0649',
-  '\uFDA5': '\u062C\u0645\u064A',
-  '\uFDA6': '\u062C\u062D\u0649',
-  '\uFDA7': '\u062C\u0645\u0649',
-  '\uFDA8': '\u0633\u062E\u0649',
-  '\uFDA9': '\u0635\u062D\u064A',
-  '\uFDAA': '\u0634\u062D\u064A',
-  '\uFDAB': '\u0636\u062D\u064A',
-  '\uFDAC': '\u0644\u062C\u064A',
-  '\uFDAD': '\u0644\u0645\u064A',
-  '\uFDAE': '\u064A\u062D\u064A',
-  '\uFDAF': '\u064A\u062C\u064A',
-  '\uFDB0': '\u064A\u0645\u064A',
-  '\uFDB1': '\u0645\u0645\u064A',
-  '\uFDB2': '\u0642\u0645\u064A',
-  '\uFDB3': '\u0646\u062D\u064A',
-  '\uFDB4': '\u0642\u0645\u062D',
-  '\uFDB5': '\u0644\u062D\u0645',
-  '\uFDB6': '\u0639\u0645\u064A',
-  '\uFDB7': '\u0643\u0645\u064A',
-  '\uFDB8': '\u0646\u062C\u062D',
-  '\uFDB9': '\u0645\u062E\u064A',
-  '\uFDBA': '\u0644\u062C\u0645',
-  '\uFDBB': '\u0643\u0645\u0645',
-  '\uFDBC': '\u0644\u062C\u0645',
-  '\uFDBD': '\u0646\u062C\u062D',
-  '\uFDBE': '\u062C\u062D\u064A',
-  '\uFDBF': '\u062D\u062C\u064A',
-  '\uFDC0': '\u0645\u062C\u064A',
-  '\uFDC1': '\u0641\u0645\u064A',
-  '\uFDC2': '\u0628\u062D\u064A',
-  '\uFDC3': '\u0643\u0645\u0645',
-  '\uFDC4': '\u0639\u062C\u0645',
-  '\uFDC5': '\u0635\u0645\u0645',
-  '\uFDC6': '\u0633\u062E\u064A',
-  '\uFDC7': '\u0646\u062C\u064A',
-  '\uFE49': '\u203E',
-  '\uFE4A': '\u203E',
-  '\uFE4B': '\u203E',
-  '\uFE4C': '\u203E',
-  '\uFE4D': '\u005F',
-  '\uFE4E': '\u005F',
-  '\uFE4F': '\u005F',
-  '\uFE80': '\u0621',
-  '\uFE81': '\u0622',
-  '\uFE82': '\u0622',
-  '\uFE83': '\u0623',
-  '\uFE84': '\u0623',
-  '\uFE85': '\u0624',
-  '\uFE86': '\u0624',
-  '\uFE87': '\u0625',
-  '\uFE88': '\u0625',
-  '\uFE89': '\u0626',
-  '\uFE8A': '\u0626',
-  '\uFE8B': '\u0626',
-  '\uFE8C': '\u0626',
-  '\uFE8D': '\u0627',
-  '\uFE8E': '\u0627',
-  '\uFE8F': '\u0628',
-  '\uFE90': '\u0628',
-  '\uFE91': '\u0628',
-  '\uFE92': '\u0628',
-  '\uFE93': '\u0629',
-  '\uFE94': '\u0629',
-  '\uFE95': '\u062A',
-  '\uFE96': '\u062A',
-  '\uFE97': '\u062A',
-  '\uFE98': '\u062A',
-  '\uFE99': '\u062B',
-  '\uFE9A': '\u062B',
-  '\uFE9B': '\u062B',
-  '\uFE9C': '\u062B',
-  '\uFE9D': '\u062C',
-  '\uFE9E': '\u062C',
-  '\uFE9F': '\u062C',
-  '\uFEA0': '\u062C',
-  '\uFEA1': '\u062D',
-  '\uFEA2': '\u062D',
-  '\uFEA3': '\u062D',
-  '\uFEA4': '\u062D',
-  '\uFEA5': '\u062E',
-  '\uFEA6': '\u062E',
-  '\uFEA7': '\u062E',
-  '\uFEA8': '\u062E',
-  '\uFEA9': '\u062F',
-  '\uFEAA': '\u062F',
-  '\uFEAB': '\u0630',
-  '\uFEAC': '\u0630',
-  '\uFEAD': '\u0631',
-  '\uFEAE': '\u0631',
-  '\uFEAF': '\u0632',
-  '\uFEB0': '\u0632',
-  '\uFEB1': '\u0633',
-  '\uFEB2': '\u0633',
-  '\uFEB3': '\u0633',
-  '\uFEB4': '\u0633',
-  '\uFEB5': '\u0634',
-  '\uFEB6': '\u0634',
-  '\uFEB7': '\u0634',
-  '\uFEB8': '\u0634',
-  '\uFEB9': '\u0635',
-  '\uFEBA': '\u0635',
-  '\uFEBB': '\u0635',
-  '\uFEBC': '\u0635',
-  '\uFEBD': '\u0636',
-  '\uFEBE': '\u0636',
-  '\uFEBF': '\u0636',
-  '\uFEC0': '\u0636',
-  '\uFEC1': '\u0637',
-  '\uFEC2': '\u0637',
-  '\uFEC3': '\u0637',
-  '\uFEC4': '\u0637',
-  '\uFEC5': '\u0638',
-  '\uFEC6': '\u0638',
-  '\uFEC7': '\u0638',
-  '\uFEC8': '\u0638',
-  '\uFEC9': '\u0639',
-  '\uFECA': '\u0639',
-  '\uFECB': '\u0639',
-  '\uFECC': '\u0639',
-  '\uFECD': '\u063A',
-  '\uFECE': '\u063A',
-  '\uFECF': '\u063A',
-  '\uFED0': '\u063A',
-  '\uFED1': '\u0641',
-  '\uFED2': '\u0641',
-  '\uFED3': '\u0641',
-  '\uFED4': '\u0641',
-  '\uFED5': '\u0642',
-  '\uFED6': '\u0642',
-  '\uFED7': '\u0642',
-  '\uFED8': '\u0642',
-  '\uFED9': '\u0643',
-  '\uFEDA': '\u0643',
-  '\uFEDB': '\u0643',
-  '\uFEDC': '\u0643',
-  '\uFEDD': '\u0644',
-  '\uFEDE': '\u0644',
-  '\uFEDF': '\u0644',
-  '\uFEE0': '\u0644',
-  '\uFEE1': '\u0645',
-  '\uFEE2': '\u0645',
-  '\uFEE3': '\u0645',
-  '\uFEE4': '\u0645',
-  '\uFEE5': '\u0646',
-  '\uFEE6': '\u0646',
-  '\uFEE7': '\u0646',
-  '\uFEE8': '\u0646',
-  '\uFEE9': '\u0647',
-  '\uFEEA': '\u0647',
-  '\uFEEB': '\u0647',
-  '\uFEEC': '\u0647',
-  '\uFEED': '\u0648',
-  '\uFEEE': '\u0648',
-  '\uFEEF': '\u0649',
-  '\uFEF0': '\u0649',
-  '\uFEF1': '\u064A',
-  '\uFEF2': '\u064A',
-  '\uFEF3': '\u064A',
-  '\uFEF4': '\u064A',
-  '\uFEF5': '\u0644\u0622',
-  '\uFEF6': '\u0644\u0622',
-  '\uFEF7': '\u0644\u0623',
-  '\uFEF8': '\u0644\u0623',
-  '\uFEF9': '\u0644\u0625',
-  '\uFEFA': '\u0644\u0625',
-  '\uFEFB': '\u0644\u0627',
-  '\uFEFC': '\u0644\u0627'
+  "\u00A8": "\u0020\u0308",
+  "\u00AF": "\u0020\u0304",
+  "\u00B4": "\u0020\u0301",
+  "\u00B5": "\u03BC",
+  "\u00B8": "\u0020\u0327",
+  "\u0132": "\u0049\u004A",
+  "\u0133": "\u0069\u006A",
+  "\u013F": "\u004C\u00B7",
+  "\u0140": "\u006C\u00B7",
+  "\u0149": "\u02BC\u006E",
+  "\u017F": "\u0073",
+  "\u01C4": "\u0044\u017D",
+  "\u01C5": "\u0044\u017E",
+  "\u01C6": "\u0064\u017E",
+  "\u01C7": "\u004C\u004A",
+  "\u01C8": "\u004C\u006A",
+  "\u01C9": "\u006C\u006A",
+  "\u01CA": "\u004E\u004A",
+  "\u01CB": "\u004E\u006A",
+  "\u01CC": "\u006E\u006A",
+  "\u01F1": "\u0044\u005A",
+  "\u01F2": "\u0044\u007A",
+  "\u01F3": "\u0064\u007A",
+  "\u02D8": "\u0020\u0306",
+  "\u02D9": "\u0020\u0307",
+  "\u02DA": "\u0020\u030A",
+  "\u02DB": "\u0020\u0328",
+  "\u02DC": "\u0020\u0303",
+  "\u02DD": "\u0020\u030B",
+  "\u037A": "\u0020\u0345",
+  "\u0384": "\u0020\u0301",
+  "\u03D0": "\u03B2",
+  "\u03D1": "\u03B8",
+  "\u03D2": "\u03A5",
+  "\u03D5": "\u03C6",
+  "\u03D6": "\u03C0",
+  "\u03F0": "\u03BA",
+  "\u03F1": "\u03C1",
+  "\u03F2": "\u03C2",
+  "\u03F4": "\u0398",
+  "\u03F5": "\u03B5",
+  "\u03F9": "\u03A3",
+  "\u0587": "\u0565\u0582",
+  "\u0675": "\u0627\u0674",
+  "\u0676": "\u0648\u0674",
+  "\u0677": "\u06C7\u0674",
+  "\u0678": "\u064A\u0674",
+  "\u0E33": "\u0E4D\u0E32",
+  "\u0EB3": "\u0ECD\u0EB2",
+  "\u0EDC": "\u0EAB\u0E99",
+  "\u0EDD": "\u0EAB\u0EA1",
+  "\u0F77": "\u0FB2\u0F81",
+  "\u0F79": "\u0FB3\u0F81",
+  "\u1E9A": "\u0061\u02BE",
+  "\u1FBD": "\u0020\u0313",
+  "\u1FBF": "\u0020\u0313",
+  "\u1FC0": "\u0020\u0342",
+  "\u1FFE": "\u0020\u0314",
+  "\u2002": "\u0020",
+  "\u2003": "\u0020",
+  "\u2004": "\u0020",
+  "\u2005": "\u0020",
+  "\u2006": "\u0020",
+  "\u2008": "\u0020",
+  "\u2009": "\u0020",
+  "\u200A": "\u0020",
+  "\u2017": "\u0020\u0333",
+  "\u2024": "\u002E",
+  "\u2025": "\u002E\u002E",
+  "\u2026": "\u002E\u002E\u002E",
+  "\u2033": "\u2032\u2032",
+  "\u2034": "\u2032\u2032\u2032",
+  "\u2036": "\u2035\u2035",
+  "\u2037": "\u2035\u2035\u2035",
+  "\u203C": "\u0021\u0021",
+  "\u203E": "\u0020\u0305",
+  "\u2047": "\u003F\u003F",
+  "\u2048": "\u003F\u0021",
+  "\u2049": "\u0021\u003F",
+  "\u2057": "\u2032\u2032\u2032\u2032",
+  "\u205F": "\u0020",
+  "\u20A8": "\u0052\u0073",
+  "\u2100": "\u0061\u002F\u0063",
+  "\u2101": "\u0061\u002F\u0073",
+  "\u2103": "\u00B0\u0043",
+  "\u2105": "\u0063\u002F\u006F",
+  "\u2106": "\u0063\u002F\u0075",
+  "\u2107": "\u0190",
+  "\u2109": "\u00B0\u0046",
+  "\u2116": "\u004E\u006F",
+  "\u2121": "\u0054\u0045\u004C",
+  "\u2135": "\u05D0",
+  "\u2136": "\u05D1",
+  "\u2137": "\u05D2",
+  "\u2138": "\u05D3",
+  "\u213B": "\u0046\u0041\u0058",
+  "\u2160": "\u0049",
+  "\u2161": "\u0049\u0049",
+  "\u2162": "\u0049\u0049\u0049",
+  "\u2163": "\u0049\u0056",
+  "\u2164": "\u0056",
+  "\u2165": "\u0056\u0049",
+  "\u2166": "\u0056\u0049\u0049",
+  "\u2167": "\u0056\u0049\u0049\u0049",
+  "\u2168": "\u0049\u0058",
+  "\u2169": "\u0058",
+  "\u216A": "\u0058\u0049",
+  "\u216B": "\u0058\u0049\u0049",
+  "\u216C": "\u004C",
+  "\u216D": "\u0043",
+  "\u216E": "\u0044",
+  "\u216F": "\u004D",
+  "\u2170": "\u0069",
+  "\u2171": "\u0069\u0069",
+  "\u2172": "\u0069\u0069\u0069",
+  "\u2173": "\u0069\u0076",
+  "\u2174": "\u0076",
+  "\u2175": "\u0076\u0069",
+  "\u2176": "\u0076\u0069\u0069",
+  "\u2177": "\u0076\u0069\u0069\u0069",
+  "\u2178": "\u0069\u0078",
+  "\u2179": "\u0078",
+  "\u217A": "\u0078\u0069",
+  "\u217B": "\u0078\u0069\u0069",
+  "\u217C": "\u006C",
+  "\u217D": "\u0063",
+  "\u217E": "\u0064",
+  "\u217F": "\u006D",
+  "\u222C": "\u222B\u222B",
+  "\u222D": "\u222B\u222B\u222B",
+  "\u222F": "\u222E\u222E",
+  "\u2230": "\u222E\u222E\u222E",
+  "\u2474": "\u0028\u0031\u0029",
+  "\u2475": "\u0028\u0032\u0029",
+  "\u2476": "\u0028\u0033\u0029",
+  "\u2477": "\u0028\u0034\u0029",
+  "\u2478": "\u0028\u0035\u0029",
+  "\u2479": "\u0028\u0036\u0029",
+  "\u247A": "\u0028\u0037\u0029",
+  "\u247B": "\u0028\u0038\u0029",
+  "\u247C": "\u0028\u0039\u0029",
+  "\u247D": "\u0028\u0031\u0030\u0029",
+  "\u247E": "\u0028\u0031\u0031\u0029",
+  "\u247F": "\u0028\u0031\u0032\u0029",
+  "\u2480": "\u0028\u0031\u0033\u0029",
+  "\u2481": "\u0028\u0031\u0034\u0029",
+  "\u2482": "\u0028\u0031\u0035\u0029",
+  "\u2483": "\u0028\u0031\u0036\u0029",
+  "\u2484": "\u0028\u0031\u0037\u0029",
+  "\u2485": "\u0028\u0031\u0038\u0029",
+  "\u2486": "\u0028\u0031\u0039\u0029",
+  "\u2487": "\u0028\u0032\u0030\u0029",
+  "\u2488": "\u0031\u002E",
+  "\u2489": "\u0032\u002E",
+  "\u248A": "\u0033\u002E",
+  "\u248B": "\u0034\u002E",
+  "\u248C": "\u0035\u002E",
+  "\u248D": "\u0036\u002E",
+  "\u248E": "\u0037\u002E",
+  "\u248F": "\u0038\u002E",
+  "\u2490": "\u0039\u002E",
+  "\u2491": "\u0031\u0030\u002E",
+  "\u2492": "\u0031\u0031\u002E",
+  "\u2493": "\u0031\u0032\u002E",
+  "\u2494": "\u0031\u0033\u002E",
+  "\u2495": "\u0031\u0034\u002E",
+  "\u2496": "\u0031\u0035\u002E",
+  "\u2497": "\u0031\u0036\u002E",
+  "\u2498": "\u0031\u0037\u002E",
+  "\u2499": "\u0031\u0038\u002E",
+  "\u249A": "\u0031\u0039\u002E",
+  "\u249B": "\u0032\u0030\u002E",
+  "\u249C": "\u0028\u0061\u0029",
+  "\u249D": "\u0028\u0062\u0029",
+  "\u249E": "\u0028\u0063\u0029",
+  "\u249F": "\u0028\u0064\u0029",
+  "\u24A0": "\u0028\u0065\u0029",
+  "\u24A1": "\u0028\u0066\u0029",
+  "\u24A2": "\u0028\u0067\u0029",
+  "\u24A3": "\u0028\u0068\u0029",
+  "\u24A4": "\u0028\u0069\u0029",
+  "\u24A5": "\u0028\u006A\u0029",
+  "\u24A6": "\u0028\u006B\u0029",
+  "\u24A7": "\u0028\u006C\u0029",
+  "\u24A8": "\u0028\u006D\u0029",
+  "\u24A9": "\u0028\u006E\u0029",
+  "\u24AA": "\u0028\u006F\u0029",
+  "\u24AB": "\u0028\u0070\u0029",
+  "\u24AC": "\u0028\u0071\u0029",
+  "\u24AD": "\u0028\u0072\u0029",
+  "\u24AE": "\u0028\u0073\u0029",
+  "\u24AF": "\u0028\u0074\u0029",
+  "\u24B0": "\u0028\u0075\u0029",
+  "\u24B1": "\u0028\u0076\u0029",
+  "\u24B2": "\u0028\u0077\u0029",
+  "\u24B3": "\u0028\u0078\u0029",
+  "\u24B4": "\u0028\u0079\u0029",
+  "\u24B5": "\u0028\u007A\u0029",
+  "\u2A0C": "\u222B\u222B\u222B\u222B",
+  "\u2A74": "\u003A\u003A\u003D",
+  "\u2A75": "\u003D\u003D",
+  "\u2A76": "\u003D\u003D\u003D",
+  "\u2E9F": "\u6BCD",
+  "\u2EF3": "\u9F9F",
+  "\u2F00": "\u4E00",
+  "\u2F01": "\u4E28",
+  "\u2F02": "\u4E36",
+  "\u2F03": "\u4E3F",
+  "\u2F04": "\u4E59",
+  "\u2F05": "\u4E85",
+  "\u2F06": "\u4E8C",
+  "\u2F07": "\u4EA0",
+  "\u2F08": "\u4EBA",
+  "\u2F09": "\u513F",
+  "\u2F0A": "\u5165",
+  "\u2F0B": "\u516B",
+  "\u2F0C": "\u5182",
+  "\u2F0D": "\u5196",
+  "\u2F0E": "\u51AB",
+  "\u2F0F": "\u51E0",
+  "\u2F10": "\u51F5",
+  "\u2F11": "\u5200",
+  "\u2F12": "\u529B",
+  "\u2F13": "\u52F9",
+  "\u2F14": "\u5315",
+  "\u2F15": "\u531A",
+  "\u2F16": "\u5338",
+  "\u2F17": "\u5341",
+  "\u2F18": "\u535C",
+  "\u2F19": "\u5369",
+  "\u2F1A": "\u5382",
+  "\u2F1B": "\u53B6",
+  "\u2F1C": "\u53C8",
+  "\u2F1D": "\u53E3",
+  "\u2F1E": "\u56D7",
+  "\u2F1F": "\u571F",
+  "\u2F20": "\u58EB",
+  "\u2F21": "\u5902",
+  "\u2F22": "\u590A",
+  "\u2F23": "\u5915",
+  "\u2F24": "\u5927",
+  "\u2F25": "\u5973",
+  "\u2F26": "\u5B50",
+  "\u2F27": "\u5B80",
+  "\u2F28": "\u5BF8",
+  "\u2F29": "\u5C0F",
+  "\u2F2A": "\u5C22",
+  "\u2F2B": "\u5C38",
+  "\u2F2C": "\u5C6E",
+  "\u2F2D": "\u5C71",
+  "\u2F2E": "\u5DDB",
+  "\u2F2F": "\u5DE5",
+  "\u2F30": "\u5DF1",
+  "\u2F31": "\u5DFE",
+  "\u2F32": "\u5E72",
+  "\u2F33": "\u5E7A",
+  "\u2F34": "\u5E7F",
+  "\u2F35": "\u5EF4",
+  "\u2F36": "\u5EFE",
+  "\u2F37": "\u5F0B",
+  "\u2F38": "\u5F13",
+  "\u2F39": "\u5F50",
+  "\u2F3A": "\u5F61",
+  "\u2F3B": "\u5F73",
+  "\u2F3C": "\u5FC3",
+  "\u2F3D": "\u6208",
+  "\u2F3E": "\u6236",
+  "\u2F3F": "\u624B",
+  "\u2F40": "\u652F",
+  "\u2F41": "\u6534",
+  "\u2F42": "\u6587",
+  "\u2F43": "\u6597",
+  "\u2F44": "\u65A4",
+  "\u2F45": "\u65B9",
+  "\u2F46": "\u65E0",
+  "\u2F47": "\u65E5",
+  "\u2F48": "\u66F0",
+  "\u2F49": "\u6708",
+  "\u2F4A": "\u6728",
+  "\u2F4B": "\u6B20",
+  "\u2F4C": "\u6B62",
+  "\u2F4D": "\u6B79",
+  "\u2F4E": "\u6BB3",
+  "\u2F4F": "\u6BCB",
+  "\u2F50": "\u6BD4",
+  "\u2F51": "\u6BDB",
+  "\u2F52": "\u6C0F",
+  "\u2F53": "\u6C14",
+  "\u2F54": "\u6C34",
+  "\u2F55": "\u706B",
+  "\u2F56": "\u722A",
+  "\u2F57": "\u7236",
+  "\u2F58": "\u723B",
+  "\u2F59": "\u723F",
+  "\u2F5A": "\u7247",
+  "\u2F5B": "\u7259",
+  "\u2F5C": "\u725B",
+  "\u2F5D": "\u72AC",
+  "\u2F5E": "\u7384",
+  "\u2F5F": "\u7389",
+  "\u2F60": "\u74DC",
+  "\u2F61": "\u74E6",
+  "\u2F62": "\u7518",
+  "\u2F63": "\u751F",
+  "\u2F64": "\u7528",
+  "\u2F65": "\u7530",
+  "\u2F66": "\u758B",
+  "\u2F67": "\u7592",
+  "\u2F68": "\u7676",
+  "\u2F69": "\u767D",
+  "\u2F6A": "\u76AE",
+  "\u2F6B": "\u76BF",
+  "\u2F6C": "\u76EE",
+  "\u2F6D": "\u77DB",
+  "\u2F6E": "\u77E2",
+  "\u2F6F": "\u77F3",
+  "\u2F70": "\u793A",
+  "\u2F71": "\u79B8",
+  "\u2F72": "\u79BE",
+  "\u2F73": "\u7A74",
+  "\u2F74": "\u7ACB",
+  "\u2F75": "\u7AF9",
+  "\u2F76": "\u7C73",
+  "\u2F77": "\u7CF8",
+  "\u2F78": "\u7F36",
+  "\u2F79": "\u7F51",
+  "\u2F7A": "\u7F8A",
+  "\u2F7B": "\u7FBD",
+  "\u2F7C": "\u8001",
+  "\u2F7D": "\u800C",
+  "\u2F7E": "\u8012",
+  "\u2F7F": "\u8033",
+  "\u2F80": "\u807F",
+  "\u2F81": "\u8089",
+  "\u2F82": "\u81E3",
+  "\u2F83": "\u81EA",
+  "\u2F84": "\u81F3",
+  "\u2F85": "\u81FC",
+  "\u2F86": "\u820C",
+  "\u2F87": "\u821B",
+  "\u2F88": "\u821F",
+  "\u2F89": "\u826E",
+  "\u2F8A": "\u8272",
+  "\u2F8B": "\u8278",
+  "\u2F8C": "\u864D",
+  "\u2F8D": "\u866B",
+  "\u2F8E": "\u8840",
+  "\u2F8F": "\u884C",
+  "\u2F90": "\u8863",
+  "\u2F91": "\u897E",
+  "\u2F92": "\u898B",
+  "\u2F93": "\u89D2",
+  "\u2F94": "\u8A00",
+  "\u2F95": "\u8C37",
+  "\u2F96": "\u8C46",
+  "\u2F97": "\u8C55",
+  "\u2F98": "\u8C78",
+  "\u2F99": "\u8C9D",
+  "\u2F9A": "\u8D64",
+  "\u2F9B": "\u8D70",
+  "\u2F9C": "\u8DB3",
+  "\u2F9D": "\u8EAB",
+  "\u2F9E": "\u8ECA",
+  "\u2F9F": "\u8F9B",
+  "\u2FA0": "\u8FB0",
+  "\u2FA1": "\u8FB5",
+  "\u2FA2": "\u9091",
+  "\u2FA3": "\u9149",
+  "\u2FA4": "\u91C6",
+  "\u2FA5": "\u91CC",
+  "\u2FA6": "\u91D1",
+  "\u2FA7": "\u9577",
+  "\u2FA8": "\u9580",
+  "\u2FA9": "\u961C",
+  "\u2FAA": "\u96B6",
+  "\u2FAB": "\u96B9",
+  "\u2FAC": "\u96E8",
+  "\u2FAD": "\u9751",
+  "\u2FAE": "\u975E",
+  "\u2FAF": "\u9762",
+  "\u2FB0": "\u9769",
+  "\u2FB1": "\u97CB",
+  "\u2FB2": "\u97ED",
+  "\u2FB3": "\u97F3",
+  "\u2FB4": "\u9801",
+  "\u2FB5": "\u98A8",
+  "\u2FB6": "\u98DB",
+  "\u2FB7": "\u98DF",
+  "\u2FB8": "\u9996",
+  "\u2FB9": "\u9999",
+  "\u2FBA": "\u99AC",
+  "\u2FBB": "\u9AA8",
+  "\u2FBC": "\u9AD8",
+  "\u2FBD": "\u9ADF",
+  "\u2FBE": "\u9B25",
+  "\u2FBF": "\u9B2F",
+  "\u2FC0": "\u9B32",
+  "\u2FC1": "\u9B3C",
+  "\u2FC2": "\u9B5A",
+  "\u2FC3": "\u9CE5",
+  "\u2FC4": "\u9E75",
+  "\u2FC5": "\u9E7F",
+  "\u2FC6": "\u9EA5",
+  "\u2FC7": "\u9EBB",
+  "\u2FC8": "\u9EC3",
+  "\u2FC9": "\u9ECD",
+  "\u2FCA": "\u9ED1",
+  "\u2FCB": "\u9EF9",
+  "\u2FCC": "\u9EFD",
+  "\u2FCD": "\u9F0E",
+  "\u2FCE": "\u9F13",
+  "\u2FCF": "\u9F20",
+  "\u2FD0": "\u9F3B",
+  "\u2FD1": "\u9F4A",
+  "\u2FD2": "\u9F52",
+  "\u2FD3": "\u9F8D",
+  "\u2FD4": "\u9F9C",
+  "\u2FD5": "\u9FA0",
+  "\u3036": "\u3012",
+  "\u3038": "\u5341",
+  "\u3039": "\u5344",
+  "\u303A": "\u5345",
+  "\u309B": "\u0020\u3099",
+  "\u309C": "\u0020\u309A",
+  "\u3131": "\u1100",
+  "\u3132": "\u1101",
+  "\u3133": "\u11AA",
+  "\u3134": "\u1102",
+  "\u3135": "\u11AC",
+  "\u3136": "\u11AD",
+  "\u3137": "\u1103",
+  "\u3138": "\u1104",
+  "\u3139": "\u1105",
+  "\u313A": "\u11B0",
+  "\u313B": "\u11B1",
+  "\u313C": "\u11B2",
+  "\u313D": "\u11B3",
+  "\u313E": "\u11B4",
+  "\u313F": "\u11B5",
+  "\u3140": "\u111A",
+  "\u3141": "\u1106",
+  "\u3142": "\u1107",
+  "\u3143": "\u1108",
+  "\u3144": "\u1121",
+  "\u3145": "\u1109",
+  "\u3146": "\u110A",
+  "\u3147": "\u110B",
+  "\u3148": "\u110C",
+  "\u3149": "\u110D",
+  "\u314A": "\u110E",
+  "\u314B": "\u110F",
+  "\u314C": "\u1110",
+  "\u314D": "\u1111",
+  "\u314E": "\u1112",
+  "\u314F": "\u1161",
+  "\u3150": "\u1162",
+  "\u3151": "\u1163",
+  "\u3152": "\u1164",
+  "\u3153": "\u1165",
+  "\u3154": "\u1166",
+  "\u3155": "\u1167",
+  "\u3156": "\u1168",
+  "\u3157": "\u1169",
+  "\u3158": "\u116A",
+  "\u3159": "\u116B",
+  "\u315A": "\u116C",
+  "\u315B": "\u116D",
+  "\u315C": "\u116E",
+  "\u315D": "\u116F",
+  "\u315E": "\u1170",
+  "\u315F": "\u1171",
+  "\u3160": "\u1172",
+  "\u3161": "\u1173",
+  "\u3162": "\u1174",
+  "\u3163": "\u1175",
+  "\u3164": "\u1160",
+  "\u3165": "\u1114",
+  "\u3166": "\u1115",
+  "\u3167": "\u11C7",
+  "\u3168": "\u11C8",
+  "\u3169": "\u11CC",
+  "\u316A": "\u11CE",
+  "\u316B": "\u11D3",
+  "\u316C": "\u11D7",
+  "\u316D": "\u11D9",
+  "\u316E": "\u111C",
+  "\u316F": "\u11DD",
+  "\u3170": "\u11DF",
+  "\u3171": "\u111D",
+  "\u3172": "\u111E",
+  "\u3173": "\u1120",
+  "\u3174": "\u1122",
+  "\u3175": "\u1123",
+  "\u3176": "\u1127",
+  "\u3177": "\u1129",
+  "\u3178": "\u112B",
+  "\u3179": "\u112C",
+  "\u317A": "\u112D",
+  "\u317B": "\u112E",
+  "\u317C": "\u112F",
+  "\u317D": "\u1132",
+  "\u317E": "\u1136",
+  "\u317F": "\u1140",
+  "\u3180": "\u1147",
+  "\u3181": "\u114C",
+  "\u3182": "\u11F1",
+  "\u3183": "\u11F2",
+  "\u3184": "\u1157",
+  "\u3185": "\u1158",
+  "\u3186": "\u1159",
+  "\u3187": "\u1184",
+  "\u3188": "\u1185",
+  "\u3189": "\u1188",
+  "\u318A": "\u1191",
+  "\u318B": "\u1192",
+  "\u318C": "\u1194",
+  "\u318D": "\u119E",
+  "\u318E": "\u11A1",
+  "\u3200": "\u0028\u1100\u0029",
+  "\u3201": "\u0028\u1102\u0029",
+  "\u3202": "\u0028\u1103\u0029",
+  "\u3203": "\u0028\u1105\u0029",
+  "\u3204": "\u0028\u1106\u0029",
+  "\u3205": "\u0028\u1107\u0029",
+  "\u3206": "\u0028\u1109\u0029",
+  "\u3207": "\u0028\u110B\u0029",
+  "\u3208": "\u0028\u110C\u0029",
+  "\u3209": "\u0028\u110E\u0029",
+  "\u320A": "\u0028\u110F\u0029",
+  "\u320B": "\u0028\u1110\u0029",
+  "\u320C": "\u0028\u1111\u0029",
+  "\u320D": "\u0028\u1112\u0029",
+  "\u320E": "\u0028\u1100\u1161\u0029",
+  "\u320F": "\u0028\u1102\u1161\u0029",
+  "\u3210": "\u0028\u1103\u1161\u0029",
+  "\u3211": "\u0028\u1105\u1161\u0029",
+  "\u3212": "\u0028\u1106\u1161\u0029",
+  "\u3213": "\u0028\u1107\u1161\u0029",
+  "\u3214": "\u0028\u1109\u1161\u0029",
+  "\u3215": "\u0028\u110B\u1161\u0029",
+  "\u3216": "\u0028\u110C\u1161\u0029",
+  "\u3217": "\u0028\u110E\u1161\u0029",
+  "\u3218": "\u0028\u110F\u1161\u0029",
+  "\u3219": "\u0028\u1110\u1161\u0029",
+  "\u321A": "\u0028\u1111\u1161\u0029",
+  "\u321B": "\u0028\u1112\u1161\u0029",
+  "\u321C": "\u0028\u110C\u116E\u0029",
+  "\u321D": "\u0028\u110B\u1169\u110C\u1165\u11AB\u0029",
+  "\u321E": "\u0028\u110B\u1169\u1112\u116E\u0029",
+  "\u3220": "\u0028\u4E00\u0029",
+  "\u3221": "\u0028\u4E8C\u0029",
+  "\u3222": "\u0028\u4E09\u0029",
+  "\u3223": "\u0028\u56DB\u0029",
+  "\u3224": "\u0028\u4E94\u0029",
+  "\u3225": "\u0028\u516D\u0029",
+  "\u3226": "\u0028\u4E03\u0029",
+  "\u3227": "\u0028\u516B\u0029",
+  "\u3228": "\u0028\u4E5D\u0029",
+  "\u3229": "\u0028\u5341\u0029",
+  "\u322A": "\u0028\u6708\u0029",
+  "\u322B": "\u0028\u706B\u0029",
+  "\u322C": "\u0028\u6C34\u0029",
+  "\u322D": "\u0028\u6728\u0029",
+  "\u322E": "\u0028\u91D1\u0029",
+  "\u322F": "\u0028\u571F\u0029",
+  "\u3230": "\u0028\u65E5\u0029",
+  "\u3231": "\u0028\u682A\u0029",
+  "\u3232": "\u0028\u6709\u0029",
+  "\u3233": "\u0028\u793E\u0029",
+  "\u3234": "\u0028\u540D\u0029",
+  "\u3235": "\u0028\u7279\u0029",
+  "\u3236": "\u0028\u8CA1\u0029",
+  "\u3237": "\u0028\u795D\u0029",
+  "\u3238": "\u0028\u52B4\u0029",
+  "\u3239": "\u0028\u4EE3\u0029",
+  "\u323A": "\u0028\u547C\u0029",
+  "\u323B": "\u0028\u5B66\u0029",
+  "\u323C": "\u0028\u76E3\u0029",
+  "\u323D": "\u0028\u4F01\u0029",
+  "\u323E": "\u0028\u8CC7\u0029",
+  "\u323F": "\u0028\u5354\u0029",
+  "\u3240": "\u0028\u796D\u0029",
+  "\u3241": "\u0028\u4F11\u0029",
+  "\u3242": "\u0028\u81EA\u0029",
+  "\u3243": "\u0028\u81F3\u0029",
+  "\u32C0": "\u0031\u6708",
+  "\u32C1": "\u0032\u6708",
+  "\u32C2": "\u0033\u6708",
+  "\u32C3": "\u0034\u6708",
+  "\u32C4": "\u0035\u6708",
+  "\u32C5": "\u0036\u6708",
+  "\u32C6": "\u0037\u6708",
+  "\u32C7": "\u0038\u6708",
+  "\u32C8": "\u0039\u6708",
+  "\u32C9": "\u0031\u0030\u6708",
+  "\u32CA": "\u0031\u0031\u6708",
+  "\u32CB": "\u0031\u0032\u6708",
+  "\u3358": "\u0030\u70B9",
+  "\u3359": "\u0031\u70B9",
+  "\u335A": "\u0032\u70B9",
+  "\u335B": "\u0033\u70B9",
+  "\u335C": "\u0034\u70B9",
+  "\u335D": "\u0035\u70B9",
+  "\u335E": "\u0036\u70B9",
+  "\u335F": "\u0037\u70B9",
+  "\u3360": "\u0038\u70B9",
+  "\u3361": "\u0039\u70B9",
+  "\u3362": "\u0031\u0030\u70B9",
+  "\u3363": "\u0031\u0031\u70B9",
+  "\u3364": "\u0031\u0032\u70B9",
+  "\u3365": "\u0031\u0033\u70B9",
+  "\u3366": "\u0031\u0034\u70B9",
+  "\u3367": "\u0031\u0035\u70B9",
+  "\u3368": "\u0031\u0036\u70B9",
+  "\u3369": "\u0031\u0037\u70B9",
+  "\u336A": "\u0031\u0038\u70B9",
+  "\u336B": "\u0031\u0039\u70B9",
+  "\u336C": "\u0032\u0030\u70B9",
+  "\u336D": "\u0032\u0031\u70B9",
+  "\u336E": "\u0032\u0032\u70B9",
+  "\u336F": "\u0032\u0033\u70B9",
+  "\u3370": "\u0032\u0034\u70B9",
+  "\u33E0": "\u0031\u65E5",
+  "\u33E1": "\u0032\u65E5",
+  "\u33E2": "\u0033\u65E5",
+  "\u33E3": "\u0034\u65E5",
+  "\u33E4": "\u0035\u65E5",
+  "\u33E5": "\u0036\u65E5",
+  "\u33E6": "\u0037\u65E5",
+  "\u33E7": "\u0038\u65E5",
+  "\u33E8": "\u0039\u65E5",
+  "\u33E9": "\u0031\u0030\u65E5",
+  "\u33EA": "\u0031\u0031\u65E5",
+  "\u33EB": "\u0031\u0032\u65E5",
+  "\u33EC": "\u0031\u0033\u65E5",
+  "\u33ED": "\u0031\u0034\u65E5",
+  "\u33EE": "\u0031\u0035\u65E5",
+  "\u33EF": "\u0031\u0036\u65E5",
+  "\u33F0": "\u0031\u0037\u65E5",
+  "\u33F1": "\u0031\u0038\u65E5",
+  "\u33F2": "\u0031\u0039\u65E5",
+  "\u33F3": "\u0032\u0030\u65E5",
+  "\u33F4": "\u0032\u0031\u65E5",
+  "\u33F5": "\u0032\u0032\u65E5",
+  "\u33F6": "\u0032\u0033\u65E5",
+  "\u33F7": "\u0032\u0034\u65E5",
+  "\u33F8": "\u0032\u0035\u65E5",
+  "\u33F9": "\u0032\u0036\u65E5",
+  "\u33FA": "\u0032\u0037\u65E5",
+  "\u33FB": "\u0032\u0038\u65E5",
+  "\u33FC": "\u0032\u0039\u65E5",
+  "\u33FD": "\u0033\u0030\u65E5",
+  "\u33FE": "\u0033\u0031\u65E5",
+  "\uFB00": "\u0066\u0066",
+  "\uFB01": "\u0066\u0069",
+  "\uFB02": "\u0066\u006C",
+  "\uFB03": "\u0066\u0066\u0069",
+  "\uFB04": "\u0066\u0066\u006C",
+  "\uFB05": "\u017F\u0074",
+  "\uFB06": "\u0073\u0074",
+  "\uFB13": "\u0574\u0576",
+  "\uFB14": "\u0574\u0565",
+  "\uFB15": "\u0574\u056B",
+  "\uFB16": "\u057E\u0576",
+  "\uFB17": "\u0574\u056D",
+  "\uFB4F": "\u05D0\u05DC",
+  "\uFB50": "\u0671",
+  "\uFB51": "\u0671",
+  "\uFB52": "\u067B",
+  "\uFB53": "\u067B",
+  "\uFB54": "\u067B",
+  "\uFB55": "\u067B",
+  "\uFB56": "\u067E",
+  "\uFB57": "\u067E",
+  "\uFB58": "\u067E",
+  "\uFB59": "\u067E",
+  "\uFB5A": "\u0680",
+  "\uFB5B": "\u0680",
+  "\uFB5C": "\u0680",
+  "\uFB5D": "\u0680",
+  "\uFB5E": "\u067A",
+  "\uFB5F": "\u067A",
+  "\uFB60": "\u067A",
+  "\uFB61": "\u067A",
+  "\uFB62": "\u067F",
+  "\uFB63": "\u067F",
+  "\uFB64": "\u067F",
+  "\uFB65": "\u067F",
+  "\uFB66": "\u0679",
+  "\uFB67": "\u0679",
+  "\uFB68": "\u0679",
+  "\uFB69": "\u0679",
+  "\uFB6A": "\u06A4",
+  "\uFB6B": "\u06A4",
+  "\uFB6C": "\u06A4",
+  "\uFB6D": "\u06A4",
+  "\uFB6E": "\u06A6",
+  "\uFB6F": "\u06A6",
+  "\uFB70": "\u06A6",
+  "\uFB71": "\u06A6",
+  "\uFB72": "\u0684",
+  "\uFB73": "\u0684",
+  "\uFB74": "\u0684",
+  "\uFB75": "\u0684",
+  "\uFB76": "\u0683",
+  "\uFB77": "\u0683",
+  "\uFB78": "\u0683",
+  "\uFB79": "\u0683",
+  "\uFB7A": "\u0686",
+  "\uFB7B": "\u0686",
+  "\uFB7C": "\u0686",
+  "\uFB7D": "\u0686",
+  "\uFB7E": "\u0687",
+  "\uFB7F": "\u0687",
+  "\uFB80": "\u0687",
+  "\uFB81": "\u0687",
+  "\uFB82": "\u068D",
+  "\uFB83": "\u068D",
+  "\uFB84": "\u068C",
+  "\uFB85": "\u068C",
+  "\uFB86": "\u068E",
+  "\uFB87": "\u068E",
+  "\uFB88": "\u0688",
+  "\uFB89": "\u0688",
+  "\uFB8A": "\u0698",
+  "\uFB8B": "\u0698",
+  "\uFB8C": "\u0691",
+  "\uFB8D": "\u0691",
+  "\uFB8E": "\u06A9",
+  "\uFB8F": "\u06A9",
+  "\uFB90": "\u06A9",
+  "\uFB91": "\u06A9",
+  "\uFB92": "\u06AF",
+  "\uFB93": "\u06AF",
+  "\uFB94": "\u06AF",
+  "\uFB95": "\u06AF",
+  "\uFB96": "\u06B3",
+  "\uFB97": "\u06B3",
+  "\uFB98": "\u06B3",
+  "\uFB99": "\u06B3",
+  "\uFB9A": "\u06B1",
+  "\uFB9B": "\u06B1",
+  "\uFB9C": "\u06B1",
+  "\uFB9D": "\u06B1",
+  "\uFB9E": "\u06BA",
+  "\uFB9F": "\u06BA",
+  "\uFBA0": "\u06BB",
+  "\uFBA1": "\u06BB",
+  "\uFBA2": "\u06BB",
+  "\uFBA3": "\u06BB",
+  "\uFBA4": "\u06C0",
+  "\uFBA5": "\u06C0",
+  "\uFBA6": "\u06C1",
+  "\uFBA7": "\u06C1",
+  "\uFBA8": "\u06C1",
+  "\uFBA9": "\u06C1",
+  "\uFBAA": "\u06BE",
+  "\uFBAB": "\u06BE",
+  "\uFBAC": "\u06BE",
+  "\uFBAD": "\u06BE",
+  "\uFBAE": "\u06D2",
+  "\uFBAF": "\u06D2",
+  "\uFBB0": "\u06D3",
+  "\uFBB1": "\u06D3",
+  "\uFBD3": "\u06AD",
+  "\uFBD4": "\u06AD",
+  "\uFBD5": "\u06AD",
+  "\uFBD6": "\u06AD",
+  "\uFBD7": "\u06C7",
+  "\uFBD8": "\u06C7",
+  "\uFBD9": "\u06C6",
+  "\uFBDA": "\u06C6",
+  "\uFBDB": "\u06C8",
+  "\uFBDC": "\u06C8",
+  "\uFBDD": "\u0677",
+  "\uFBDE": "\u06CB",
+  "\uFBDF": "\u06CB",
+  "\uFBE0": "\u06C5",
+  "\uFBE1": "\u06C5",
+  "\uFBE2": "\u06C9",
+  "\uFBE3": "\u06C9",
+  "\uFBE4": "\u06D0",
+  "\uFBE5": "\u06D0",
+  "\uFBE6": "\u06D0",
+  "\uFBE7": "\u06D0",
+  "\uFBE8": "\u0649",
+  "\uFBE9": "\u0649",
+  "\uFBEA": "\u0626\u0627",
+  "\uFBEB": "\u0626\u0627",
+  "\uFBEC": "\u0626\u06D5",
+  "\uFBED": "\u0626\u06D5",
+  "\uFBEE": "\u0626\u0648",
+  "\uFBEF": "\u0626\u0648",
+  "\uFBF0": "\u0626\u06C7",
+  "\uFBF1": "\u0626\u06C7",
+  "\uFBF2": "\u0626\u06C6",
+  "\uFBF3": "\u0626\u06C6",
+  "\uFBF4": "\u0626\u06C8",
+  "\uFBF5": "\u0626\u06C8",
+  "\uFBF6": "\u0626\u06D0",
+  "\uFBF7": "\u0626\u06D0",
+  "\uFBF8": "\u0626\u06D0",
+  "\uFBF9": "\u0626\u0649",
+  "\uFBFA": "\u0626\u0649",
+  "\uFBFB": "\u0626\u0649",
+  "\uFBFC": "\u06CC",
+  "\uFBFD": "\u06CC",
+  "\uFBFE": "\u06CC",
+  "\uFBFF": "\u06CC",
+  "\uFC00": "\u0626\u062C",
+  "\uFC01": "\u0626\u062D",
+  "\uFC02": "\u0626\u0645",
+  "\uFC03": "\u0626\u0649",
+  "\uFC04": "\u0626\u064A",
+  "\uFC05": "\u0628\u062C",
+  "\uFC06": "\u0628\u062D",
+  "\uFC07": "\u0628\u062E",
+  "\uFC08": "\u0628\u0645",
+  "\uFC09": "\u0628\u0649",
+  "\uFC0A": "\u0628\u064A",
+  "\uFC0B": "\u062A\u062C",
+  "\uFC0C": "\u062A\u062D",
+  "\uFC0D": "\u062A\u062E",
+  "\uFC0E": "\u062A\u0645",
+  "\uFC0F": "\u062A\u0649",
+  "\uFC10": "\u062A\u064A",
+  "\uFC11": "\u062B\u062C",
+  "\uFC12": "\u062B\u0645",
+  "\uFC13": "\u062B\u0649",
+  "\uFC14": "\u062B\u064A",
+  "\uFC15": "\u062C\u062D",
+  "\uFC16": "\u062C\u0645",
+  "\uFC17": "\u062D\u062C",
+  "\uFC18": "\u062D\u0645",
+  "\uFC19": "\u062E\u062C",
+  "\uFC1A": "\u062E\u062D",
+  "\uFC1B": "\u062E\u0645",
+  "\uFC1C": "\u0633\u062C",
+  "\uFC1D": "\u0633\u062D",
+  "\uFC1E": "\u0633\u062E",
+  "\uFC1F": "\u0633\u0645",
+  "\uFC20": "\u0635\u062D",
+  "\uFC21": "\u0635\u0645",
+  "\uFC22": "\u0636\u062C",
+  "\uFC23": "\u0636\u062D",
+  "\uFC24": "\u0636\u062E",
+  "\uFC25": "\u0636\u0645",
+  "\uFC26": "\u0637\u062D",
+  "\uFC27": "\u0637\u0645",
+  "\uFC28": "\u0638\u0645",
+  "\uFC29": "\u0639\u062C",
+  "\uFC2A": "\u0639\u0645",
+  "\uFC2B": "\u063A\u062C",
+  "\uFC2C": "\u063A\u0645",
+  "\uFC2D": "\u0641\u062C",
+  "\uFC2E": "\u0641\u062D",
+  "\uFC2F": "\u0641\u062E",
+  "\uFC30": "\u0641\u0645",
+  "\uFC31": "\u0641\u0649",
+  "\uFC32": "\u0641\u064A",
+  "\uFC33": "\u0642\u062D",
+  "\uFC34": "\u0642\u0645",
+  "\uFC35": "\u0642\u0649",
+  "\uFC36": "\u0642\u064A",
+  "\uFC37": "\u0643\u0627",
+  "\uFC38": "\u0643\u062C",
+  "\uFC39": "\u0643\u062D",
+  "\uFC3A": "\u0643\u062E",
+  "\uFC3B": "\u0643\u0644",
+  "\uFC3C": "\u0643\u0645",
+  "\uFC3D": "\u0643\u0649",
+  "\uFC3E": "\u0643\u064A",
+  "\uFC3F": "\u0644\u062C",
+  "\uFC40": "\u0644\u062D",
+  "\uFC41": "\u0644\u062E",
+  "\uFC42": "\u0644\u0645",
+  "\uFC43": "\u0644\u0649",
+  "\uFC44": "\u0644\u064A",
+  "\uFC45": "\u0645\u062C",
+  "\uFC46": "\u0645\u062D",
+  "\uFC47": "\u0645\u062E",
+  "\uFC48": "\u0645\u0645",
+  "\uFC49": "\u0645\u0649",
+  "\uFC4A": "\u0645\u064A",
+  "\uFC4B": "\u0646\u062C",
+  "\uFC4C": "\u0646\u062D",
+  "\uFC4D": "\u0646\u062E",
+  "\uFC4E": "\u0646\u0645",
+  "\uFC4F": "\u0646\u0649",
+  "\uFC50": "\u0646\u064A",
+  "\uFC51": "\u0647\u062C",
+  "\uFC52": "\u0647\u0645",
+  "\uFC53": "\u0647\u0649",
+  "\uFC54": "\u0647\u064A",
+  "\uFC55": "\u064A\u062C",
+  "\uFC56": "\u064A\u062D",
+  "\uFC57": "\u064A\u062E",
+  "\uFC58": "\u064A\u0645",
+  "\uFC59": "\u064A\u0649",
+  "\uFC5A": "\u064A\u064A",
+  "\uFC5B": "\u0630\u0670",
+  "\uFC5C": "\u0631\u0670",
+  "\uFC5D": "\u0649\u0670",
+  "\uFC5E": "\u0020\u064C\u0651",
+  "\uFC5F": "\u0020\u064D\u0651",
+  "\uFC60": "\u0020\u064E\u0651",
+  "\uFC61": "\u0020\u064F\u0651",
+  "\uFC62": "\u0020\u0650\u0651",
+  "\uFC63": "\u0020\u0651\u0670",
+  "\uFC64": "\u0626\u0631",
+  "\uFC65": "\u0626\u0632",
+  "\uFC66": "\u0626\u0645",
+  "\uFC67": "\u0626\u0646",
+  "\uFC68": "\u0626\u0649",
+  "\uFC69": "\u0626\u064A",
+  "\uFC6A": "\u0628\u0631",
+  "\uFC6B": "\u0628\u0632",
+  "\uFC6C": "\u0628\u0645",
+  "\uFC6D": "\u0628\u0646",
+  "\uFC6E": "\u0628\u0649",
+  "\uFC6F": "\u0628\u064A",
+  "\uFC70": "\u062A\u0631",
+  "\uFC71": "\u062A\u0632",
+  "\uFC72": "\u062A\u0645",
+  "\uFC73": "\u062A\u0646",
+  "\uFC74": "\u062A\u0649",
+  "\uFC75": "\u062A\u064A",
+  "\uFC76": "\u062B\u0631",
+  "\uFC77": "\u062B\u0632",
+  "\uFC78": "\u062B\u0645",
+  "\uFC79": "\u062B\u0646",
+  "\uFC7A": "\u062B\u0649",
+  "\uFC7B": "\u062B\u064A",
+  "\uFC7C": "\u0641\u0649",
+  "\uFC7D": "\u0641\u064A",
+  "\uFC7E": "\u0642\u0649",
+  "\uFC7F": "\u0642\u064A",
+  "\uFC80": "\u0643\u0627",
+  "\uFC81": "\u0643\u0644",
+  "\uFC82": "\u0643\u0645",
+  "\uFC83": "\u0643\u0649",
+  "\uFC84": "\u0643\u064A",
+  "\uFC85": "\u0644\u0645",
+  "\uFC86": "\u0644\u0649",
+  "\uFC87": "\u0644\u064A",
+  "\uFC88": "\u0645\u0627",
+  "\uFC89": "\u0645\u0645",
+  "\uFC8A": "\u0646\u0631",
+  "\uFC8B": "\u0646\u0632",
+  "\uFC8C": "\u0646\u0645",
+  "\uFC8D": "\u0646\u0646",
+  "\uFC8E": "\u0646\u0649",
+  "\uFC8F": "\u0646\u064A",
+  "\uFC90": "\u0649\u0670",
+  "\uFC91": "\u064A\u0631",
+  "\uFC92": "\u064A\u0632",
+  "\uFC93": "\u064A\u0645",
+  "\uFC94": "\u064A\u0646",
+  "\uFC95": "\u064A\u0649",
+  "\uFC96": "\u064A\u064A",
+  "\uFC97": "\u0626\u062C",
+  "\uFC98": "\u0626\u062D",
+  "\uFC99": "\u0626\u062E",
+  "\uFC9A": "\u0626\u0645",
+  "\uFC9B": "\u0626\u0647",
+  "\uFC9C": "\u0628\u062C",
+  "\uFC9D": "\u0628\u062D",
+  "\uFC9E": "\u0628\u062E",
+  "\uFC9F": "\u0628\u0645",
+  "\uFCA0": "\u0628\u0647",
+  "\uFCA1": "\u062A\u062C",
+  "\uFCA2": "\u062A\u062D",
+  "\uFCA3": "\u062A\u062E",
+  "\uFCA4": "\u062A\u0645",
+  "\uFCA5": "\u062A\u0647",
+  "\uFCA6": "\u062B\u0645",
+  "\uFCA7": "\u062C\u062D",
+  "\uFCA8": "\u062C\u0645",
+  "\uFCA9": "\u062D\u062C",
+  "\uFCAA": "\u062D\u0645",
+  "\uFCAB": "\u062E\u062C",
+  "\uFCAC": "\u062E\u0645",
+  "\uFCAD": "\u0633\u062C",
+  "\uFCAE": "\u0633\u062D",
+  "\uFCAF": "\u0633\u062E",
+  "\uFCB0": "\u0633\u0645",
+  "\uFCB1": "\u0635\u062D",
+  "\uFCB2": "\u0635\u062E",
+  "\uFCB3": "\u0635\u0645",
+  "\uFCB4": "\u0636\u062C",
+  "\uFCB5": "\u0636\u062D",
+  "\uFCB6": "\u0636\u062E",
+  "\uFCB7": "\u0636\u0645",
+  "\uFCB8": "\u0637\u062D",
+  "\uFCB9": "\u0638\u0645",
+  "\uFCBA": "\u0639\u062C",
+  "\uFCBB": "\u0639\u0645",
+  "\uFCBC": "\u063A\u062C",
+  "\uFCBD": "\u063A\u0645",
+  "\uFCBE": "\u0641\u062C",
+  "\uFCBF": "\u0641\u062D",
+  "\uFCC0": "\u0641\u062E",
+  "\uFCC1": "\u0641\u0645",
+  "\uFCC2": "\u0642\u062D",
+  "\uFCC3": "\u0642\u0645",
+  "\uFCC4": "\u0643\u062C",
+  "\uFCC5": "\u0643\u062D",
+  "\uFCC6": "\u0643\u062E",
+  "\uFCC7": "\u0643\u0644",
+  "\uFCC8": "\u0643\u0645",
+  "\uFCC9": "\u0644\u062C",
+  "\uFCCA": "\u0644\u062D",
+  "\uFCCB": "\u0644\u062E",
+  "\uFCCC": "\u0644\u0645",
+  "\uFCCD": "\u0644\u0647",
+  "\uFCCE": "\u0645\u062C",
+  "\uFCCF": "\u0645\u062D",
+  "\uFCD0": "\u0645\u062E",
+  "\uFCD1": "\u0645\u0645",
+  "\uFCD2": "\u0646\u062C",
+  "\uFCD3": "\u0646\u062D",
+  "\uFCD4": "\u0646\u062E",
+  "\uFCD5": "\u0646\u0645",
+  "\uFCD6": "\u0646\u0647",
+  "\uFCD7": "\u0647\u062C",
+  "\uFCD8": "\u0647\u0645",
+  "\uFCD9": "\u0647\u0670",
+  "\uFCDA": "\u064A\u062C",
+  "\uFCDB": "\u064A\u062D",
+  "\uFCDC": "\u064A\u062E",
+  "\uFCDD": "\u064A\u0645",
+  "\uFCDE": "\u064A\u0647",
+  "\uFCDF": "\u0626\u0645",
+  "\uFCE0": "\u0626\u0647",
+  "\uFCE1": "\u0628\u0645",
+  "\uFCE2": "\u0628\u0647",
+  "\uFCE3": "\u062A\u0645",
+  "\uFCE4": "\u062A\u0647",
+  "\uFCE5": "\u062B\u0645",
+  "\uFCE6": "\u062B\u0647",
+  "\uFCE7": "\u0633\u0645",
+  "\uFCE8": "\u0633\u0647",
+  "\uFCE9": "\u0634\u0645",
+  "\uFCEA": "\u0634\u0647",
+  "\uFCEB": "\u0643\u0644",
+  "\uFCEC": "\u0643\u0645",
+  "\uFCED": "\u0644\u0645",
+  "\uFCEE": "\u0646\u0645",
+  "\uFCEF": "\u0646\u0647",
+  "\uFCF0": "\u064A\u0645",
+  "\uFCF1": "\u064A\u0647",
+  "\uFCF2": "\u0640\u064E\u0651",
+  "\uFCF3": "\u0640\u064F\u0651",
+  "\uFCF4": "\u0640\u0650\u0651",
+  "\uFCF5": "\u0637\u0649",
+  "\uFCF6": "\u0637\u064A",
+  "\uFCF7": "\u0639\u0649",
+  "\uFCF8": "\u0639\u064A",
+  "\uFCF9": "\u063A\u0649",
+  "\uFCFA": "\u063A\u064A",
+  "\uFCFB": "\u0633\u0649",
+  "\uFCFC": "\u0633\u064A",
+  "\uFCFD": "\u0634\u0649",
+  "\uFCFE": "\u0634\u064A",
+  "\uFCFF": "\u062D\u0649",
+  "\uFD00": "\u062D\u064A",
+  "\uFD01": "\u062C\u0649",
+  "\uFD02": "\u062C\u064A",
+  "\uFD03": "\u062E\u0649",
+  "\uFD04": "\u062E\u064A",
+  "\uFD05": "\u0635\u0649",
+  "\uFD06": "\u0635\u064A",
+  "\uFD07": "\u0636\u0649",
+  "\uFD08": "\u0636\u064A",
+  "\uFD09": "\u0634\u062C",
+  "\uFD0A": "\u0634\u062D",
+  "\uFD0B": "\u0634\u062E",
+  "\uFD0C": "\u0634\u0645",
+  "\uFD0D": "\u0634\u0631",
+  "\uFD0E": "\u0633\u0631",
+  "\uFD0F": "\u0635\u0631",
+  "\uFD10": "\u0636\u0631",
+  "\uFD11": "\u0637\u0649",
+  "\uFD12": "\u0637\u064A",
+  "\uFD13": "\u0639\u0649",
+  "\uFD14": "\u0639\u064A",
+  "\uFD15": "\u063A\u0649",
+  "\uFD16": "\u063A\u064A",
+  "\uFD17": "\u0633\u0649",
+  "\uFD18": "\u0633\u064A",
+  "\uFD19": "\u0634\u0649",
+  "\uFD1A": "\u0634\u064A",
+  "\uFD1B": "\u062D\u0649",
+  "\uFD1C": "\u062D\u064A",
+  "\uFD1D": "\u062C\u0649",
+  "\uFD1E": "\u062C\u064A",
+  "\uFD1F": "\u062E\u0649",
+  "\uFD20": "\u062E\u064A",
+  "\uFD21": "\u0635\u0649",
+  "\uFD22": "\u0635\u064A",
+  "\uFD23": "\u0636\u0649",
+  "\uFD24": "\u0636\u064A",
+  "\uFD25": "\u0634\u062C",
+  "\uFD26": "\u0634\u062D",
+  "\uFD27": "\u0634\u062E",
+  "\uFD28": "\u0634\u0645",
+  "\uFD29": "\u0634\u0631",
+  "\uFD2A": "\u0633\u0631",
+  "\uFD2B": "\u0635\u0631",
+  "\uFD2C": "\u0636\u0631",
+  "\uFD2D": "\u0634\u062C",
+  "\uFD2E": "\u0634\u062D",
+  "\uFD2F": "\u0634\u062E",
+  "\uFD30": "\u0634\u0645",
+  "\uFD31": "\u0633\u0647",
+  "\uFD32": "\u0634\u0647",
+  "\uFD33": "\u0637\u0645",
+  "\uFD34": "\u0633\u062C",
+  "\uFD35": "\u0633\u062D",
+  "\uFD36": "\u0633\u062E",
+  "\uFD37": "\u0634\u062C",
+  "\uFD38": "\u0634\u062D",
+  "\uFD39": "\u0634\u062E",
+  "\uFD3A": "\u0637\u0645",
+  "\uFD3B": "\u0638\u0645",
+  "\uFD3C": "\u0627\u064B",
+  "\uFD3D": "\u0627\u064B",
+  "\uFD50": "\u062A\u062C\u0645",
+  "\uFD51": "\u062A\u062D\u062C",
+  "\uFD52": "\u062A\u062D\u062C",
+  "\uFD53": "\u062A\u062D\u0645",
+  "\uFD54": "\u062A\u062E\u0645",
+  "\uFD55": "\u062A\u0645\u062C",
+  "\uFD56": "\u062A\u0645\u062D",
+  "\uFD57": "\u062A\u0645\u062E",
+  "\uFD58": "\u062C\u0645\u062D",
+  "\uFD59": "\u062C\u0645\u062D",
+  "\uFD5A": "\u062D\u0645\u064A",
+  "\uFD5B": "\u062D\u0645\u0649",
+  "\uFD5C": "\u0633\u062D\u062C",
+  "\uFD5D": "\u0633\u062C\u062D",
+  "\uFD5E": "\u0633\u062C\u0649",
+  "\uFD5F": "\u0633\u0645\u062D",
+  "\uFD60": "\u0633\u0645\u062D",
+  "\uFD61": "\u0633\u0645\u062C",
+  "\uFD62": "\u0633\u0645\u0645",
+  "\uFD63": "\u0633\u0645\u0645",
+  "\uFD64": "\u0635\u062D\u062D",
+  "\uFD65": "\u0635\u062D\u062D",
+  "\uFD66": "\u0635\u0645\u0645",
+  "\uFD67": "\u0634\u062D\u0645",
+  "\uFD68": "\u0634\u062D\u0645",
+  "\uFD69": "\u0634\u062C\u064A",
+  "\uFD6A": "\u0634\u0645\u062E",
+  "\uFD6B": "\u0634\u0645\u062E",
+  "\uFD6C": "\u0634\u0645\u0645",
+  "\uFD6D": "\u0634\u0645\u0645",
+  "\uFD6E": "\u0636\u062D\u0649",
+  "\uFD6F": "\u0636\u062E\u0645",
+  "\uFD70": "\u0636\u062E\u0645",
+  "\uFD71": "\u0637\u0645\u062D",
+  "\uFD72": "\u0637\u0645\u062D",
+  "\uFD73": "\u0637\u0645\u0645",
+  "\uFD74": "\u0637\u0645\u064A",
+  "\uFD75": "\u0639\u062C\u0645",
+  "\uFD76": "\u0639\u0645\u0645",
+  "\uFD77": "\u0639\u0645\u0645",
+  "\uFD78": "\u0639\u0645\u0649",
+  "\uFD79": "\u063A\u0645\u0645",
+  "\uFD7A": "\u063A\u0645\u064A",
+  "\uFD7B": "\u063A\u0645\u0649",
+  "\uFD7C": "\u0641\u062E\u0645",
+  "\uFD7D": "\u0641\u062E\u0645",
+  "\uFD7E": "\u0642\u0645\u062D",
+  "\uFD7F": "\u0642\u0645\u0645",
+  "\uFD80": "\u0644\u062D\u0645",
+  "\uFD81": "\u0644\u062D\u064A",
+  "\uFD82": "\u0644\u062D\u0649",
+  "\uFD83": "\u0644\u062C\u062C",
+  "\uFD84": "\u0644\u062C\u062C",
+  "\uFD85": "\u0644\u062E\u0645",
+  "\uFD86": "\u0644\u062E\u0645",
+  "\uFD87": "\u0644\u0645\u062D",
+  "\uFD88": "\u0644\u0645\u062D",
+  "\uFD89": "\u0645\u062D\u062C",
+  "\uFD8A": "\u0645\u062D\u0645",
+  "\uFD8B": "\u0645\u062D\u064A",
+  "\uFD8C": "\u0645\u062C\u062D",
+  "\uFD8D": "\u0645\u062C\u0645",
+  "\uFD8E": "\u0645\u062E\u062C",
+  "\uFD8F": "\u0645\u062E\u0645",
+  "\uFD92": "\u0645\u062C\u062E",
+  "\uFD93": "\u0647\u0645\u062C",
+  "\uFD94": "\u0647\u0645\u0645",
+  "\uFD95": "\u0646\u062D\u0645",
+  "\uFD96": "\u0646\u062D\u0649",
+  "\uFD97": "\u0646\u062C\u0645",
+  "\uFD98": "\u0646\u062C\u0645",
+  "\uFD99": "\u0646\u062C\u0649",
+  "\uFD9A": "\u0646\u0645\u064A",
+  "\uFD9B": "\u0646\u0645\u0649",
+  "\uFD9C": "\u064A\u0645\u0645",
+  "\uFD9D": "\u064A\u0645\u0645",
+  "\uFD9E": "\u0628\u062E\u064A",
+  "\uFD9F": "\u062A\u062C\u064A",
+  "\uFDA0": "\u062A\u062C\u0649",
+  "\uFDA1": "\u062A\u062E\u064A",
+  "\uFDA2": "\u062A\u062E\u0649",
+  "\uFDA3": "\u062A\u0645\u064A",
+  "\uFDA4": "\u062A\u0645\u0649",
+  "\uFDA5": "\u062C\u0645\u064A",
+  "\uFDA6": "\u062C\u062D\u0649",
+  "\uFDA7": "\u062C\u0645\u0649",
+  "\uFDA8": "\u0633\u062E\u0649",
+  "\uFDA9": "\u0635\u062D\u064A",
+  "\uFDAA": "\u0634\u062D\u064A",
+  "\uFDAB": "\u0636\u062D\u064A",
+  "\uFDAC": "\u0644\u062C\u064A",
+  "\uFDAD": "\u0644\u0645\u064A",
+  "\uFDAE": "\u064A\u062D\u064A",
+  "\uFDAF": "\u064A\u062C\u064A",
+  "\uFDB0": "\u064A\u0645\u064A",
+  "\uFDB1": "\u0645\u0645\u064A",
+  "\uFDB2": "\u0642\u0645\u064A",
+  "\uFDB3": "\u0646\u062D\u064A",
+  "\uFDB4": "\u0642\u0645\u062D",
+  "\uFDB5": "\u0644\u062D\u0645",
+  "\uFDB6": "\u0639\u0645\u064A",
+  "\uFDB7": "\u0643\u0645\u064A",
+  "\uFDB8": "\u0646\u062C\u062D",
+  "\uFDB9": "\u0645\u062E\u064A",
+  "\uFDBA": "\u0644\u062C\u0645",
+  "\uFDBB": "\u0643\u0645\u0645",
+  "\uFDBC": "\u0644\u062C\u0645",
+  "\uFDBD": "\u0646\u062C\u062D",
+  "\uFDBE": "\u062C\u062D\u064A",
+  "\uFDBF": "\u062D\u062C\u064A",
+  "\uFDC0": "\u0645\u062C\u064A",
+  "\uFDC1": "\u0641\u0645\u064A",
+  "\uFDC2": "\u0628\u062D\u064A",
+  "\uFDC3": "\u0643\u0645\u0645",
+  "\uFDC4": "\u0639\u062C\u0645",
+  "\uFDC5": "\u0635\u0645\u0645",
+  "\uFDC6": "\u0633\u062E\u064A",
+  "\uFDC7": "\u0646\u062C\u064A",
+  "\uFE49": "\u203E",
+  "\uFE4A": "\u203E",
+  "\uFE4B": "\u203E",
+  "\uFE4C": "\u203E",
+  "\uFE4D": "\u005F",
+  "\uFE4E": "\u005F",
+  "\uFE4F": "\u005F",
+  "\uFE80": "\u0621",
+  "\uFE81": "\u0622",
+  "\uFE82": "\u0622",
+  "\uFE83": "\u0623",
+  "\uFE84": "\u0623",
+  "\uFE85": "\u0624",
+  "\uFE86": "\u0624",
+  "\uFE87": "\u0625",
+  "\uFE88": "\u0625",
+  "\uFE89": "\u0626",
+  "\uFE8A": "\u0626",
+  "\uFE8B": "\u0626",
+  "\uFE8C": "\u0626",
+  "\uFE8D": "\u0627",
+  "\uFE8E": "\u0627",
+  "\uFE8F": "\u0628",
+  "\uFE90": "\u0628",
+  "\uFE91": "\u0628",
+  "\uFE92": "\u0628",
+  "\uFE93": "\u0629",
+  "\uFE94": "\u0629",
+  "\uFE95": "\u062A",
+  "\uFE96": "\u062A",
+  "\uFE97": "\u062A",
+  "\uFE98": "\u062A",
+  "\uFE99": "\u062B",
+  "\uFE9A": "\u062B",
+  "\uFE9B": "\u062B",
+  "\uFE9C": "\u062B",
+  "\uFE9D": "\u062C",
+  "\uFE9E": "\u062C",
+  "\uFE9F": "\u062C",
+  "\uFEA0": "\u062C",
+  "\uFEA1": "\u062D",
+  "\uFEA2": "\u062D",
+  "\uFEA3": "\u062D",
+  "\uFEA4": "\u062D",
+  "\uFEA5": "\u062E",
+  "\uFEA6": "\u062E",
+  "\uFEA7": "\u062E",
+  "\uFEA8": "\u062E",
+  "\uFEA9": "\u062F",
+  "\uFEAA": "\u062F",
+  "\uFEAB": "\u0630",
+  "\uFEAC": "\u0630",
+  "\uFEAD": "\u0631",
+  "\uFEAE": "\u0631",
+  "\uFEAF": "\u0632",
+  "\uFEB0": "\u0632",
+  "\uFEB1": "\u0633",
+  "\uFEB2": "\u0633",
+  "\uFEB3": "\u0633",
+  "\uFEB4": "\u0633",
+  "\uFEB5": "\u0634",
+  "\uFEB6": "\u0634",
+  "\uFEB7": "\u0634",
+  "\uFEB8": "\u0634",
+  "\uFEB9": "\u0635",
+  "\uFEBA": "\u0635",
+  "\uFEBB": "\u0635",
+  "\uFEBC": "\u0635",
+  "\uFEBD": "\u0636",
+  "\uFEBE": "\u0636",
+  "\uFEBF": "\u0636",
+  "\uFEC0": "\u0636",
+  "\uFEC1": "\u0637",
+  "\uFEC2": "\u0637",
+  "\uFEC3": "\u0637",
+  "\uFEC4": "\u0637",
+  "\uFEC5": "\u0638",
+  "\uFEC6": "\u0638",
+  "\uFEC7": "\u0638",
+  "\uFEC8": "\u0638",
+  "\uFEC9": "\u0639",
+  "\uFECA": "\u0639",
+  "\uFECB": "\u0639",
+  "\uFECC": "\u0639",
+  "\uFECD": "\u063A",
+  "\uFECE": "\u063A",
+  "\uFECF": "\u063A",
+  "\uFED0": "\u063A",
+  "\uFED1": "\u0641",
+  "\uFED2": "\u0641",
+  "\uFED3": "\u0641",
+  "\uFED4": "\u0641",
+  "\uFED5": "\u0642",
+  "\uFED6": "\u0642",
+  "\uFED7": "\u0642",
+  "\uFED8": "\u0642",
+  "\uFED9": "\u0643",
+  "\uFEDA": "\u0643",
+  "\uFEDB": "\u0643",
+  "\uFEDC": "\u0643",
+  "\uFEDD": "\u0644",
+  "\uFEDE": "\u0644",
+  "\uFEDF": "\u0644",
+  "\uFEE0": "\u0644",
+  "\uFEE1": "\u0645",
+  "\uFEE2": "\u0645",
+  "\uFEE3": "\u0645",
+  "\uFEE4": "\u0645",
+  "\uFEE5": "\u0646",
+  "\uFEE6": "\u0646",
+  "\uFEE7": "\u0646",
+  "\uFEE8": "\u0646",
+  "\uFEE9": "\u0647",
+  "\uFEEA": "\u0647",
+  "\uFEEB": "\u0647",
+  "\uFEEC": "\u0647",
+  "\uFEED": "\u0648",
+  "\uFEEE": "\u0648",
+  "\uFEEF": "\u0649",
+  "\uFEF0": "\u0649",
+  "\uFEF1": "\u064A",
+  "\uFEF2": "\u064A",
+  "\uFEF3": "\u064A",
+  "\uFEF4": "\u064A",
+  "\uFEF5": "\u0644\u0622",
+  "\uFEF6": "\u0644\u0622",
+  "\uFEF7": "\u0644\u0623",
+  "\uFEF8": "\u0644\u0623",
+  "\uFEF9": "\u0644\u0625",
+  "\uFEFA": "\u0644\u0625",
+  "\uFEFB": "\u0644\u0627",
+  "\uFEFC": "\u0644\u0627",
 };
 
 function reverseIfRtl(chars) {
@@ -2112,7 +4310,7 @@ function reverseIfRtl(chars) {
   if (charsLength <= 1 || !isRTLRangeFor(chars.charCodeAt(0))) {
     return chars;
   }
-  var s = '';
+  var s = "";
   for (var ii = charsLength - 1; ii >= 0; ii--) {
     s += chars[ii];
   }
@@ -2120,8 +4318,7 @@ function reverseIfRtl(chars) {
 }
 
 function glyphToUnicode(glyph) {
-  if (!glyph)
-    return '';
+  if (!glyph) return "";
 
   var glyphUnicode = glyph.unicode;
   if (glyphUnicode in NormalizedUnicodes)
@@ -2144,20 +4341,21 @@ function adjustWidths(properties) {
 
 function getFontType(type, subtype) {
   switch (type) {
-    case 'Type1':
-      return subtype === 'Type1C' ? FontType.TYPE1C : FontType.TYPE1;
-    case 'CIDFontType0':
-      return subtype === 'CIDFontType0C' ? FontType.CIDFONTTYPE0C :
-        FontType.CIDFONTTYPE0;
-    case 'OpenType':
+    case "Type1":
+      return subtype === "Type1C" ? FontType.TYPE1C : FontType.TYPE1;
+    case "CIDFontType0":
+      return subtype === "CIDFontType0C"
+        ? FontType.CIDFONTTYPE0C
+        : FontType.CIDFONTTYPE0;
+    case "OpenType":
       return FontType.OPENTYPE;
-    case 'TrueType':
+    case "TrueType":
       return FontType.TRUETYPE;
-    case 'CIDFontType2':
+    case "CIDFontType2":
       return FontType.CIDFONTTYPE2;
-    case 'MMType1':
+    case "MMType1":
       return FontType.MMTYPE1;
-    case 'Type0':
+    case "Type0":
       return FontType.TYPE0;
     default:
       return FontType.UNKNOWN;
@@ -2174,14 +4372,22 @@ var Glyph = (function GlyphClosure() {
     this.operatorListId = operatorListId;
   }
 
-  Glyph.prototype.matchesForCache =
-      function(fontChar, unicode, accent, width, vmetric, operatorListId) {
-    return this.fontChar === fontChar &&
-           this.unicode === unicode &&
-           this.accent === accent &&
-           this.width === width &&
-           this.vmetric === vmetric &&
-           this.operatorListId === operatorListId;
+  Glyph.prototype.matchesForCache = function (
+    fontChar,
+    unicode,
+    accent,
+    width,
+    vmetric,
+    operatorListId,
+  ) {
+    return (
+      this.fontChar === fontChar &&
+      this.unicode === unicode &&
+      this.accent === accent &&
+      this.width === width &&
+      this.vmetric === vmetric &&
+      this.operatorListId === operatorListId
+    );
   };
 
   return Glyph;
@@ -2199,19 +4405,19 @@ var ToUnicodeMap = (function ToUnicodeMapClosure() {
       return this._map.length;
     },
 
-    forEach: function(callback) {
+    forEach: function (callback) {
       for (var charCode in this._map) {
         callback(charCode, this._map[charCode].charCodeAt(0));
       }
     },
 
-    get: function(i) {
+    get: function (i) {
       return this._map[i];
     },
 
-    charCodeOf: function(v) {
+    charCodeOf: function (v) {
       return this._map.indexOf(v);
-    }
+    },
   };
 
   return ToUnicodeMap;
@@ -2225,7 +4431,7 @@ var IdentityToUnicodeMap = (function IdentityToUnicodeMapClosure() {
 
   IdentityToUnicodeMap.prototype = {
     get length() {
-      error('should not access .length');
+      error("should not access .length");
     },
 
     forEach: function (callback) {
@@ -2242,8 +4448,8 @@ var IdentityToUnicodeMap = (function IdentityToUnicodeMapClosure() {
     },
 
     charCodeOf: function (v) {
-      error('should not call .charCodeOf');
-    }
+      error("should not call .charCodeOf");
+    },
   };
 
   return IdentityToUnicodeMap;
@@ -2251,29 +4457,29 @@ var IdentityToUnicodeMap = (function IdentityToUnicodeMapClosure() {
 
 var OpenTypeFileBuilder = (function OpenTypeFileBuilderClosure() {
   function writeInt16(dest, offset, num) {
-    dest[offset] = (num >> 8) & 0xFF;
-    dest[offset + 1] = num & 0xFF;
+    dest[offset] = (num >> 8) & 0xff;
+    dest[offset + 1] = num & 0xff;
   }
 
   function writeInt32(dest, offset, num) {
-    dest[offset] = (num >> 24) & 0xFF;
-    dest[offset + 1] = (num >> 16) & 0xFF;
-    dest[offset + 2] = (num >> 8) & 0xFF;
-    dest[offset + 3] = num & 0xFF;
+    dest[offset] = (num >> 24) & 0xff;
+    dest[offset + 1] = (num >> 16) & 0xff;
+    dest[offset + 2] = (num >> 8) & 0xff;
+    dest[offset + 3] = num & 0xff;
   }
 
   function writeData(dest, offset, data) {
     var i, ii;
     if (data instanceof Uint8Array) {
       dest.set(data, offset);
-    } else if (typeof data === 'string') {
+    } else if (typeof data === "string") {
       for (i = 0, ii = data.length; i < ii; i++) {
-        dest[offset++] = data.charCodeAt(i) & 0xFF;
+        dest[offset++] = data.charCodeAt(i) & 0xff;
       }
     } else {
       // treating everything else as array
       for (i = 0, ii = data.length; i < ii; i++) {
-        dest[offset++] = data[i] & 0xFF;
+        dest[offset++] = data[i] & 0xff;
       }
     }
   }
@@ -2284,19 +4490,20 @@ var OpenTypeFileBuilder = (function OpenTypeFileBuilderClosure() {
   }
 
   OpenTypeFileBuilder.getSearchParams =
-      function OpenTypeFileBuilder_getSearchParams(entriesCount, entrySize) {
-    var maxPower2 = 1, log2 = 0;
-    while ((maxPower2 ^ entriesCount) > maxPower2) {
-      maxPower2 <<= 1;
-      log2++;
-    }
-    var searchRange = maxPower2 * entrySize;
-    return {
-      range: searchRange,
-      entry: log2,
-      rangeShift: entrySize * entriesCount - searchRange
+    function OpenTypeFileBuilder_getSearchParams(entriesCount, entrySize) {
+      var maxPower2 = 1,
+        log2 = 0;
+      while ((maxPower2 ^ entriesCount) > maxPower2) {
+        maxPower2 <<= 1;
+        log2++;
+      }
+      var searchRange = maxPower2 * entrySize;
+      return {
+        range: searchRange,
+        entry: log2,
+        rangeShift: entrySize * entriesCount - searchRange,
+      };
     };
-  };
 
   var OTF_HEADER_SIZE = 12;
   var OTF_TABLE_ENTRY_SIZE = 16;
@@ -2330,14 +4537,14 @@ var OpenTypeFileBuilder = (function OpenTypeFileBuilderClosure() {
       }
 
       // sfnt version (4 bytes)
-      if (sfnt === 'true') {
+      if (sfnt === "true") {
         // Windows hates the Mac TrueType sfnt version number
         sfnt = string32(0x00010000);
       }
-      file[0] = sfnt.charCodeAt(0) & 0xFF;
-      file[1] = sfnt.charCodeAt(1) & 0xFF;
-      file[2] = sfnt.charCodeAt(2) & 0xFF;
-      file[3] = sfnt.charCodeAt(3) & 0xFF;
+      file[0] = sfnt.charCodeAt(0) & 0xff;
+      file[1] = sfnt.charCodeAt(1) & 0xff;
+      file[2] = sfnt.charCodeAt(2) & 0xff;
+      file[3] = sfnt.charCodeAt(3) & 0xff;
 
       // numTables (2 bytes)
       writeInt16(file, 4, numTables);
@@ -2355,16 +4562,19 @@ var OpenTypeFileBuilder = (function OpenTypeFileBuilderClosure() {
       // writing table entries
       for (i = 0; i < numTables; i++) {
         tableName = tablesNames[i];
-        file[offset] = tableName.charCodeAt(0) & 0xFF;
-        file[offset + 1] = tableName.charCodeAt(1) & 0xFF;
-        file[offset + 2] = tableName.charCodeAt(2) & 0xFF;
-        file[offset + 3] = tableName.charCodeAt(3) & 0xFF;
+        file[offset] = tableName.charCodeAt(0) & 0xff;
+        file[offset + 1] = tableName.charCodeAt(1) & 0xff;
+        file[offset + 2] = tableName.charCodeAt(2) & 0xff;
+        file[offset + 3] = tableName.charCodeAt(3) & 0xff;
 
         // checksum
         var checksum = 0;
         for (j = tableOffsets[i], jj = tableOffsets[i + 1]; j < jj; j += 4) {
-          var quad = (file[j] << 24) + (file[j + 1] << 16) +
-                     (file[j + 2] << 8) + file[j + 3];
+          var quad =
+            (file[j] << 24) +
+            (file[j + 1] << 16) +
+            (file[j + 2] << 8) +
+            file[j + 3];
           checksum = (checksum + quad) | 0;
         }
         writeInt32(file, offset + 4, checksum);
@@ -2381,10 +4591,10 @@ var OpenTypeFileBuilder = (function OpenTypeFileBuilderClosure() {
 
     addTable: function OpenTypeFileBuilder_addTable(tag, data) {
       if (tag in this.tables) {
-        throw new Error('Table ' + tag + ' already exists');
+        throw new Error("Table " + tag + " already exists");
       }
       this.tables[tag] = data;
-    }
+    },
   };
 
   return OpenTypeFileBuilder;
@@ -2409,7 +4619,7 @@ var Font = (function FontClosure() {
 
     this.glyphCache = {};
 
-    var names = name.split('+');
+    var names = name.split("+");
     names = names.length > 1 ? names[1] : names[0];
     names = names.split(/[-,_]/g)[0];
     this.isSerifFont = !!(properties.flags & FontFlags.Serif);
@@ -2420,8 +4630,11 @@ var Font = (function FontClosure() {
     var subtype = properties.subtype;
     this.type = type;
 
-    this.fallbackName = (this.isMonospace ? 'monospace' :
-                         (this.isSerifFont ? 'serif' : 'sans-serif'));
+    this.fallbackName = this.isMonospace
+      ? "monospace"
+      : this.isSerifFont
+      ? "serif"
+      : "sans-serif";
 
     this.differences = properties.differences;
     this.widths = properties.widths;
@@ -2437,10 +4650,10 @@ var Font = (function FontClosure() {
 
     this.toFontChar = [];
 
-    if (properties.type === 'Type3') {
+    if (properties.type === "Type3") {
       for (charCode = 0; charCode < 256; charCode++) {
-        this.toFontChar[charCode] = (this.differences[charCode] ||
-                                     properties.defaultEncoding[charCode]);
+        this.toFontChar[charCode] =
+          this.differences[charCode] || properties.defaultEncoding[charCode];
       }
       this.fontType = FontType.TYPE3;
       return;
@@ -2457,28 +4670,32 @@ var Font = (function FontClosure() {
       if (file) {
         // Some bad PDF generators will include empty font files,
         // attempting to recover by assuming that no file exists.
-        warn('Font file is empty in "' + name + '" (' + this.loadedName + ')');
+        warn('Font file is empty in "' + name + '" (' + this.loadedName + ")");
       }
 
       this.missingFile = true;
       // The file data is not specified. Trying to fix the font name
       // to be used with the canvas.font.
-      var fontName = name.replace(/[,_]/g, '-');
+      var fontName = name.replace(/[,_]/g, "-");
       var isStandardFont = fontName in stdFontMap;
       fontName = stdFontMap[fontName] || nonStdFontMap[fontName] || fontName;
 
-      this.bold = (fontName.search(/bold/gi) !== -1);
-      this.italic = ((fontName.search(/oblique/gi) !== -1) ||
-                     (fontName.search(/italic/gi) !== -1));
+      this.bold = fontName.search(/bold/gi) !== -1;
+      this.italic =
+        fontName.search(/oblique/gi) !== -1 ||
+        fontName.search(/italic/gi) !== -1;
 
       // Use 'name' instead of 'fontName' here because the original
       // name ArialBlack for example will be replaced by Helvetica.
-      this.black = (name.search(/Black/g) !== -1);
+      this.black = name.search(/Black/g) !== -1;
 
       // if at least one width is present, remeasure all chars when exists
       this.remeasure = Object.keys(this.widths).length > 0;
-      if (isStandardFont && type === 'CIDFontType2' &&
-          properties.cidEncoding.indexOf('Identity-') === 0) {
+      if (
+        isStandardFont &&
+        type === "CIDFontType2" &&
+        properties.cidEncoding.indexOf("Identity-") === 0
+      ) {
         // Standard fonts might be embedded as CID font without glyph mapping.
         // Building one based on GlyphMapForStandardFonts.
         var map = [];
@@ -2487,7 +4704,7 @@ var Font = (function FontClosure() {
         }
         var isIdentityUnicode = this.toUnicode instanceof IdentityToUnicodeMap;
         if (!isIdentityUnicode) {
-          this.toUnicode.forEach(function(charCode, unicodeCharCode) {
+          this.toUnicode.forEach(function (charCode, unicodeCharCode) {
             map[+charCode] = unicodeCharCode;
           });
         }
@@ -2528,56 +4745,63 @@ var Font = (function FontClosure() {
       } else if (isStandardFont) {
         this.toFontChar = [];
         for (charCode in properties.defaultEncoding) {
-          glyphName = (properties.differences[charCode] ||
-                       properties.defaultEncoding[charCode]);
+          glyphName =
+            properties.differences[charCode] ||
+            properties.defaultEncoding[charCode];
           this.toFontChar[charCode] = GlyphsUnicode[glyphName];
         }
       } else {
-        var unicodeCharCode, notCidFont = (type.indexOf('CIDFontType') === -1);
-        this.toUnicode.forEach(function(charCode, unicodeCharCode) {
-          if (notCidFont) {
-            glyphName = (properties.differences[charCode] ||
-                         properties.defaultEncoding[charCode]);
-            unicodeCharCode = (GlyphsUnicode[glyphName] || unicodeCharCode);
-          }
-          this.toFontChar[charCode] = unicodeCharCode;
-        }.bind(this));
+        var unicodeCharCode,
+          notCidFont = type.indexOf("CIDFontType") === -1;
+        this.toUnicode.forEach(
+          function (charCode, unicodeCharCode) {
+            if (notCidFont) {
+              glyphName =
+                properties.differences[charCode] ||
+                properties.defaultEncoding[charCode];
+              unicodeCharCode = GlyphsUnicode[glyphName] || unicodeCharCode;
+            }
+            this.toFontChar[charCode] = unicodeCharCode;
+          }.bind(this),
+        );
       }
-      this.loadedName = fontName.split('-')[0];
+      this.loadedName = fontName.split("-")[0];
       this.loading = false;
       this.fontType = getFontType(type, subtype);
       return;
     }
 
     // Some fonts might use wrong font types for Type1C or CIDFontType0C
-    if (subtype === 'Type1C' && (type !== 'Type1' && type !== 'MMType1')) {
+    if (subtype === "Type1C" && type !== "Type1" && type !== "MMType1") {
       // Some TrueType fonts by mistake claim Type1C
       if (isTrueTypeFile(file)) {
-        subtype = 'TrueType';
+        subtype = "TrueType";
       } else {
-        type = 'Type1';
+        type = "Type1";
       }
     }
-    if (subtype === 'CIDFontType0C' && type !== 'CIDFontType0') {
-      type = 'CIDFontType0';
+    if (subtype === "CIDFontType0C" && type !== "CIDFontType0") {
+      type = "CIDFontType0";
     }
     // XXX: Temporarily change the type for open type so we trigger a warning.
     // This should be removed when we add support for open type.
-    if (subtype === 'OpenType') {
-      type = 'OpenType';
+    if (subtype === "OpenType") {
+      type = "OpenType";
     }
 
     var data;
     switch (type) {
-      case 'MMType1':
-        info('MMType1 font (' + name + '), falling back to Type1.');
-        /* falls through */
-      case 'Type1':
-      case 'CIDFontType0':
-        this.mimetype = 'font/opentype';
+      case "MMType1":
+        info("MMType1 font (" + name + "), falling back to Type1.");
+      /* falls through */
+      case "Type1":
+      case "CIDFontType0":
+        this.mimetype = "font/opentype";
 
-        var cff = (subtype === 'Type1C' || subtype === 'CIDFontType0C') ?
-          new CFFFont(file, properties) : new Type1Font(name, file, properties);
+        var cff =
+          subtype === "Type1C" || subtype === "CIDFontType0C"
+            ? new CFFFont(file, properties)
+            : new Type1Font(name, file, properties);
 
         adjustWidths(properties);
 
@@ -2585,21 +4809,21 @@ var Font = (function FontClosure() {
         data = this.convert(name, cff, properties);
         break;
 
-      case 'OpenType':
-      case 'TrueType':
-      case 'CIDFontType2':
-        this.mimetype = 'font/opentype';
+      case "OpenType":
+      case "TrueType":
+      case "CIDFontType2":
+        this.mimetype = "font/opentype";
 
         // Repair the TrueType file. It is can be damaged in the point of
         // view of the sanitizer
         data = this.checkAndRepair(name, file, properties);
         if (this.isOpenType) {
-          type = 'OpenType';
+          type = "OpenType";
         }
         break;
 
       default:
-        error('Font ' + type + ' is not supported');
+        error("Font " + type + " is not supported");
         break;
     }
 
@@ -2637,7 +4861,7 @@ var Font = (function FontClosure() {
 
   function safeString16(value) {
     // clamp value to the 16-bit int range
-    value = (value > 0x7FFF ? 0x7FFF : (value < -0x8000 ? -0x8000 : value));
+    value = value > 0x7fff ? 0x7fff : value < -0x8000 ? -0x8000 : value;
     return String.fromCharCode((value >> 8) & 0xff, value & 0xff);
   }
 
@@ -2661,7 +4885,7 @@ var Font = (function FontClosure() {
     var isSymbolic = !!(properties.flags & FontFlags.Symbolic);
     var isIdentityUnicode =
       properties.toUnicode instanceof IdentityToUnicodeMap;
-    var isCidFontType2 = (properties.type === 'CIDFontType2');
+    var isCidFontType2 = properties.type === "CIDFontType2";
     var newMap = Object.create(null);
     var toFontChar = [];
     var usedFontCharCodes = [];
@@ -2691,26 +4915,30 @@ var Font = (function FontClosure() {
       // font was symbolic and there is only an identity unicode map since the
       // characters probably aren't in the correct position (fixes an issue
       // with firefox and thuluthfont).
-      if ((usedFontCharCodes[fontCharCode] !== undefined ||
-           fontCharCode <= 0x1f || // Control chars
-           fontCharCode === 0x7F || // Control char
-           fontCharCode === 0xAD || // Soft hyphen
-           (fontCharCode >= 0x80 && fontCharCode <= 0x9F) || // Control chars
-           // Prevent drawing characters in the specials unicode block.
-           (fontCharCode >= 0xFFF0 && fontCharCode <= 0xFFFF) ||
-           (isSymbolic && isIdentityUnicode)) &&
-          nextAvailableFontCharCode <= PRIVATE_USE_OFFSET_END) { // Room left.
+      if (
+        (usedFontCharCodes[fontCharCode] !== undefined ||
+          fontCharCode <= 0x1f || // Control chars
+          fontCharCode === 0x7f || // Control char
+          fontCharCode === 0xad || // Soft hyphen
+          (fontCharCode >= 0x80 && fontCharCode <= 0x9f) || // Control chars
+          // Prevent drawing characters in the specials unicode block.
+          (fontCharCode >= 0xfff0 && fontCharCode <= 0xffff) ||
+          (isSymbolic && isIdentityUnicode)) &&
+        nextAvailableFontCharCode <= PRIVATE_USE_OFFSET_END
+      ) {
+        // Room left.
         // Loop to try and find a free spot in the private use area.
         do {
           fontCharCode = nextAvailableFontCharCode++;
 
-          if (SKIP_PRIVATE_USE_RANGE_F000_TO_F01F && fontCharCode === 0xF000) {
-            fontCharCode = 0xF020;
+          if (SKIP_PRIVATE_USE_RANGE_F000_TO_F01F && fontCharCode === 0xf000) {
+            fontCharCode = 0xf020;
             nextAvailableFontCharCode = fontCharCode + 1;
           }
-
-        } while (usedFontCharCodes[fontCharCode] !== undefined &&
-                 nextAvailableFontCharCode <= PRIVATE_USE_OFFSET_END);
+        } while (
+          usedFontCharCodes[fontCharCode] !== undefined &&
+          nextAvailableFontCharCode <= PRIVATE_USE_OFFSET_END
+        );
       }
 
       newMap[fontCharCode] = glyphId;
@@ -2720,7 +4948,7 @@ var Font = (function FontClosure() {
     return {
       toFontChar: toFontChar,
       charCodeToGlyphId: newMap,
-      nextAvailableFontCharCode: nextAvailableFontCharCode
+      nextAvailableFontCharCode: nextAvailableFontCharCode,
     };
   }
 
@@ -2747,7 +4975,7 @@ var Font = (function FontClosure() {
         codeIndices.push(codes[n].glyphId);
         ++end;
         ++n;
-        if (end === 0xFFFF) {
+        if (end === 0xffff) {
           break;
         }
       }
@@ -2759,32 +4987,35 @@ var Font = (function FontClosure() {
 
   function createCmapTable(glyphs) {
     var ranges = getRanges(glyphs);
-    var numTables = ranges[ranges.length - 1][1] > 0xFFFF ? 2 : 1;
-    var cmap = '\x00\x00' + // version
-               string16(numTables) +  // numTables
-               '\x00\x03' + // platformID
-               '\x00\x01' + // encodingID
-               string32(4 + numTables * 8); // start of the table record
+    var numTables = ranges[ranges.length - 1][1] > 0xffff ? 2 : 1;
+    var cmap =
+      "\x00\x00" + // version
+      string16(numTables) + // numTables
+      "\x00\x03" + // platformID
+      "\x00\x01" + // encodingID
+      string32(4 + numTables * 8); // start of the table record
 
     var i, ii, j, jj;
     for (i = ranges.length - 1; i >= 0; --i) {
-      if (ranges[i][0] <= 0xFFFF) { break; }
+      if (ranges[i][0] <= 0xffff) {
+        break;
+      }
     }
     var bmpLength = i + 1;
 
-    if (ranges[i][0] < 0xFFFF && ranges[i][1] === 0xFFFF) {
-      ranges[i][1] = 0xFFFE;
+    if (ranges[i][0] < 0xffff && ranges[i][1] === 0xffff) {
+      ranges[i][1] = 0xfffe;
     }
-    var trailingRangesCount = ranges[i][1] < 0xFFFF ? 1 : 0;
+    var trailingRangesCount = ranges[i][1] < 0xffff ? 1 : 0;
     var segCount = bmpLength + trailingRangesCount;
     var searchParams = OpenTypeFileBuilder.getSearchParams(segCount, 2);
 
     // Fill up the 4 parallel arrays describing the segments.
-    var startCount = '';
-    var endCount = '';
-    var idDeltas = '';
-    var idRangeOffsets = '';
-    var glyphsIds = '';
+    var startCount = "";
+    var endCount = "";
+    var idDeltas = "";
+    var idRangeOffsets = "";
+    var glyphsIds = "";
     var bias = 0;
 
     var range, start, end, codes;
@@ -2804,7 +5035,7 @@ var Font = (function FontClosure() {
       }
       if (!contiguous) {
         var offset = (segCount - i) * 2 + bias * 2;
-        bias += (end - start + 1);
+        bias += end - start + 1;
 
         idDeltas += string16(0);
         idRangeOffsets += string16(offset);
@@ -2815,34 +5046,39 @@ var Font = (function FontClosure() {
       } else {
         var startCode = codes[0];
 
-        idDeltas += string16((startCode - start) & 0xFFFF);
+        idDeltas += string16((startCode - start) & 0xffff);
         idRangeOffsets += string16(0);
       }
     }
 
     if (trailingRangesCount > 0) {
-      endCount += '\xFF\xFF';
-      startCount += '\xFF\xFF';
-      idDeltas += '\x00\x01';
-      idRangeOffsets += '\x00\x00';
+      endCount += "\xFF\xFF";
+      startCount += "\xFF\xFF";
+      idDeltas += "\x00\x01";
+      idRangeOffsets += "\x00\x00";
     }
 
-    var format314 = '\x00\x00' + // language
-                    string16(2 * segCount) +
-                    string16(searchParams.range) +
-                    string16(searchParams.entry) +
-                    string16(searchParams.rangeShift) +
-                    endCount + '\x00\x00' + startCount +
-                    idDeltas + idRangeOffsets + glyphsIds;
+    var format314 =
+      "\x00\x00" + // language
+      string16(2 * segCount) +
+      string16(searchParams.range) +
+      string16(searchParams.entry) +
+      string16(searchParams.rangeShift) +
+      endCount +
+      "\x00\x00" +
+      startCount +
+      idDeltas +
+      idRangeOffsets +
+      glyphsIds;
 
-    var format31012 = '';
-    var header31012 = '';
+    var format31012 = "";
+    var header31012 = "";
     if (numTables > 1) {
-      cmap += '\x00\x03' + // platformID
-              '\x00\x0A' + // encodingID
-              string32(4 + numTables * 8 +
-                       4 + format314.length); // start of the table record
-      format31012 = '';
+      cmap +=
+        "\x00\x03" + // platformID
+        "\x00\x0A" + // encodingID
+        string32(4 + numTables * 8 + 4 + format314.length); // start of the table record
+      format31012 = "";
       for (i = 0, ii = ranges.length; i < ii; i++) {
         range = ranges[i];
         start = range[0];
@@ -2851,27 +5087,35 @@ var Font = (function FontClosure() {
         for (j = 1, jj = codes.length; j < jj; ++j) {
           if (codes[j] !== codes[j - 1] + 1) {
             end = range[0] + j - 1;
-            format31012 += string32(start) + // startCharCode
-                           string32(end) + // endCharCode
-                           string32(code); // startGlyphID
+            format31012 +=
+              string32(start) + // startCharCode
+              string32(end) + // endCharCode
+              string32(code); // startGlyphID
             start = end + 1;
             code = codes[j];
           }
         }
-        format31012 += string32(start) + // startCharCode
-                       string32(range[1]) + // endCharCode
-                       string32(code); // startGlyphID
+        format31012 +=
+          string32(start) + // startCharCode
+          string32(range[1]) + // endCharCode
+          string32(code); // startGlyphID
       }
-      header31012 = '\x00\x0C' + // format
-                    '\x00\x00' + // reserved
-                    string32(format31012.length + 16) + // length
-                    '\x00\x00\x00\x00' + // language
-                    string32(format31012.length / 12); // nGroups
+      header31012 =
+        "\x00\x0C" + // format
+        "\x00\x00" + // reserved
+        string32(format31012.length + 16) + // length
+        "\x00\x00\x00\x00" + // language
+        string32(format31012.length / 12); // nGroups
     }
 
-    return cmap + '\x00\x04' + // format
-                  string16(format314.length + 4) + // length
-                  format314 + header31012 + format31012;
+    return (
+      cmap +
+      "\x00\x04" + // format
+      string16(format314.length + 4) + // length
+      format314 +
+      header31012 +
+      format31012
+    );
   }
 
   function validateOS2Table(os2) {
@@ -2881,7 +5125,7 @@ var Font = (function FontClosure() {
     // that give us issues
     stream.getBytes(60); // skipping type, misc sizes, panose, unicode ranges
     var selection = stream.getUint16();
-    if (version < 4 && (selection & 0x0300)) {
+    if (version < 4 && selection & 0x0300) {
       return false;
     }
     var firstChar = stream.getUint16();
@@ -2891,7 +5135,8 @@ var Font = (function FontClosure() {
     }
     stream.getBytes(6); // skipping sTypoAscender/Descender/LineGap
     var usWinAscent = stream.getUint16();
-    if (usWinAscent === 0) { // makes font unreadable by windows
+    if (usWinAscent === 0) {
+      // makes font unreadable by windows
       return false;
     }
 
@@ -2906,7 +5151,7 @@ var Font = (function FontClosure() {
       yMax: 0,
       yMin: 0,
       ascent: 0,
-      descent: 0
+      descent: 0,
     };
 
     var ulUnicodeRange1 = 0;
@@ -2931,13 +5176,13 @@ var Font = (function FontClosure() {
         if (position < 32) {
           ulUnicodeRange1 |= 1 << position;
         } else if (position < 64) {
-          ulUnicodeRange2 |= 1 << position - 32;
+          ulUnicodeRange2 |= 1 << (position - 32);
         } else if (position < 96) {
-          ulUnicodeRange3 |= 1 << position - 64;
+          ulUnicodeRange3 |= 1 << (position - 64);
         } else if (position < 123) {
-          ulUnicodeRange4 |= 1 << position - 96;
+          ulUnicodeRange4 |= 1 << (position - 96);
         } else {
-          error('Unicode ranges Bits > 123 are reserved for internal usage');
+          error("Unicode ranges Bits > 123 are reserved for internal usage");
         }
       }
     } else {
@@ -2947,77 +5192,82 @@ var Font = (function FontClosure() {
     }
 
     var bbox = properties.bbox || [0, 0, 0, 0];
-    var unitsPerEm = (override.unitsPerEm ||
-                      1 / (properties.fontMatrix || FONT_IDENTITY_MATRIX)[0]);
+    var unitsPerEm =
+      override.unitsPerEm ||
+      1 / (properties.fontMatrix || FONT_IDENTITY_MATRIX)[0];
 
     // if the font units differ to the PDF glyph space units
     // then scale up the values
-    var scale = (properties.ascentScaled ? 1.0 :
-                 unitsPerEm / PDF_GLYPH_SPACE_UNITS);
+    var scale = properties.ascentScaled
+      ? 1.0
+      : unitsPerEm / PDF_GLYPH_SPACE_UNITS;
 
-    var typoAscent = (override.ascent ||
-                      Math.round(scale * (properties.ascent || bbox[3])));
-    var typoDescent = (override.descent ||
-                       Math.round(scale * (properties.descent || bbox[1])));
+    var typoAscent =
+      override.ascent || Math.round(scale * (properties.ascent || bbox[3]));
+    var typoDescent =
+      override.descent || Math.round(scale * (properties.descent || bbox[1]));
     if (typoDescent > 0 && properties.descent > 0 && bbox[1] < 0) {
       typoDescent = -typoDescent; // fixing incorrect descent
     }
     var winAscent = override.yMax || typoAscent;
     var winDescent = -override.yMin || -typoDescent;
 
-    return '\x00\x03' + // version
-           '\x02\x24' + // xAvgCharWidth
-           '\x01\xF4' + // usWeightClass
-           '\x00\x05' + // usWidthClass
-           '\x00\x00' + // fstype (0 to let the font loads via font-face on IE)
-           '\x02\x8A' + // ySubscriptXSize
-           '\x02\xBB' + // ySubscriptYSize
-           '\x00\x00' + // ySubscriptXOffset
-           '\x00\x8C' + // ySubscriptYOffset
-           '\x02\x8A' + // ySuperScriptXSize
-           '\x02\xBB' + // ySuperScriptYSize
-           '\x00\x00' + // ySuperScriptXOffset
-           '\x01\xDF' + // ySuperScriptYOffset
-           '\x00\x31' + // yStrikeOutSize
-           '\x01\x02' + // yStrikeOutPosition
-           '\x00\x00' + // sFamilyClass
-           '\x00\x00\x06' +
-           String.fromCharCode(properties.fixedPitch ? 0x09 : 0x00) +
-           '\x00\x00\x00\x00\x00\x00' + // Panose
-           string32(ulUnicodeRange1) + // ulUnicodeRange1 (Bits 0-31)
-           string32(ulUnicodeRange2) + // ulUnicodeRange2 (Bits 32-63)
-           string32(ulUnicodeRange3) + // ulUnicodeRange3 (Bits 64-95)
-           string32(ulUnicodeRange4) + // ulUnicodeRange4 (Bits 96-127)
-           '\x2A\x32\x31\x2A' + // achVendID
-           string16(properties.italicAngle ? 1 : 0) + // fsSelection
-           string16(firstCharIndex ||
-                    properties.firstChar) + // usFirstCharIndex
-           string16(lastCharIndex || properties.lastChar) +  // usLastCharIndex
-           string16(typoAscent) + // sTypoAscender
-           string16(typoDescent) + // sTypoDescender
-           '\x00\x64' + // sTypoLineGap (7%-10% of the unitsPerEM value)
-           string16(winAscent) + // usWinAscent
-           string16(winDescent) + // usWinDescent
-           '\x00\x00\x00\x00' + // ulCodePageRange1 (Bits 0-31)
-           '\x00\x00\x00\x00' + // ulCodePageRange2 (Bits 32-63)
-           string16(properties.xHeight) + // sxHeight
-           string16(properties.capHeight) + // sCapHeight
-           string16(0) + // usDefaultChar
-           string16(firstCharIndex || properties.firstChar) + // usBreakChar
-           '\x00\x03';  // usMaxContext
+    return (
+      "\x00\x03" + // version
+      "\x02\x24" + // xAvgCharWidth
+      "\x01\xF4" + // usWeightClass
+      "\x00\x05" + // usWidthClass
+      "\x00\x00" + // fstype (0 to let the font loads via font-face on IE)
+      "\x02\x8A" + // ySubscriptXSize
+      "\x02\xBB" + // ySubscriptYSize
+      "\x00\x00" + // ySubscriptXOffset
+      "\x00\x8C" + // ySubscriptYOffset
+      "\x02\x8A" + // ySuperScriptXSize
+      "\x02\xBB" + // ySuperScriptYSize
+      "\x00\x00" + // ySuperScriptXOffset
+      "\x01\xDF" + // ySuperScriptYOffset
+      "\x00\x31" + // yStrikeOutSize
+      "\x01\x02" + // yStrikeOutPosition
+      "\x00\x00" + // sFamilyClass
+      "\x00\x00\x06" +
+      String.fromCharCode(properties.fixedPitch ? 0x09 : 0x00) +
+      "\x00\x00\x00\x00\x00\x00" + // Panose
+      string32(ulUnicodeRange1) + // ulUnicodeRange1 (Bits 0-31)
+      string32(ulUnicodeRange2) + // ulUnicodeRange2 (Bits 32-63)
+      string32(ulUnicodeRange3) + // ulUnicodeRange3 (Bits 64-95)
+      string32(ulUnicodeRange4) + // ulUnicodeRange4 (Bits 96-127)
+      "\x2A\x32\x31\x2A" + // achVendID
+      string16(properties.italicAngle ? 1 : 0) + // fsSelection
+      string16(firstCharIndex || properties.firstChar) + // usFirstCharIndex
+      string16(lastCharIndex || properties.lastChar) + // usLastCharIndex
+      string16(typoAscent) + // sTypoAscender
+      string16(typoDescent) + // sTypoDescender
+      "\x00\x64" + // sTypoLineGap (7%-10% of the unitsPerEM value)
+      string16(winAscent) + // usWinAscent
+      string16(winDescent) + // usWinDescent
+      "\x00\x00\x00\x00" + // ulCodePageRange1 (Bits 0-31)
+      "\x00\x00\x00\x00" + // ulCodePageRange2 (Bits 32-63)
+      string16(properties.xHeight) + // sxHeight
+      string16(properties.capHeight) + // sCapHeight
+      string16(0) + // usDefaultChar
+      string16(firstCharIndex || properties.firstChar) + // usBreakChar
+      "\x00\x03"
+    ); // usMaxContext
   }
 
   function createPostTable(properties) {
-    var angle = Math.floor(properties.italicAngle * (Math.pow(2, 16)));
-    return ('\x00\x03\x00\x00' + // Version number
-            string32(angle) + // italicAngle
-            '\x00\x00' + // underlinePosition
-            '\x00\x00' + // underlineThickness
-            string32(properties.fixedPitch) + // isFixedPitch
-            '\x00\x00\x00\x00' + // minMemType42
-            '\x00\x00\x00\x00' + // maxMemType42
-            '\x00\x00\x00\x00' + // minMemType1
-            '\x00\x00\x00\x00');  // maxMemType1
+    var angle = Math.floor(properties.italicAngle * Math.pow(2, 16));
+    return (
+      "\x00\x03\x00\x00" + // Version number
+      string32(angle) + // italicAngle
+      "\x00\x00" + // underlinePosition
+      "\x00\x00" + // underlineThickness
+      string32(properties.fixedPitch) + // isFixedPitch
+      "\x00\x00\x00\x00" + // minMemType42
+      "\x00\x00\x00\x00" + // maxMemType42
+      "\x00\x00\x00\x00" + // minMemType1
+      "\x00\x00\x00\x00"
+    ); // maxMemType1
   }
 
   function createNameTable(name, proto) {
@@ -3026,16 +5276,16 @@ var Font = (function FontClosure() {
     }
 
     var strings = [
-      proto[0][0] || 'Original licence',  // 0.Copyright
-      proto[0][1] || name,                // 1.Font family
-      proto[0][2] || 'Unknown',           // 2.Font subfamily (font weight)
-      proto[0][3] || 'uniqueID',          // 3.Unique ID
-      proto[0][4] || name,                // 4.Full font name
-      proto[0][5] || 'Version 0.11',      // 5.Version
-      proto[0][6] || '',                  // 6.Postscript name
-      proto[0][7] || 'Unknown',           // 7.Trademark
-      proto[0][8] || 'Unknown',           // 8.Manufacturer
-      proto[0][9] || 'Unknown'            // 9.Designer
+      proto[0][0] || "Original licence", // 0.Copyright
+      proto[0][1] || name, // 1.Font family
+      proto[0][2] || "Unknown", // 2.Font subfamily (font weight)
+      proto[0][3] || "uniqueID", // 3.Unique ID
+      proto[0][4] || name, // 4.Full font name
+      proto[0][5] || "Version 0.11", // 5.Version
+      proto[0][6] || "", // 6.Postscript name
+      proto[0][7] || "Unknown", // 7.Trademark
+      proto[0][8] || "Unknown", // 8.Manufacturer
+      proto[0][9] || "Unknown", // 9.Designer
     ];
 
     // Mac want 1-byte per character strings while Windows want
@@ -3049,19 +5299,19 @@ var Font = (function FontClosure() {
       for (j = 0, jj = str.length; j < jj; j++) {
         strBufUnicode.push(string16(str.charCodeAt(j)));
       }
-      stringsUnicode.push(strBufUnicode.join(''));
+      stringsUnicode.push(strBufUnicode.join(""));
     }
 
     var names = [strings, stringsUnicode];
-    var platforms = ['\x00\x01', '\x00\x03'];
-    var encodings = ['\x00\x00', '\x00\x01'];
-    var languages = ['\x00\x00', '\x04\x09'];
+    var platforms = ["\x00\x01", "\x00\x03"];
+    var encodings = ["\x00\x00", "\x00\x01"];
+    var languages = ["\x00\x00", "\x04\x09"];
 
     var namesRecordCount = strings.length * platforms.length;
     var nameTable =
-      '\x00\x00' +                           // format
-      string16(namesRecordCount) +           // Number of names Record
-      string16(namesRecordCount * 12 + 6);   // Storage
+      "\x00\x00" + // format
+      string16(namesRecordCount) + // Number of names Record
+      string16(namesRecordCount * 12 + 6); // Storage
 
     // Build the name records field
     var strOffset = 0;
@@ -3081,7 +5331,7 @@ var Font = (function FontClosure() {
       }
     }
 
-    nameTable += strings.join('') + stringsUnicode.join('');
+    nameTable += strings.join("") + stringsUnicode.join("");
     return nameTable;
   }
 
@@ -3092,7 +5342,7 @@ var Font = (function FontClosure() {
     encoding: null,
     get renderer() {
       var renderer = FontRendererFactory.create(this);
-      return shadow(this, 'renderer', renderer);
+      return shadow(this, "renderer", renderer);
     },
 
     exportData: function Font_exportData() {
@@ -3121,7 +5371,7 @@ var Font = (function FontClosure() {
         var data = file.getBytes(length);
         file.pos = previousPosition;
 
-        if (tag === 'head') {
+        if (tag === "head") {
           // clearing checksum adjustment
           data[8] = data[9] = data[10] = data[11] = 0;
           data[17] |= 0x20; //Set font optimized for cleartype flag
@@ -3132,7 +5382,7 @@ var Font = (function FontClosure() {
           checksum: checksum,
           length: length,
           offset: offset,
-          data: data
+          data: data,
         };
       }
 
@@ -3142,7 +5392,7 @@ var Font = (function FontClosure() {
           numTables: ttf.getUint16(),
           searchRange: ttf.getUint16(),
           entrySelector: ttf.getUint16(),
-          rangeShift: ttf.getUint16()
+          rangeShift: ttf.getUint16(),
         };
       }
 
@@ -3188,7 +5438,7 @@ var Font = (function FontClosure() {
             potentialTable = {
               platformId: platformId,
               encodingId: encodingId,
-              offset: offset
+              offset: offset,
             };
           }
           if (canBreak) {
@@ -3197,12 +5447,12 @@ var Font = (function FontClosure() {
         }
 
         if (!potentialTable) {
-          warn('Could not find a preferred cmap table.');
+          warn("Could not find a preferred cmap table.");
           return {
             platformId: -1,
             encodingId: -1,
             mappings: [],
-            hasShortCmap: false
+            hasShortCmap: false,
           };
         }
 
@@ -3224,16 +5474,17 @@ var Font = (function FontClosure() {
             }
             mappings.push({
               charCode: j,
-              glyphId: index
+              glyphId: index,
             });
           }
           hasShortCmap = true;
         } else if (format === 4) {
           // re-creating the table in format 4 since the encoding
           // might be changed
-          var segCount = (font.getUint16() >> 1);
+          var segCount = font.getUint16() >> 1;
           font.getBytes(6); // skipping range fields
-          var segIndex, segments = [];
+          var segIndex,
+            segments = [];
           for (segIndex = 0; segIndex < segCount; segIndex++) {
             segments.push({ end: font.getUint16() });
           }
@@ -3257,8 +5508,10 @@ var Font = (function FontClosure() {
 
             var offsetIndex = (rangeOffset >> 1) - (segCount - segIndex);
             segment.offsetIndex = offsetIndex;
-            offsetsCount = Math.max(offsetsCount, offsetIndex +
-                                    segment.end - segment.start + 1);
+            offsetsCount = Math.max(
+              offsetsCount,
+              offsetIndex + segment.end - segment.start + 1,
+            );
           }
 
           var offsets = [];
@@ -3274,19 +5527,18 @@ var Font = (function FontClosure() {
             offsetIndex = segment.offsetIndex;
 
             for (j = start; j <= end; j++) {
-              if (j === 0xFFFF) {
+              if (j === 0xffff) {
                 continue;
               }
 
-              glyphId = (offsetIndex < 0 ?
-                         j : offsets[offsetIndex + j - start]);
-              glyphId = (glyphId + delta) & 0xFFFF;
+              glyphId = offsetIndex < 0 ? j : offsets[offsetIndex + j - start];
+              glyphId = (glyphId + delta) & 0xffff;
               if (glyphId === 0) {
                 continue;
               }
               mappings.push({
                 charCode: j,
-                glyphId: glyphId
+                glyphId: glyphId,
               });
             }
           }
@@ -3305,11 +5557,11 @@ var Font = (function FontClosure() {
 
             mappings.push({
               charCode: charCode,
-              glyphId: glyphId
+              glyphId: glyphId,
             });
           }
         } else {
-          error('cmap table has unsupported format: ' + format);
+          error("cmap table has unsupported format: " + format);
         }
 
         // removing duplicate entries
@@ -3327,7 +5579,7 @@ var Font = (function FontClosure() {
           platformId: potentialTable.platformId,
           encodingId: potentialTable.encodingId,
           mappings: mappings,
-          hasShortCmap: hasShortCmap
+          hasShortCmap: hasShortCmap,
         };
       }
 
@@ -3344,8 +5596,14 @@ var Font = (function FontClosure() {
         var numOfMetrics = font.getUint16();
 
         if (numOfMetrics > numGlyphs) {
-          info('The numOfMetrics (' + numOfMetrics + ') should not be ' +
-               'greater than the numGlyphs (' + numGlyphs + ')');
+          info(
+            "The numOfMetrics (" +
+              numOfMetrics +
+              ") should not be " +
+              "greater than the numGlyphs (" +
+              numGlyphs +
+              ")",
+          );
           // Reduce numOfMetrics if it is greater than numGlyphs
           numOfMetrics = numGlyphs;
           header.data[34] = (numOfMetrics & 0xff00) >> 8;
@@ -3353,8 +5611,8 @@ var Font = (function FontClosure() {
         }
 
         var numOfSidebearings = numGlyphs - numOfMetrics;
-        var numMissing = numOfSidebearings -
-          ((metrics.length - numOfMetrics * 4) >> 1);
+        var numMissing =
+          numOfSidebearings - ((metrics.length - numOfMetrics * 4) >> 1);
 
         if (numMissing > 0) {
           // For each missing glyph, we set both the width and lsb to 0 (zero).
@@ -3366,8 +5624,14 @@ var Font = (function FontClosure() {
         }
       }
 
-      function sanitizeGlyph(source, sourceStart, sourceEnd, dest, destStart,
-                             hintsValid) {
+      function sanitizeGlyph(
+        source,
+        sourceStart,
+        sourceEnd,
+        dest,
+        destStart,
+        hintsValid,
+      ) {
         if (sourceEnd - sourceStart <= 12) {
           // glyph with data less than 12 is invalid one
           return 0;
@@ -3380,7 +5644,9 @@ var Font = (function FontClosure() {
           return glyf.length;
         }
 
-        var i, j = 10, flagsCount = 0;
+        var i,
+          j = 10,
+          flagsCount = 0;
         for (i = 0; i < contoursCount; i++) {
           var endPoint = (glyf[j] << 8) | glyf[j + 1];
           flagsCount = endPoint + 1;
@@ -3395,12 +5661,13 @@ var Font = (function FontClosure() {
         var coordinatesLength = 0;
         for (i = 0; i < flagsCount; i++) {
           var flag = glyf[j++];
-          if (flag & 0xC0) {
+          if (flag & 0xc0) {
             // reserved flags must be zero, cleaning up
-            glyf[j - 1] = flag & 0x3F;
+            glyf[j - 1] = flag & 0x3f;
           }
-          var xyLength = ((flag & 2) ? 1 : (flag & 16) ? 0 : 2) +
-                         ((flag & 4) ? 1 : (flag & 32) ? 0 : 2);
+          var xyLength =
+            (flag & 2 ? 1 : flag & 16 ? 0 : 2) +
+            (flag & 4 ? 1 : flag & 32 ? 0 : 2);
           coordinatesLength += xyLength;
           if (flag & 8) {
             var repeat = glyf[j++];
@@ -3420,8 +5687,10 @@ var Font = (function FontClosure() {
         if (!hintsValid && instructionsLength > 0) {
           dest.set(glyf.subarray(0, instructionsStart), destStart);
           dest.set([0, 0], destStart + instructionsStart);
-          dest.set(glyf.subarray(instructionsEnd, glyphDataLength),
-                   destStart + instructionsStart + 2);
+          dest.set(
+            glyf.subarray(instructionsEnd, glyphDataLength),
+            destStart + instructionsStart + 2,
+          );
           glyphDataLength -= instructionsLength;
           if (glyf.length - glyphDataLength > 3) {
             glyphDataLength = (glyphDataLength + 3) & ~3;
@@ -3446,7 +5715,7 @@ var Font = (function FontClosure() {
         // Should always be 0x00010000
         var version = int32(data[0], data[1], data[2], data[3]);
         if (version >> 16 !== 1) {
-          info('Attempting to fix invalid version in head table: ' + version);
+          info("Attempting to fix invalid version in head table: " + version);
           data[0] = 0;
           data[1] = 1;
           data[2] = 0;
@@ -3455,8 +5724,10 @@ var Font = (function FontClosure() {
 
         var indexToLocFormat = int16(data[50], data[51]);
         if (indexToLocFormat < 0 || indexToLocFormat > 1) {
-          info('Attempting to fix invalid indexToLocFormat in head table: ' +
-               indexToLocFormat);
+          info(
+            "Attempting to fix invalid indexToLocFormat in head table: " +
+              indexToLocFormat,
+          );
 
           // The value of indexToLocFormat should be 0 if the loca table
           // consists of short offsets, and should be 1 if the loca table
@@ -3478,26 +5749,35 @@ var Font = (function FontClosure() {
             data[50] = 0;
             data[51] = 1;
           } else {
-            warn('Could not fix indexToLocFormat: ' + indexToLocFormat);
+            warn("Could not fix indexToLocFormat: " + indexToLocFormat);
           }
         }
       }
 
-      function sanitizeGlyphLocations(loca, glyf, numGlyphs,
-                                      isGlyphLocationsLong, hintsValid,
-                                      dupFirstEntry) {
+      function sanitizeGlyphLocations(
+        loca,
+        glyf,
+        numGlyphs,
+        isGlyphLocationsLong,
+        hintsValid,
+        dupFirstEntry,
+      ) {
         var itemSize, itemDecode, itemEncode;
         if (isGlyphLocationsLong) {
           itemSize = 4;
           itemDecode = function fontItemDecodeLong(data, offset) {
-            return (data[offset] << 24) | (data[offset + 1] << 16) |
-                   (data[offset + 2] << 8) | data[offset + 3];
+            return (
+              (data[offset] << 24) |
+              (data[offset + 1] << 16) |
+              (data[offset + 2] << 8) |
+              data[offset + 3]
+            );
           };
           itemEncode = function fontItemEncodeLong(data, offset, value) {
-            data[offset] = (value >>> 24) & 0xFF;
-            data[offset + 1] = (value >> 16) & 0xFF;
-            data[offset + 2] = (value >> 8) & 0xFF;
-            data[offset + 3] = value & 0xFF;
+            data[offset] = (value >>> 24) & 0xff;
+            data[offset + 1] = (value >> 16) & 0xff;
+            data[offset + 2] = (value >> 8) & 0xff;
+            data[offset + 3] = value & 0xff;
           };
         } else {
           itemSize = 2;
@@ -3505,8 +5785,8 @@ var Font = (function FontClosure() {
             return (data[offset] << 9) | (data[offset + 1] << 1);
           };
           itemEncode = function fontItemEncode(data, offset, value) {
-            data[offset] = (value >> 9) & 0xFF;
-            data[offset + 1] = (value >> 1) & 0xFF;
+            data[offset] = (value >> 9) & 0xff;
+            data[offset + 1] = (value >> 1) & 0xff;
           };
         }
         var locaData = loca.data;
@@ -3527,8 +5807,10 @@ var Font = (function FontClosure() {
         var i, j;
         for (i = 0, j = itemSize; i < numGlyphs; i++, j += itemSize) {
           var endOffset = itemDecode(locaData, j);
-          if (endOffset > oldGlyfDataLength &&
-              ((oldGlyfDataLength + 3) & ~3) === endOffset) {
+          if (
+            endOffset > oldGlyfDataLength &&
+            ((oldGlyfDataLength + 3) & ~3) === endOffset
+          ) {
             // Aspose breaks fonts by aligning the glyphs to the qword, but not
             // the glyf table size, which makes last glyph out of range.
             endOffset = oldGlyfDataLength;
@@ -3540,8 +5822,14 @@ var Font = (function FontClosure() {
             continue;
           }
 
-          var newLength = sanitizeGlyph(oldGlyfData, startOffset, endOffset,
-                                        newGlyfData, writeOffset, hintsValid);
+          var newLength = sanitizeGlyph(
+            oldGlyfData,
+            startOffset,
+            endOffset,
+            newGlyfData,
+            writeOffset,
+            hintsValid,
+          );
           writeOffset += newLength;
           itemEncode(locaData, j, writeOffset);
           startOffset = endOffset;
@@ -3550,8 +5838,9 @@ var Font = (function FontClosure() {
         if (writeOffset === 0) {
           // glyf table cannot be empty -- redoing the glyf and loca tables
           // to have single glyph with one point
-          var simpleGlyph = new Uint8Array(
-            [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 0]);
+          var simpleGlyph = new Uint8Array([
+            0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 0,
+          ]);
           for (i = 0, j = itemSize; i < numGlyphs; i++, j += itemSize) {
             itemEncode(locaData, j, simpleGlyph.length);
           }
@@ -3568,8 +5857,11 @@ var Font = (function FontClosure() {
             glyf.data.set(newGlyfData.subarray(0, writeOffset));
           }
           glyf.data.set(newGlyfData.subarray(0, firstEntryLength), writeOffset);
-          itemEncode(loca.data, locaData.length - itemSize,
-                     writeOffset + firstEntryLength);
+          itemEncode(
+            loca.data,
+            locaData.length - itemSize,
+            writeOffset + firstEntryLength,
+          );
         } else {
           glyf.data = newGlyfData.subarray(0, writeOffset);
         }
@@ -3579,7 +5871,8 @@ var Font = (function FontClosure() {
         var start = (font.start ? font.start : 0) + post.offset;
         font.pos = start;
 
-        var length = post.length, end = start + length;
+        var length = post.length,
+          end = start + length;
         var version = font.getInt32();
         // skip rest to the tables
         font.getBytes(28);
@@ -3618,7 +5911,7 @@ var Font = (function FontClosure() {
               for (i = 0; i < stringLength; ++i) {
                 strBuf[i] = String.fromCharCode(font.getByte());
               }
-              customNames.push(strBuf.join(''));
+              customNames.push(strBuf.join(""));
             }
             glyphNames = [];
             for (i = 0; i < numGlyphs; ++i) {
@@ -3633,7 +5926,7 @@ var Font = (function FontClosure() {
           case 0x00030000:
             break;
           default:
-            warn('Unknown/unsupported post table version ' + version);
+            warn("Unknown/unsupported post table version " + version);
             valid = false;
             break;
         }
@@ -3646,7 +5939,8 @@ var Font = (function FontClosure() {
         font.pos = start;
 
         var names = [[], []];
-        var length = nameTable.length, end = start + length;
+        var length = nameTable.length,
+          end = start + length;
         var format = font.getUint16();
         var FORMAT_0_HEADER_LENGTH = 6;
         if (format !== 0 || length < FORMAT_0_HEADER_LENGTH) {
@@ -3659,19 +5953,24 @@ var Font = (function FontClosure() {
         var NAME_RECORD_LENGTH = 12;
         var i, ii;
 
-        for (i = 0; i < numRecords &&
-                        font.pos + NAME_RECORD_LENGTH <= end; i++) {
+        for (
+          i = 0;
+          i < numRecords && font.pos + NAME_RECORD_LENGTH <= end;
+          i++
+        ) {
           var r = {
             platform: font.getUint16(),
             encoding: font.getUint16(),
             language: font.getUint16(),
             name: font.getUint16(),
             length: font.getUint16(),
-            offset: font.getUint16()
+            offset: font.getUint16(),
           };
           // using only Macintosh and Windows platform/encoding names
-          if ((r.platform === 1 && r.encoding === 0 && r.language === 0) ||
-              (r.platform === 3 && r.encoding === 1 && r.language === 0x409)) {
+          if (
+            (r.platform === 1 && r.encoding === 0 && r.language === 0) ||
+            (r.platform === 3 && r.encoding === 1 && r.language === 0x409)
+          ) {
             records.push(r);
           }
         }
@@ -3685,7 +5984,7 @@ var Font = (function FontClosure() {
           var nameIndex = record.name;
           if (record.encoding) {
             // unicode
-            var str = '';
+            var str = "";
             for (var j = 0, jj = record.length; j < jj; j += 2) {
               str += String.fromCharCode(font.getUint16());
             }
@@ -3698,31 +5997,40 @@ var Font = (function FontClosure() {
       }
 
       var TTOpsStackDeltas = [
-        0, 0, 0, 0, 0, 0, 0, 0, -2, -2, -2, -2, 0, 0, -2, -5,
-        -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, -1, 0, -1, -1, -1, -1,
-        1, -1, -999, 0, 1, 0, -1, -2, 0, -1, -2, -1, -1, 0, -1, -1,
-        0, 0, -999, -999, -1, -1, -1, -1, -2, -999, -2, -2, -999, 0, -2, -2,
-        0, 0, -2, 0, -2, 0, 0, 0, -2, -1, -1, 1, 1, 0, 0, -1,
-        -1, -1, -1, -1, -1, -1, 0, 0, -1, 0, -1, -1, 0, -999, -1, -1,
-        -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        -2, -999, -999, -999, -999, -999, -1, -1, -2, -2, 0, 0, 0, 0, -1, -1,
-        -999, -2, -2, 0, 0, -1, -2, -2, 0, 0, 0, -1, -1, -1, -2];
-        // 0xC0-DF == -1 and 0xE0-FF == -2
+        0, 0, 0, 0, 0, 0, 0, 0, -2, -2, -2, -2, 0, 0, -2, -5, -1, -1, -1, -1,
+        -1, -1, -1, -1, 0, 0, -1, 0, -1, -1, -1, -1, 1, -1, -999, 0, 1, 0, -1,
+        -2, 0, -1, -2, -1, -1, 0, -1, -1, 0, 0, -999, -999, -1, -1, -1, -1, -2,
+        -999, -2, -2, -999, 0, -2, -2, 0, 0, -2, 0, -2, 0, 0, 0, -2, -1, -1, 1,
+        1, 0, 0, -1, -1, -1, -1, -1, -1, -1, 0, 0, -1, 0, -1, -1, 0, -999, -1,
+        -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -999, -999,
+        -999, -999, -999, -1, -1, -2, -2, 0, 0, 0, 0, -1, -1, -999, -2, -2, 0,
+        0, -1, -2, -2, 0, 0, 0, -1, -1, -1, -2,
+      ];
+      // 0xC0-DF == -1 and 0xE0-FF == -2
 
       function sanitizeTTProgram(table, ttContext) {
         var data = table.data;
-        var i = 0, j, n, b, funcId, pc, lastEndf = 0, lastDeff = 0;
+        var i = 0,
+          j,
+          n,
+          b,
+          funcId,
+          pc,
+          lastEndf = 0,
+          lastDeff = 0;
         var stack = [];
         var callstack = [];
         var functionsCalled = [];
-        var tooComplexToFollowFunctions =
-          ttContext.tooComplexToFollowFunctions;
-        var inFDEF = false, ifLevel = 0, inELSE = 0;
-        for (var ii = data.length; i < ii;) {
+        var tooComplexToFollowFunctions = ttContext.tooComplexToFollowFunctions;
+        var inFDEF = false,
+          ifLevel = 0,
+          inELSE = 0;
+        for (var ii = data.length; i < ii; ) {
           var op = data[i++];
           // The TrueType instruction set docs can be found at
           // https://developer.apple.com/fonts/TTRefMan/RM05/Chap5.html
-          if (op === 0x40) { // NPUSHB - pushes n bytes
+          if (op === 0x40) {
+            // NPUSHB - pushes n bytes
             n = data[i++];
             if (inFDEF || inELSE) {
               i += n;
@@ -3731,7 +6039,8 @@ var Font = (function FontClosure() {
                 stack.push(data[i++]);
               }
             }
-          } else if (op === 0x41) { // NPUSHW - pushes n words
+          } else if (op === 0x41) {
+            // NPUSHW - pushes n words
             n = data[i++];
             if (inFDEF || inELSE) {
               i += n * 2;
@@ -3741,8 +6050,9 @@ var Font = (function FontClosure() {
                 stack.push((b << 8) | data[i++]);
               }
             }
-          } else if ((op & 0xF8) === 0xB0) { // PUSHB - pushes bytes
-            n = op - 0xB0 + 1;
+          } else if ((op & 0xf8) === 0xb0) {
+            // PUSHB - pushes bytes
+            n = op - 0xb0 + 1;
             if (inFDEF || inELSE) {
               i += n;
             } else {
@@ -3750,8 +6060,9 @@ var Font = (function FontClosure() {
                 stack.push(data[i++]);
               }
             }
-          } else if ((op & 0xF8) === 0xB8) { // PUSHW - pushes words
-            n = op - 0xB8 + 1;
+          } else if ((op & 0xf8) === 0xb8) {
+            // PUSHW - pushes words
+            n = op - 0xb8 + 1;
             if (inFDEF || inELSE) {
               i += n * 2;
             } else {
@@ -3760,20 +6071,27 @@ var Font = (function FontClosure() {
                 stack.push((b << 8) | data[i++]);
               }
             }
-          } else if (op === 0x2B && !tooComplexToFollowFunctions) { // CALL
+          } else if (op === 0x2b && !tooComplexToFollowFunctions) {
+            // CALL
             if (!inFDEF && !inELSE) {
               // collecting inforamtion about which functions are used
               funcId = stack[stack.length - 1];
               ttContext.functionsUsed[funcId] = true;
               if (funcId in ttContext.functionsStackDeltas) {
                 stack.length += ttContext.functionsStackDeltas[funcId];
-              } else if (funcId in ttContext.functionsDefined &&
-                         functionsCalled.indexOf(funcId) < 0) {
-                callstack.push({data: data, i: i, stackTop: stack.length - 1});
+              } else if (
+                funcId in ttContext.functionsDefined &&
+                functionsCalled.indexOf(funcId) < 0
+              ) {
+                callstack.push({
+                  data: data,
+                  i: i,
+                  stackTop: stack.length - 1,
+                });
                 functionsCalled.push(funcId);
                 pc = ttContext.functionsDefined[funcId];
                 if (!pc) {
-                  warn('TT: CALL non-existent function');
+                  warn("TT: CALL non-existent function");
                   ttContext.hintsValid = false;
                   return;
                 }
@@ -3781,24 +6099,26 @@ var Font = (function FontClosure() {
                 i = pc.i;
               }
             }
-          } else if (op === 0x2C && !tooComplexToFollowFunctions) { // FDEF
+          } else if (op === 0x2c && !tooComplexToFollowFunctions) {
+            // FDEF
             if (inFDEF || inELSE) {
-              warn('TT: nested FDEFs not allowed');
+              warn("TT: nested FDEFs not allowed");
               tooComplexToFollowFunctions = true;
             }
             inFDEF = true;
             // collecting inforamtion about which functions are defined
             lastDeff = i;
             funcId = stack.pop();
-            ttContext.functionsDefined[funcId] = {data: data, i: i};
-          } else if (op === 0x2D) { // ENDF - end of function
+            ttContext.functionsDefined[funcId] = { data: data, i: i };
+          } else if (op === 0x2d) {
+            // ENDF - end of function
             if (inFDEF) {
               inFDEF = false;
               lastEndf = i;
             } else {
               pc = callstack.pop();
               if (!pc) {
-                warn('TT: ENDF bad stack');
+                warn("TT: ENDF bad stack");
                 ttContext.hintsValid = false;
                 return;
               }
@@ -3808,24 +6128,29 @@ var Font = (function FontClosure() {
               ttContext.functionsStackDeltas[funcId] =
                 stack.length - pc.stackTop;
             }
-          } else if (op === 0x89) { // IDEF - instruction definition
+          } else if (op === 0x89) {
+            // IDEF - instruction definition
             if (inFDEF || inELSE) {
-              warn('TT: nested IDEFs not allowed');
+              warn("TT: nested IDEFs not allowed");
               tooComplexToFollowFunctions = true;
             }
             inFDEF = true;
             // recording it as a function to track ENDF
             lastDeff = i;
-          } else if (op === 0x58) { // IF
+          } else if (op === 0x58) {
+            // IF
             ++ifLevel;
-          } else if (op === 0x1B) { // ELSE
+          } else if (op === 0x1b) {
+            // ELSE
             inELSE = ifLevel;
-          } else if (op === 0x59) { // EIF
+          } else if (op === 0x59) {
+            // EIF
             if (inELSE === ifLevel) {
               inELSE = 0;
             }
             --ifLevel;
-          } else if (op === 0x1C) { // JMPR
+          } else if (op === 0x1c) {
+            // JMPR
             if (!inFDEF && !inELSE) {
               var offset = stack[stack.length - 1];
               // only jumping forward to prevent infinite loop
@@ -3836,8 +6161,14 @@ var Font = (function FontClosure() {
           }
           // Adjusting stack not extactly, but just enough to get function id
           if (!inFDEF && !inELSE) {
-            var stackDelta = op <= 0x8E ? TTOpsStackDeltas[op] :
-              op >= 0xC0 && op <= 0xDF ? -1 : op >= 0xE0 ? -2 : 0;
+            var stackDelta =
+              op <= 0x8e
+                ? TTOpsStackDeltas[op]
+                : op >= 0xc0 && op <= 0xdf
+                ? -1
+                : op >= 0xe0
+                ? -2
+                : 0;
             if (op >= 0x71 && op <= 0x75) {
               n = stack.pop();
               if (n === n) {
@@ -3860,10 +6191,10 @@ var Font = (function FontClosure() {
           content.push(new Uint8Array(i - data.length));
         }
         if (lastDeff > lastEndf) {
-          warn('TT: complementing a missing function tail');
+          warn("TT: complementing a missing function tail");
           // new function definition started, but not finished
           // complete function by [CLEAR, ENDF]
-          content.push(new Uint8Array([0x22, 0x2D]));
+          content.push(new Uint8Array([0x22, 0x2d]));
         }
         foldTTTable(table, content);
       }
@@ -3873,18 +6204,18 @@ var Font = (function FontClosure() {
           return;
         }
         if (ttContext.functionsDefined.length > maxFunctionDefs) {
-          warn('TT: more functions defined than expected');
+          warn("TT: more functions defined than expected");
           ttContext.hintsValid = false;
           return;
         }
         for (var j = 0, jj = ttContext.functionsUsed.length; j < jj; j++) {
           if (j > maxFunctionDefs) {
-            warn('TT: invalid function id: ' + j);
+            warn("TT: invalid function id: " + j);
             ttContext.hintsValid = false;
             return;
           }
           if (ttContext.functionsUsed[j] && !ttContext.functionsDefined[j]) {
-            warn('TT: undefined function: ' + j);
+            warn("TT: undefined function: " + j);
             ttContext.hintsValid = false;
             return;
           }
@@ -3917,7 +6248,7 @@ var Font = (function FontClosure() {
           functionsUsed: [],
           functionsStackDeltas: [],
           tooComplexToFollowFunctions: false,
-          hintsValid: true
+          hintsValid: true,
         };
         if (fpgm) {
           sanitizeTTProgram(fpgm, ttContext);
@@ -3928,7 +6259,7 @@ var Font = (function FontClosure() {
         if (fpgm) {
           checkInvalidFunctions(ttContext, maxFunctionDefs);
         }
-        if (cvt && (cvt.length & 1)) {
+        if (cvt && cvt.length & 1) {
           var cvtData = new Uint8Array(cvt.length + 1);
           cvtData.set(cvt.data);
           cvt.data = cvtData;
@@ -3939,15 +6270,37 @@ var Font = (function FontClosure() {
       // The following steps modify the original font data, making copy
       font = new Stream(new Uint8Array(font.getBytes()));
 
-      var VALID_TABLES = ['OS/2', 'cmap', 'head', 'hhea', 'hmtx', 'maxp',
-        'name', 'post', 'loca', 'glyf', 'fpgm', 'prep', 'cvt ', 'CFF '];
+      var VALID_TABLES = [
+        "OS/2",
+        "cmap",
+        "head",
+        "hhea",
+        "hmtx",
+        "maxp",
+        "name",
+        "post",
+        "loca",
+        "glyf",
+        "fpgm",
+        "prep",
+        "cvt ",
+        "CFF ",
+      ];
 
       var header = readOpenTypeHeader(font);
       var numTables = header.numTables;
       var cff, cffFile;
 
-      var tables = { 'OS/2': null, cmap: null, head: null, hhea: null,
-                     hmtx: null, maxp: null, name: null, post: null };
+      var tables = {
+        "OS/2": null,
+        cmap: null,
+        head: null,
+        hhea: null,
+        hmtx: null,
+        maxp: null,
+        name: null,
+        post: null,
+      };
       var table;
       for (var i = 0; i < numTables; i++) {
         table = readTableEntry(font);
@@ -3960,12 +6313,12 @@ var Font = (function FontClosure() {
         tables[table.tag] = table;
       }
 
-      var isTrueType = !tables['CFF '];
+      var isTrueType = !tables["CFF "];
       if (!isTrueType) {
         // OpenType font
         if (!tables.head || !tables.hhea || !tables.maxp || !tables.post) {
           // no major tables: throwing everything at CFFFont
-          cffFile = new Stream(tables['CFF '].data);
+          cffFile = new Stream(tables["CFF "].data);
           cff = new CFFFont(cffFile, properties);
 
           return this.convert(name, cff, properties);
@@ -3975,7 +6328,7 @@ var Font = (function FontClosure() {
         delete tables.loca;
         delete tables.fpgm;
         delete tables.prep;
-        delete tables['cvt '];
+        delete tables["cvt "];
         this.isOpenType = true;
       } else {
         if (!tables.glyf || !tables.loca) {
@@ -3996,7 +6349,8 @@ var Font = (function FontClosure() {
         // maxZones can be invalid
         font.pos += 8;
         var maxZones = font.getUint16();
-        if (maxZones > 2) { // reset to 2 if font has invalid maxZones
+        if (maxZones > 2) {
+          // reset to 2 if font has invalid maxZones
           tables.maxp.data[14] = 0;
           tables.maxp.data[15] = 2;
         }
@@ -4005,8 +6359,11 @@ var Font = (function FontClosure() {
       }
 
       var dupFirstEntry = false;
-      if (properties.type === 'CIDFontType2' && properties.toUnicode &&
-          properties.toUnicode.get(0) > '\u0000') {
+      if (
+        properties.type === "CIDFontType2" &&
+        properties.toUnicode &&
+        properties.toUnicode.get(0) > "\u0000"
+      ) {
         // oracle's defect (see 3427), duplicating first entry
         dupFirstEntry = true;
         numGlyphs++;
@@ -4014,12 +6371,16 @@ var Font = (function FontClosure() {
         tables.maxp.data[5] = numGlyphs & 255;
       }
 
-      var hintsValid = sanitizeTTPrograms(tables.fpgm, tables.prep,
-                                          tables['cvt '], maxFunctionDefs);
+      var hintsValid = sanitizeTTPrograms(
+        tables.fpgm,
+        tables.prep,
+        tables["cvt "],
+        maxFunctionDefs,
+      );
       if (!hintsValid) {
         delete tables.fpgm;
         delete tables.prep;
-        delete tables['cvt '];
+        delete tables["cvt "];
       }
 
       // Ensure the hmtx table contains the advance width and
@@ -4033,10 +6394,18 @@ var Font = (function FontClosure() {
       sanitizeHead(tables.head, numGlyphs, isTrueType ? tables.loca.length : 0);
 
       if (isTrueType) {
-        var isGlyphLocationsLong = int16(tables.head.data[50],
-                                         tables.head.data[51]);
-        sanitizeGlyphLocations(tables.loca, tables.glyf, numGlyphs,
-                               isGlyphLocationsLong, hintsValid, dupFirstEntry);
+        var isGlyphLocationsLong = int16(
+          tables.head.data[50],
+          tables.head.data[51],
+        );
+        sanitizeGlyphLocations(
+          tables.loca,
+          tables.glyf,
+          numGlyphs,
+          isGlyphLocationsLong,
+          hintsValid,
+          dupFirstEntry,
+        );
       }
 
       if (!tables.hhea) {
@@ -4046,8 +6415,8 @@ var Font = (function FontClosure() {
       // Sanitizer reduces the glyph advanceWidth to the maxAdvanceWidth
       // Sometimes it's 0. That needs to be fixed
       if (tables.hhea.data[10] === 0 && tables.hhea.data[11] === 0) {
-        tables.hhea.data[10] = 0xFF;
-        tables.hhea.data[11] = 0xFF;
+        tables.hhea.data[10] = 0xff;
+        tables.hhea.data[11] = 0xff;
       }
 
       // The 'post' table has glyphs names.
@@ -4058,12 +6427,13 @@ var Font = (function FontClosure() {
         }
       }
 
-      var charCodeToGlyphId = [], charCode;
-      if (properties.type === 'CIDFontType2') {
+      var charCodeToGlyphId = [],
+        charCode;
+      if (properties.type === "CIDFontType2") {
         var cidToGidMap = properties.cidToGidMap || [];
         var cidToGidMapLength = cidToGidMap.length;
-        properties.cMap.forEach(function(charCode, cid) {
-          assert(cid <= 0xffff, 'Max size of CID is 65,535');
+        properties.cMap.forEach(function (charCode, cid) {
+          assert(cid <= 0xffff, "Max size of CID is 65,535");
           var glyphId = -1;
           if (cidToGidMapLength === 0) {
             glyphId = charCode;
@@ -4085,17 +6455,21 @@ var Font = (function FontClosure() {
         var cmapEncodingId = cmapTable.encodingId;
         var cmapMappings = cmapTable.mappings;
         var cmapMappingsLength = cmapMappings.length;
-        var hasEncoding = properties.differences.length ||
-                          !!properties.baseEncodingName;
+        var hasEncoding =
+          properties.differences.length || !!properties.baseEncodingName;
 
         // The spec seems to imply that if the font is symbolic the encoding
         // should be ignored, this doesn't appear to work for 'preistabelle.pdf'
         // where the the font is symbolic and it has an encoding.
-        if (hasEncoding &&
-            (cmapPlatformId === 3 && cmapEncodingId === 1 ||
-             cmapPlatformId === 1 && cmapEncodingId === 0) ||
-            (cmapPlatformId === -1 && cmapEncodingId === -1 && // Temporary hack
-             !!Encodings[properties.baseEncodingName])) {      // Temporary hack
+        if (
+          (hasEncoding &&
+            ((cmapPlatformId === 3 && cmapEncodingId === 1) ||
+              (cmapPlatformId === 1 && cmapEncodingId === 0))) ||
+          (cmapPlatformId === -1 &&
+            cmapEncodingId === -1 && // Temporary hack
+            !!Encodings[properties.baseEncodingName])
+        ) {
+          // Temporary hack
           // When no preferred cmap table was found and |baseEncodingName| is
           // one of the predefined encodings, we seem to obtain a better
           // |charCodeToGlyphId| map from the code below (fixes bug 1057544).
@@ -4103,16 +6477,20 @@ var Font = (function FontClosure() {
           //       we have proper support for more exotic cmap tables.
 
           var baseEncoding = [];
-          if (properties.baseEncodingName === 'MacRomanEncoding' ||
-              properties.baseEncodingName === 'WinAnsiEncoding') {
+          if (
+            properties.baseEncodingName === "MacRomanEncoding" ||
+            properties.baseEncodingName === "WinAnsiEncoding"
+          ) {
             baseEncoding = Encodings[properties.baseEncodingName];
           }
           for (charCode = 0; charCode < 256; charCode++) {
             var glyphName;
             if (this.differences && charCode in this.differences) {
               glyphName = this.differences[charCode];
-            } else if (charCode in baseEncoding &&
-                       baseEncoding[charCode] !== '') {
+            } else if (
+              charCode in baseEncoding &&
+              baseEncoding[charCode] !== ""
+            ) {
               glyphName = baseEncoding[charCode];
             } else {
               glyphName = Encodings.StandardEncoding[charCode];
@@ -4160,7 +6538,7 @@ var Font = (function FontClosure() {
           // charcodes in the cmap will be single bytes, so no-op since
           // glyph.charCode & 0xFF === glyph.charCode
           for (i = 0; i < cmapMappingsLength; ++i) {
-            charCode = cmapMappings[i].charCode & 0xFF;
+            charCode = cmapMappings[i].charCode & 0xff;
             charCodeToGlyphId[charCode] = cmapMappings[i].glyphId;
           }
         }
@@ -4175,11 +6553,11 @@ var Font = (function FontClosure() {
       var newMapping = adjustMapping(charCodeToGlyphId, properties);
       this.toFontChar = newMapping.toFontChar;
       tables.cmap = {
-        tag: 'cmap',
-        data: createCmapTable(newMapping.charCodeToGlyphId)
+        tag: "cmap",
+        data: createCmapTable(newMapping.charCodeToGlyphId),
       };
 
-      if (!tables['OS/2'] || !validateOS2Table(tables['OS/2'])) {
+      if (!tables["OS/2"] || !validateOS2Table(tables["OS/2"])) {
         // extract some more font properties from the OpenType head and
         // hhea tables; yMin and descent value are always negative
         var override = {
@@ -4187,42 +6565,45 @@ var Font = (function FontClosure() {
           yMax: int16(tables.head.data[42], tables.head.data[43]),
           yMin: int16(tables.head.data[38], tables.head.data[39]) - 0x10000,
           ascent: int16(tables.hhea.data[4], tables.hhea.data[5]),
-          descent: int16(tables.hhea.data[6], tables.hhea.data[7]) - 0x10000
+          descent: int16(tables.hhea.data[6], tables.hhea.data[7]) - 0x10000,
         };
 
-        tables['OS/2'] = {
-          tag: 'OS/2',
-          data: createOS2Table(properties, newMapping.charCodeToGlyphId,
-                               override)
+        tables["OS/2"] = {
+          tag: "OS/2",
+          data: createOS2Table(
+            properties,
+            newMapping.charCodeToGlyphId,
+            override,
+          ),
         };
       }
 
       // Rewrite the 'post' table if needed
       if (!tables.post) {
         tables.post = {
-          tag: 'post',
-          data: createPostTable(properties)
+          tag: "post",
+          data: createPostTable(properties),
         };
       }
 
       if (!isTrueType) {
         try {
           // Trying to repair CFF file
-          cffFile = new Stream(tables['CFF '].data);
+          cffFile = new Stream(tables["CFF "].data);
           var parser = new CFFParser(cffFile, properties);
           cff = parser.parse();
           var compiler = new CFFCompiler(cff);
-          tables['CFF '].data = compiler.compile();
+          tables["CFF "].data = compiler.compile();
         } catch (e) {
-          warn('Failed to compile font ' + properties.loadedName);
+          warn("Failed to compile font " + properties.loadedName);
         }
       }
 
       // Re-creating 'name' table
       if (!tables.name) {
         tables.name = {
-          tag: 'name',
-          data: createNameTable(this.name)
+          tag: "name",
+          data: createNameTable(this.name),
         };
       } else {
         // ... using existing 'name' table as prototype
@@ -4266,7 +6647,7 @@ var Font = (function FontClosure() {
           }
         }
         newMapping.charCodeToGlyphId[newMapping.nextAvailableFontCharCode] =
-            glyphId;
+          glyphId;
         return newMapping.nextAvailableFontCharCode++;
       }
 
@@ -4287,7 +6668,7 @@ var Font = (function FontClosure() {
           }
           var accentOffset = {
             x: seac[0] * matrix[0] + seac[1] * matrix[2] + matrix[4],
-            y: seac[0] * matrix[1] + seac[1] * matrix[3] + matrix[5]
+            y: seac[0] * matrix[1] + seac[1] * matrix[3] + matrix[5],
           };
 
           var charCodes = getCharCodes(mapping, glyphId);
@@ -4301,14 +6682,18 @@ var Font = (function FontClosure() {
             // Find a fontCharCode that maps to the base and accent glyphs.
             // If one doesn't exists, create it.
             var charCodeToGlyphId = newMapping.charCodeToGlyphId;
-            var baseFontCharCode = createCharCode(charCodeToGlyphId,
-                                                  baseGlyphId);
-            var accentFontCharCode = createCharCode(charCodeToGlyphId,
-                                                    accentGlyphId);
+            var baseFontCharCode = createCharCode(
+              charCodeToGlyphId,
+              baseGlyphId,
+            );
+            var accentFontCharCode = createCharCode(
+              charCodeToGlyphId,
+              accentGlyphId,
+            );
             seacMap[charCode] = {
               baseFontCharCode: baseFontCharCode,
               accentFontCharCode: accentFontCharCode,
-              accentOffset: accentOffset
+              accentOffset: accentOffset,
             };
           }
         }
@@ -4317,83 +6702,93 @@ var Font = (function FontClosure() {
 
       var unitsPerEm = 1 / (properties.fontMatrix || FONT_IDENTITY_MATRIX)[0];
 
-      var builder = new OpenTypeFileBuilder('\x4F\x54\x54\x4F');
+      var builder = new OpenTypeFileBuilder("\x4F\x54\x54\x4F");
       // PostScript Font Program
-      builder.addTable('CFF ', font.data);
+      builder.addTable("CFF ", font.data);
       // OS/2 and Windows Specific metrics
-      builder.addTable('OS/2', createOS2Table(properties,
-                                              newMapping.charCodeToGlyphId));
+      builder.addTable(
+        "OS/2",
+        createOS2Table(properties, newMapping.charCodeToGlyphId),
+      );
       // Character to glyphs mapping
-      builder.addTable('cmap', createCmapTable(newMapping.charCodeToGlyphId));
+      builder.addTable("cmap", createCmapTable(newMapping.charCodeToGlyphId));
       // Font header
-      builder.addTable('head',
-            '\x00\x01\x00\x00' + // Version number
-            '\x00\x00\x10\x00' + // fontRevision
-            '\x00\x00\x00\x00' + // checksumAdjustement
-            '\x5F\x0F\x3C\xF5' + // magicNumber
-            '\x00\x00' + // Flags
-            safeString16(unitsPerEm) + // unitsPerEM
-            '\x00\x00\x00\x00\x9e\x0b\x7e\x27' + // creation date
-            '\x00\x00\x00\x00\x9e\x0b\x7e\x27' + // modifification date
-            '\x00\x00' + // xMin
-            safeString16(properties.descent) + // yMin
-            '\x0F\xFF' + // xMax
-            safeString16(properties.ascent) + // yMax
-            string16(properties.italicAngle ? 2 : 0) + // macStyle
-            '\x00\x11' + // lowestRecPPEM
-            '\x00\x00' + // fontDirectionHint
-            '\x00\x00' + // indexToLocFormat
-            '\x00\x00');  // glyphDataFormat
+      builder.addTable(
+        "head",
+        "\x00\x01\x00\x00" + // Version number
+          "\x00\x00\x10\x00" + // fontRevision
+          "\x00\x00\x00\x00" + // checksumAdjustement
+          "\x5F\x0F\x3C\xF5" + // magicNumber
+          "\x00\x00" + // Flags
+          safeString16(unitsPerEm) + // unitsPerEM
+          "\x00\x00\x00\x00\x9e\x0b\x7e\x27" + // creation date
+          "\x00\x00\x00\x00\x9e\x0b\x7e\x27" + // modifification date
+          "\x00\x00" + // xMin
+          safeString16(properties.descent) + // yMin
+          "\x0F\xFF" + // xMax
+          safeString16(properties.ascent) + // yMax
+          string16(properties.italicAngle ? 2 : 0) + // macStyle
+          "\x00\x11" + // lowestRecPPEM
+          "\x00\x00" + // fontDirectionHint
+          "\x00\x00" + // indexToLocFormat
+          "\x00\x00",
+      ); // glyphDataFormat
 
       // Horizontal header
-      builder.addTable('hhea',
-            '\x00\x01\x00\x00' + // Version number
-            safeString16(properties.ascent) + // Typographic Ascent
-            safeString16(properties.descent) + // Typographic Descent
-            '\x00\x00' + // Line Gap
-            '\xFF\xFF' + // advanceWidthMax
-            '\x00\x00' + // minLeftSidebearing
-            '\x00\x00' + // minRightSidebearing
-            '\x00\x00' + // xMaxExtent
-            safeString16(properties.capHeight) + // caretSlopeRise
-            safeString16(Math.tan(properties.italicAngle) *
-                         properties.xHeight) + // caretSlopeRun
-            '\x00\x00' + // caretOffset
-            '\x00\x00' + // -reserved-
-            '\x00\x00' + // -reserved-
-            '\x00\x00' + // -reserved-
-            '\x00\x00' + // -reserved-
-            '\x00\x00' + // metricDataFormat
-            string16(numGlyphs)); // Number of HMetrics
+      builder.addTable(
+        "hhea",
+        "\x00\x01\x00\x00" + // Version number
+          safeString16(properties.ascent) + // Typographic Ascent
+          safeString16(properties.descent) + // Typographic Descent
+          "\x00\x00" + // Line Gap
+          "\xFF\xFF" + // advanceWidthMax
+          "\x00\x00" + // minLeftSidebearing
+          "\x00\x00" + // minRightSidebearing
+          "\x00\x00" + // xMaxExtent
+          safeString16(properties.capHeight) + // caretSlopeRise
+          safeString16(Math.tan(properties.italicAngle) * properties.xHeight) + // caretSlopeRun
+          "\x00\x00" + // caretOffset
+          "\x00\x00" + // -reserved-
+          "\x00\x00" + // -reserved-
+          "\x00\x00" + // -reserved-
+          "\x00\x00" + // -reserved-
+          "\x00\x00" + // metricDataFormat
+          string16(numGlyphs),
+      ); // Number of HMetrics
 
       // Horizontal metrics
-      builder.addTable('hmtx', (function fontFieldsHmtx() {
+      builder.addTable(
+        "hmtx",
+        (function fontFieldsHmtx() {
           var charstrings = font.charstrings;
           var cffWidths = font.cff ? font.cff.widths : null;
-          var hmtx = '\x00\x00\x00\x00'; // Fake .notdef
+          var hmtx = "\x00\x00\x00\x00"; // Fake .notdef
           for (var i = 1, ii = numGlyphs; i < ii; i++) {
             var width = 0;
             if (charstrings) {
               var charstring = charstrings[i - 1];
-              width = 'width' in charstring ? charstring.width : 0;
+              width = "width" in charstring ? charstring.width : 0;
             } else if (cffWidths) {
               width = Math.ceil(cffWidths[i] || 0);
             }
             hmtx += string16(width) + string16(0);
           }
           return hmtx;
-        })());
+        })(),
+      );
 
       // Maximum profile
-      builder.addTable('maxp',
-            '\x00\x00\x50\x00' + // Version number
-            string16(numGlyphs)); // Num of glyphs
+      builder.addTable(
+        "maxp",
+        "\x00\x00\x50\x00" + // Version number
+          string16(numGlyphs),
+      ); // Num of glyphs
 
       // Naming tables
-      builder.addTable('name', createNameTable(fontName));
+      builder.addTable("name", createNameTable(fontName));
 
       // PostScript informations
-      builder.addTable('post', createPostTable(properties));
+      builder.addTable("post", createPostTable(properties));
 
       return builder.toArray();
     },
@@ -4428,25 +6823,25 @@ var Font = (function FontClosure() {
           var glyphName = encoding[charcode];
           // b) Look up the character name in the Adobe Glyph List (see the
           //    Bibliography) to obtain the corresponding Unicode value.
-          if (glyphName === '') {
+          if (glyphName === "") {
             continue;
           } else if (GlyphsUnicode[glyphName] === undefined) {
             // (undocumented) c) Few heuristics to recognize unknown glyphs
             // NOTE: Adobe Reader does not do this step, but OSX Preview does
             var code = 0;
             switch (glyphName[0]) {
-              case 'G': // Gxx glyph
+              case "G": // Gxx glyph
                 if (glyphName.length === 3) {
                   code = parseInt(glyphName.substr(1), 16);
                 }
                 break;
-              case 'g': // g00xx glyph
+              case "g": // g00xx glyph
                 if (glyphName.length === 5) {
                   code = parseInt(glyphName.substr(1), 16);
                 }
                 break;
-              case 'C': // Cddd glyph
-              case 'c': // cddd glyph
+              case "C": // Cddd glyph
+              case "c": // cddd glyph
                 if (glyphName.length >= 3) {
                   code = +glyphName.substr(1);
                 }
@@ -4460,8 +6855,9 @@ var Font = (function FontClosure() {
               if (baseEncodingName && code === +charcode) {
                 var baseEncoding = Encodings[baseEncodingName];
                 if (baseEncoding && (glyphName = baseEncoding[charcode])) {
-                  toUnicode[charcode] =
-                    String.fromCharCode(GlyphsUnicode[glyphName]);
+                  toUnicode[charcode] = String.fromCharCode(
+                    GlyphsUnicode[glyphName],
+                  );
                   continue;
                 }
               }
@@ -4477,14 +6873,16 @@ var Font = (function FontClosure() {
       // listed in Table 118 (except Identity–H and Identity–V) or whose
       // descendant CIDFont uses the Adobe-GB1, Adobe-CNS1, Adobe-Japan1, or
       // Adobe-Korea1 character collection:
-      if (properties.composite && (
-           (properties.cMap.builtInCMap &&
-            !(properties.cMap instanceof IdentityCMap)) ||
-           (properties.cidSystemInfo.registry === 'Adobe' &&
-             (properties.cidSystemInfo.ordering === 'GB1' ||
-              properties.cidSystemInfo.ordering === 'CNS1' ||
-              properties.cidSystemInfo.ordering === 'Japan1' ||
-              properties.cidSystemInfo.ordering === 'Korea1')))) {
+      if (
+        properties.composite &&
+        ((properties.cMap.builtInCMap &&
+          !(properties.cMap instanceof IdentityCMap)) ||
+          (properties.cidSystemInfo.registry === "Adobe" &&
+            (properties.cidSystemInfo.ordering === "GB1" ||
+              properties.cidSystemInfo.ordering === "CNS1" ||
+              properties.cidSystemInfo.ordering === "Japan1" ||
+              properties.cidSystemInfo.ordering === "Korea1")))
+      ) {
         // Then:
         // a) Map the character code to a character identifier (CID) according
         // to the font’s CMap.
@@ -4496,39 +6894,44 @@ var Font = (function FontClosure() {
         // c) Construct a second CMap name by concatenating the registry and
         // ordering obtained in step (b) in the format registry–ordering–UCS2
         // (for example, Adobe–Japan1–UCS2).
-        var ucs2CMapName = new Name(registry + '-' + ordering + '-UCS2');
+        var ucs2CMapName = new Name(registry + "-" + ordering + "-UCS2");
         // d) Obtain the CMap with the name constructed in step (c) (available
         // from the ASN Web site; see the Bibliography).
-        var ucs2CMap = CMapFactory.create(ucs2CMapName,
-          { url: PDFJS.cMapUrl, packed: PDFJS.cMapPacked }, null);
+        var ucs2CMap = CMapFactory.create(
+          ucs2CMapName,
+          { url: PDFJS.cMapUrl, packed: PDFJS.cMapPacked },
+          null,
+        );
         var cMap = properties.cMap;
         toUnicode = [];
-        cMap.forEach(function(charcode, cid) {
-          assert(cid <= 0xffff, 'Max size of CID is 65,535');
+        cMap.forEach(function (charcode, cid) {
+          assert(cid <= 0xffff, "Max size of CID is 65,535");
           // e) Map the CID obtained in step (a) according to the CMap obtained
           // in step (d), producing a Unicode value.
           var ucs2 = ucs2CMap.lookup(cid);
           if (ucs2) {
-            toUnicode[charcode] =
-              String.fromCharCode((ucs2.charCodeAt(0) << 8) +
-                                  ucs2.charCodeAt(1));
+            toUnicode[charcode] = String.fromCharCode(
+              (ucs2.charCodeAt(0) << 8) + ucs2.charCodeAt(1),
+            );
           }
         });
         return new ToUnicodeMap(toUnicode);
       }
 
       // The viewer's choice, just use an identity map.
-      return new IdentityToUnicodeMap(properties.firstChar,
-                                      properties.lastChar);
+      return new IdentityToUnicodeMap(
+        properties.firstChar,
+        properties.lastChar,
+      );
     },
 
     get spaceWidth() {
-      if ('_shadowWidth' in this) {
+      if ("_shadowWidth" in this) {
         return this._shadowWidth;
       }
 
       // trying to estimate space character width
-      var possibleSpaceReplacements = ['space', 'minus', 'one', 'i'];
+      var possibleSpaceReplacements = ["space", "minus", "one", "i"];
       var width;
       for (var i = 0, ii = possibleSpaceReplacements.length; i < ii; i++) {
         var glyphName = possibleSpaceReplacements[i];
@@ -4546,7 +6949,7 @@ var Font = (function FontClosure() {
           }
         }
         // ... via toUnicode map
-        if (!charcode && 'toUnicode' in this) {
+        if (!charcode && "toUnicode" in this) {
           charcode = this.toUnicode.charCodeOf(glyphUnicode);
         }
         // setting it to unicode if negative or undefined
@@ -4578,7 +6981,7 @@ var Font = (function FontClosure() {
       var vmetric = this.vmetrics && this.vmetrics[widthCode];
 
       var unicode = this.toUnicode.get(charcode) || charcode;
-      if (typeof unicode === 'number') {
+      if (typeof unicode === "number") {
         unicode = String.fromCharCode(unicode);
       }
 
@@ -4600,18 +7003,32 @@ var Font = (function FontClosure() {
         fontCharCode = seac.baseFontCharCode;
         accent = {
           fontChar: String.fromCharCode(seac.accentFontCharCode),
-          offset: seac.accentOffset
+          offset: seac.accentOffset,
         };
       }
 
       var fontChar = String.fromCharCode(fontCharCode);
 
       var glyph = this.glyphCache[charcode];
-      if (!glyph ||
-          !glyph.matchesForCache(fontChar, unicode, accent, width, vmetric,
-                                 operatorListId)) {
-        glyph = new Glyph(fontChar, unicode, accent, width, vmetric,
-                          operatorListId);
+      if (
+        !glyph ||
+        !glyph.matchesForCache(
+          fontChar,
+          unicode,
+          accent,
+          width,
+          vmetric,
+          operatorListId,
+        )
+      ) {
+        glyph = new Glyph(
+          fontChar,
+          unicode,
+          accent,
+          width,
+          vmetric,
+          operatorListId,
+        );
         this.glyphCache[charcode] = glyph;
       }
       return glyph;
@@ -4636,7 +7053,8 @@ var Font = (function FontClosure() {
 
       glyphs = [];
       var charsCacheKey = chars;
-      var i = 0, ii;
+      var i = 0,
+        ii;
 
       if (this.cMap) {
         // composite fonts have multi-byte strings convert the string from
@@ -4668,7 +7086,7 @@ var Font = (function FontClosure() {
 
       // Enter the translated string into the cache
       return (charsCache[charsCacheKey] = glyphs);
-    }
+    },
   };
 
   return Font;
@@ -4677,7 +7095,7 @@ var Font = (function FontClosure() {
 var ErrorFont = (function ErrorFontClosure() {
   function ErrorFont(error) {
     this.error = error;
-    this.loadedName = 'g_font_error';
+    this.loadedName = "g_font_error";
     this.loading = false;
   }
 
@@ -4686,8 +7104,8 @@ var ErrorFont = (function ErrorFontClosure() {
       return [];
     },
     exportData: function ErrorFont_exportData() {
-      return {error: this.error};
-    }
+      return { error: this.error };
+    },
   };
 
   return ErrorFont;
@@ -4788,21 +7206,21 @@ function type1FontGlyphMapping(properties, builtInEncoding, glyphNames) {
  */
 var Type1CharString = (function Type1CharStringClosure() {
   var COMMAND_MAP = {
-    'hstem': [1],
-    'vstem': [3],
-    'vmoveto': [4],
-    'rlineto': [5],
-    'hlineto': [6],
-    'vlineto': [7],
-    'rrcurveto': [8],
-    'callsubr': [10],
-    'flex': [12, 35],
-    'drop' : [12, 18],
-    'endchar': [14],
-    'rmoveto': [21],
-    'hmoveto': [22],
-    'vhcurveto': [30],
-    'hvcurveto': [31]
+    hstem: [1],
+    vstem: [3],
+    vmoveto: [4],
+    rlineto: [5],
+    hlineto: [6],
+    vlineto: [7],
+    rrcurveto: [8],
+    callsubr: [10],
+    flex: [12, 35],
+    drop: [12, 18],
+    endchar: [14],
+    rmoveto: [21],
+    hmoveto: [22],
+    vhcurveto: [30],
+    hvcurveto: [31],
   };
 
   function Type1CharString() {
@@ -4935,7 +7353,7 @@ var Type1CharString = (function Type1CharStringClosure() {
               break;
             case (12 << 8) + 2: // hstem3
               if (!HINTING_ENABLED) {
-                 this.stack = [];
+                this.stack = [];
                 break;
               }
               // See vstem3.
@@ -5000,7 +7418,7 @@ var Type1CharString = (function Type1CharStringClosure() {
                   flexArgs[11], // bcp4y
                   flexArgs[12], // p3x
                   flexArgs[13], // p3y
-                  flexArgs[14] // flexDepth
+                  flexArgs[14], // flexDepth
                   // 15 = finalx unused by flex
                   // 16 = finaly unused by flex
                 );
@@ -5029,19 +7447,22 @@ var Type1CharString = (function Type1CharStringClosure() {
         } else if (value <= 246) {
           value = value - 139;
         } else if (value <= 250) {
-          value = ((value - 247) * 256) + encoded[++i] + 108;
+          value = (value - 247) * 256 + encoded[++i] + 108;
         } else if (value <= 254) {
           value = -((value - 251) * 256) - encoded[++i] - 108;
         } else {
-          value = (encoded[++i] & 0xff) << 24 | (encoded[++i] & 0xff) << 16 |
-                  (encoded[++i] & 0xff) << 8 | (encoded[++i] & 0xff) << 0;
+          value =
+            ((encoded[++i] & 0xff) << 24) |
+            ((encoded[++i] & 0xff) << 16) |
+            ((encoded[++i] & 0xff) << 8) |
+            ((encoded[++i] & 0xff) << 0);
         }
         this.stack.push(value);
       }
       return error;
     },
 
-    executeCommand: function(howManyArgs, command, keepStack) {
+    executeCommand: function (howManyArgs, command, keepStack) {
       var stackLength = this.stack.length;
       if (howManyArgs > stackLength) {
         return true;
@@ -5049,15 +7470,19 @@ var Type1CharString = (function Type1CharStringClosure() {
       var start = stackLength - howManyArgs;
       for (var i = start; i < stackLength; i++) {
         var value = this.stack[i];
-        if (value === (value | 0)) { // int
+        if (value === (value | 0)) {
+          // int
           this.output.push(28, (value >> 8) & 0xff, value & 0xff);
-        } else { // fixed point
+        } else {
+          // fixed point
           value = (65536 * value) | 0;
-          this.output.push(255,
-                           (value >> 24) & 0xFF,
-                           (value >> 16) & 0xFF,
-                           (value >> 8) & 0xFF,
-                           value & 0xFF);
+          this.output.push(
+            255,
+            (value >> 24) & 0xff,
+            (value >> 16) & 0xff,
+            (value >> 8) & 0xff,
+            value & 0xff,
+          );
         }
       }
       this.output.push.apply(this.output, command);
@@ -5067,7 +7492,7 @@ var Type1CharString = (function Type1CharStringClosure() {
         this.stack.length = 0;
       }
       return false;
-    }
+    },
   };
 
   return Type1CharString;
@@ -5091,13 +7516,17 @@ var Type1Parser = (function Type1ParserClosure() {
   var CHAR_STRS_ENCRYPT_KEY = 4330;
 
   function isHexDigit(code) {
-    return code >= 48 && code <= 57 || // '0'-'9'
-           code >= 65 && code <= 70 || // 'A'-'F'
-           code >= 97 && code <= 102;  // 'a'-'f'
+    return (
+      (code >= 48 && code <= 57) || // '0'-'9'
+      (code >= 65 && code <= 70) || // 'A'-'F'
+      (code >= 97 && code <= 102)
+    ); // 'a'-'f'
   }
 
   function decrypt(data, key, discardNumber) {
-    var r = key | 0, c1 = 52845, c2 = 22719;
+    var r = key | 0,
+      c1 = 52845,
+      c2 = 22719;
     var count = data.length;
     var decrypted = new Uint8Array(count);
     for (var i = 0; i < count; i++) {
@@ -5109,8 +7538,11 @@ var Type1Parser = (function Type1ParserClosure() {
   }
 
   function decryptAscii(data, key, discardNumber) {
-    var r = key | 0, c1 = 52845, c2 = 22719;
-    var count = data.length, maybeLength = count >>> 1;
+    var r = key | 0,
+      c1 = 52845,
+      c2 = 22719;
+    var count = data.length,
+      maybeLength = count >>> 1;
     var decrypted = new Uint8Array(maybeLength);
     var i, j;
     for (i = 0, j = 0; i < count; i++) {
@@ -5120,7 +7552,7 @@ var Type1Parser = (function Type1ParserClosure() {
       }
       i++;
       var digit2;
-      while (i < count && !isHexDigit(digit2 = data[i])) {
+      while (i < count && !isHexDigit((digit2 = data[i]))) {
         i++;
       }
       if (i < count) {
@@ -5133,19 +7565,31 @@ var Type1Parser = (function Type1ParserClosure() {
   }
 
   function isSpecial(c) {
-    return c === 0x2F || // '/'
-           c === 0x5B || c === 0x5D || // '[', ']'
-           c === 0x7B || c === 0x7D || // '{', '}'
-           c === 0x28 || c === 0x29; // '(', ')'
+    return (
+      c === 0x2f || // '/'
+      c === 0x5b ||
+      c === 0x5d || // '[', ']'
+      c === 0x7b ||
+      c === 0x7d || // '{', '}'
+      c === 0x28 ||
+      c === 0x29
+    ); // '(', ')'
   }
 
   function Type1Parser(stream, encrypted) {
     if (encrypted) {
       var data = stream.getBytes();
-      var isBinary = !(isHexDigit(data[0]) && isHexDigit(data[1]) &&
-                       isHexDigit(data[2]) && isHexDigit(data[3]));
-      stream = new Stream(isBinary ? decrypt(data, EEXEC_ENCRYPT_KEY, 4) :
-                          decryptAscii(data, EEXEC_ENCRYPT_KEY, 4));
+      var isBinary = !(
+        isHexDigit(data[0]) &&
+        isHexDigit(data[1]) &&
+        isHexDigit(data[2]) &&
+        isHexDigit(data[3])
+      );
+      stream = new Stream(
+        isBinary
+          ? decrypt(data, EEXEC_ENCRYPT_KEY, 4)
+          : decryptAscii(data, EEXEC_ENCRYPT_KEY, 4),
+      );
     }
     this.stream = stream;
     this.nextChar();
@@ -5157,7 +7601,7 @@ var Type1Parser = (function Type1ParserClosure() {
       var array = [];
       while (true) {
         var token = this.getToken();
-        if (token === null || token === ']' || token === '}') {
+        if (token === null || token === "]" || token === "}") {
           break;
         }
         array.push(parseFloat(token || 0));
@@ -5181,10 +7625,10 @@ var Type1Parser = (function Type1ParserClosure() {
       var token = this.getToken();
 
       // Use 1 and 0 since that's what type2 charstrings use.
-      return token === 'true' ? 1 : 0;
+      return token === "true" ? 1 : 0;
     },
 
-    nextChar : function Type1_nextChar() {
+    nextChar: function Type1_nextChar() {
       return (this.currentChar = this.stream.getByte());
     },
 
@@ -5198,10 +7642,11 @@ var Type1Parser = (function Type1ParserClosure() {
         }
 
         if (comment) {
-          if (ch === 0x0A || ch === 0x0D) {
+          if (ch === 0x0a || ch === 0x0d) {
             comment = false;
           }
-        } else if (ch === 0x25) { // '%'
+        } else if (ch === 0x25) {
+          // '%'
           comment = true;
         } else if (!Lexer.isSpace(ch)) {
           break;
@@ -5212,7 +7657,7 @@ var Type1Parser = (function Type1ParserClosure() {
         this.nextChar();
         return String.fromCharCode(ch);
       }
-      var token = '';
+      var token = "";
       do {
         token += String.fromCharCode(ch);
         ch = this.nextChar();
@@ -5227,108 +7672,111 @@ var Type1Parser = (function Type1ParserClosure() {
     extractFontProgram: function Type1Parser_extractFontProgram() {
       var stream = this.stream;
 
-      var subrs = [], charstrings = [];
+      var subrs = [],
+        charstrings = [];
       var program = {
         subrs: [],
         charstrings: [],
         properties: {
-          'privateData': {
-            'lenIV': 4
-          }
-        }
+          privateData: {
+            lenIV: 4,
+          },
+        },
       };
       var token, length, data, lenIV, encoded;
       while ((token = this.getToken()) !== null) {
-        if (token !== '/') {
+        if (token !== "/") {
           continue;
         }
         token = this.getToken();
         switch (token) {
-          case 'CharStrings':
+          case "CharStrings":
             // The number immediately following CharStrings must be greater or
             // equal to the number of CharStrings.
             this.getToken();
             this.getToken(); // read in 'dict'
             this.getToken(); // read in 'dup'
             this.getToken(); // read in 'begin'
-            while(true) {
+            while (true) {
               token = this.getToken();
-              if (token === null || token === 'end') {
+              if (token === null || token === "end") {
                 break;
               }
 
-              if (token !== '/') {
+              if (token !== "/") {
                 continue;
               }
               var glyph = this.getToken();
               length = this.readInt();
               this.getToken(); // read in 'RD' or '-|'
               data = stream.makeSubStream(stream.pos, length);
-              lenIV = program.properties.privateData['lenIV'];
+              lenIV = program.properties.privateData["lenIV"];
               encoded = decrypt(data.getBytes(), CHAR_STRS_ENCRYPT_KEY, lenIV);
               // Skip past the required space and binary data.
               stream.skip(length);
               this.nextChar();
               token = this.getToken(); // read in 'ND' or '|-'
-              if (token === 'noaccess') {
+              if (token === "noaccess") {
                 this.getToken(); // read in 'def'
               }
               charstrings.push({
                 glyph: glyph,
-                encoded: encoded
+                encoded: encoded,
               });
             }
             break;
-          case 'Subrs':
+          case "Subrs":
             var num = this.readInt();
             this.getToken(); // read in 'array'
-            while ((token = this.getToken()) === 'dup') {
+            while ((token = this.getToken()) === "dup") {
               var index = this.readInt();
               length = this.readInt();
               this.getToken(); // read in 'RD' or '-|'
               data = stream.makeSubStream(stream.pos, length);
-              lenIV = program.properties.privateData['lenIV'];
+              lenIV = program.properties.privateData["lenIV"];
               encoded = decrypt(data.getBytes(), CHAR_STRS_ENCRYPT_KEY, lenIV);
               // Skip past the required space and binary data.
               stream.skip(length);
               this.nextChar();
               token = this.getToken(); // read in 'NP' or '|'
-              if (token === 'noaccess') {
+              if (token === "noaccess") {
                 this.getToken(); // read in 'put'
               }
               subrs[index] = encoded;
             }
             break;
-          case 'BlueValues':
-          case 'OtherBlues':
-          case 'FamilyBlues':
-          case 'FamilyOtherBlues':
+          case "BlueValues":
+          case "OtherBlues":
+          case "FamilyBlues":
+          case "FamilyOtherBlues":
             var blueArray = this.readNumberArray();
             // *Blue* values may contain invalid data: disables reading of
             // those values when hinting is disabled.
-            if (blueArray.length > 0 && (blueArray.length % 2) === 0 &&
-                HINTING_ENABLED) {
+            if (
+              blueArray.length > 0 &&
+              blueArray.length % 2 === 0 &&
+              HINTING_ENABLED
+            ) {
               program.properties.privateData[token] = blueArray;
             }
             break;
-          case 'StemSnapH':
-          case 'StemSnapV':
+          case "StemSnapH":
+          case "StemSnapV":
             program.properties.privateData[token] = this.readNumberArray();
             break;
-          case 'StdHW':
-          case 'StdVW':
-            program.properties.privateData[token] =
-              this.readNumberArray()[0];
+          case "StdHW":
+          case "StdVW":
+            program.properties.privateData[token] = this.readNumberArray()[0];
             break;
-          case 'BlueShift':
-          case 'lenIV':
-          case 'BlueFuzz':
-          case 'BlueScale':
-          case 'LanguageGroup':
-          case 'ExpansionFactor':
+          case "BlueShift":
+          case "lenIV":
+          case "BlueFuzz":
+          case "BlueScale":
+          case "LanguageGroup":
+          case "ExpansionFactor":
             program.properties.privateData[token] = this.readNumber();
             break;
-          case 'ForceBold':
+          case "ForceBold":
             program.properties.privateData[token] = this.readBoolean();
             break;
         }
@@ -5351,7 +7799,7 @@ var Type1Parser = (function Type1ParserClosure() {
           charstring: output,
           width: charString.width,
           lsb: charString.lsb,
-          seac: charString.seac
+          seac: charString.seac,
         });
       }
 
@@ -5361,16 +7809,16 @@ var Type1Parser = (function Type1ParserClosure() {
     extractFontHeader: function Type1Parser_extractFontHeader(properties) {
       var token;
       while ((token = this.getToken()) !== null) {
-        if (token !== '/') {
+        if (token !== "/") {
           continue;
         }
         token = this.getToken();
         switch (token) {
-          case 'FontMatrix':
+          case "FontMatrix":
             var matrix = this.readNumberArray();
             properties.fontMatrix = matrix;
             break;
-          case 'Encoding':
+          case "Encoding":
             var encodingArg = this.getToken();
             var encoding;
             if (!/^\d+$/.test(encodingArg)) {
@@ -5384,13 +7832,13 @@ var Type1Parser = (function Type1ParserClosure() {
               for (var j = 0; j < size; j++) {
                 token = this.getToken();
                 // skipping till first dup or def (e.g. ignoring for statement)
-                while (token !== 'dup' && token !== 'def') {
+                while (token !== "dup" && token !== "def") {
                   token = this.getToken();
                   if (token === null) {
                     return; // invalid header
                   }
                 }
-                if (token === 'def') {
+                if (token === "def") {
                   break; // read all array data
                 }
                 var index = this.readInt();
@@ -5402,7 +7850,7 @@ var Type1Parser = (function Type1ParserClosure() {
             }
             properties.builtInEncoding = encoding;
             break;
-          case 'FontBBox':
+          case "FontBBox":
             var fontBBox = this.readNumberArray();
             // adjusting ascent/descent
             properties.ascent = fontBBox[3];
@@ -5411,7 +7859,7 @@ var Type1Parser = (function Type1ParserClosure() {
             break;
         }
       }
-    }
+    },
   };
 
   return Type1Parser;
@@ -5422,71 +7870,397 @@ var Type1Parser = (function Type1ParserClosure() {
  * 'Compact Font Format' which itself embed Type2 charstrings.
  */
 var CFFStandardStrings = [
-  '.notdef', 'space', 'exclam', 'quotedbl', 'numbersign', 'dollar', 'percent',
-  'ampersand', 'quoteright', 'parenleft', 'parenright', 'asterisk', 'plus',
-  'comma', 'hyphen', 'period', 'slash', 'zero', 'one', 'two', 'three', 'four',
-  'five', 'six', 'seven', 'eight', 'nine', 'colon', 'semicolon', 'less',
-  'equal', 'greater', 'question', 'at', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-  'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
-  'X', 'Y', 'Z', 'bracketleft', 'backslash', 'bracketright', 'asciicircum',
-  'underscore', 'quoteleft', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-  'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
-  'z', 'braceleft', 'bar', 'braceright', 'asciitilde', 'exclamdown', 'cent',
-  'sterling', 'fraction', 'yen', 'florin', 'section', 'currency',
-  'quotesingle', 'quotedblleft', 'guillemotleft', 'guilsinglleft',
-  'guilsinglright', 'fi', 'fl', 'endash', 'dagger', 'daggerdbl',
-  'periodcentered', 'paragraph', 'bullet', 'quotesinglbase', 'quotedblbase',
-  'quotedblright', 'guillemotright', 'ellipsis', 'perthousand', 'questiondown',
-  'grave', 'acute', 'circumflex', 'tilde', 'macron', 'breve', 'dotaccent',
-  'dieresis', 'ring', 'cedilla', 'hungarumlaut', 'ogonek', 'caron', 'emdash',
-  'AE', 'ordfeminine', 'Lslash', 'Oslash', 'OE', 'ordmasculine', 'ae',
-  'dotlessi', 'lslash', 'oslash', 'oe', 'germandbls', 'onesuperior',
-  'logicalnot', 'mu', 'trademark', 'Eth', 'onehalf', 'plusminus', 'Thorn',
-  'onequarter', 'divide', 'brokenbar', 'degree', 'thorn', 'threequarters',
-  'twosuperior', 'registered', 'minus', 'eth', 'multiply', 'threesuperior',
-  'copyright', 'Aacute', 'Acircumflex', 'Adieresis', 'Agrave', 'Aring',
-  'Atilde', 'Ccedilla', 'Eacute', 'Ecircumflex', 'Edieresis', 'Egrave',
-  'Iacute', 'Icircumflex', 'Idieresis', 'Igrave', 'Ntilde', 'Oacute',
-  'Ocircumflex', 'Odieresis', 'Ograve', 'Otilde', 'Scaron', 'Uacute',
-  'Ucircumflex', 'Udieresis', 'Ugrave', 'Yacute', 'Ydieresis', 'Zcaron',
-  'aacute', 'acircumflex', 'adieresis', 'agrave', 'aring', 'atilde',
-  'ccedilla', 'eacute', 'ecircumflex', 'edieresis', 'egrave', 'iacute',
-  'icircumflex', 'idieresis', 'igrave', 'ntilde', 'oacute', 'ocircumflex',
-  'odieresis', 'ograve', 'otilde', 'scaron', 'uacute', 'ucircumflex',
-  'udieresis', 'ugrave', 'yacute', 'ydieresis', 'zcaron', 'exclamsmall',
-  'Hungarumlautsmall', 'dollaroldstyle', 'dollarsuperior', 'ampersandsmall',
-  'Acutesmall', 'parenleftsuperior', 'parenrightsuperior', 'twodotenleader',
-  'onedotenleader', 'zerooldstyle', 'oneoldstyle', 'twooldstyle',
-  'threeoldstyle', 'fouroldstyle', 'fiveoldstyle', 'sixoldstyle',
-  'sevenoldstyle', 'eightoldstyle', 'nineoldstyle', 'commasuperior',
-  'threequartersemdash', 'periodsuperior', 'questionsmall', 'asuperior',
-  'bsuperior', 'centsuperior', 'dsuperior', 'esuperior', 'isuperior',
-  'lsuperior', 'msuperior', 'nsuperior', 'osuperior', 'rsuperior', 'ssuperior',
-  'tsuperior', 'ff', 'ffi', 'ffl', 'parenleftinferior', 'parenrightinferior',
-  'Circumflexsmall', 'hyphensuperior', 'Gravesmall', 'Asmall', 'Bsmall',
-  'Csmall', 'Dsmall', 'Esmall', 'Fsmall', 'Gsmall', 'Hsmall', 'Ismall',
-  'Jsmall', 'Ksmall', 'Lsmall', 'Msmall', 'Nsmall', 'Osmall', 'Psmall',
-  'Qsmall', 'Rsmall', 'Ssmall', 'Tsmall', 'Usmall', 'Vsmall', 'Wsmall',
-  'Xsmall', 'Ysmall', 'Zsmall', 'colonmonetary', 'onefitted', 'rupiah',
-  'Tildesmall', 'exclamdownsmall', 'centoldstyle', 'Lslashsmall',
-  'Scaronsmall', 'Zcaronsmall', 'Dieresissmall', 'Brevesmall', 'Caronsmall',
-  'Dotaccentsmall', 'Macronsmall', 'figuredash', 'hypheninferior',
-  'Ogoneksmall', 'Ringsmall', 'Cedillasmall', 'questiondownsmall', 'oneeighth',
-  'threeeighths', 'fiveeighths', 'seveneighths', 'onethird', 'twothirds',
-  'zerosuperior', 'foursuperior', 'fivesuperior', 'sixsuperior',
-  'sevensuperior', 'eightsuperior', 'ninesuperior', 'zeroinferior',
-  'oneinferior', 'twoinferior', 'threeinferior', 'fourinferior',
-  'fiveinferior', 'sixinferior', 'seveninferior', 'eightinferior',
-  'nineinferior', 'centinferior', 'dollarinferior', 'periodinferior',
-  'commainferior', 'Agravesmall', 'Aacutesmall', 'Acircumflexsmall',
-  'Atildesmall', 'Adieresissmall', 'Aringsmall', 'AEsmall', 'Ccedillasmall',
-  'Egravesmall', 'Eacutesmall', 'Ecircumflexsmall', 'Edieresissmall',
-  'Igravesmall', 'Iacutesmall', 'Icircumflexsmall', 'Idieresissmall',
-  'Ethsmall', 'Ntildesmall', 'Ogravesmall', 'Oacutesmall', 'Ocircumflexsmall',
-  'Otildesmall', 'Odieresissmall', 'OEsmall', 'Oslashsmall', 'Ugravesmall',
-  'Uacutesmall', 'Ucircumflexsmall', 'Udieresissmall', 'Yacutesmall',
-  'Thornsmall', 'Ydieresissmall', '001.000', '001.001', '001.002', '001.003',
-  'Black', 'Bold', 'Book', 'Light', 'Medium', 'Regular', 'Roman', 'Semibold'
+  ".notdef",
+  "space",
+  "exclam",
+  "quotedbl",
+  "numbersign",
+  "dollar",
+  "percent",
+  "ampersand",
+  "quoteright",
+  "parenleft",
+  "parenright",
+  "asterisk",
+  "plus",
+  "comma",
+  "hyphen",
+  "period",
+  "slash",
+  "zero",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "colon",
+  "semicolon",
+  "less",
+  "equal",
+  "greater",
+  "question",
+  "at",
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "U",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z",
+  "bracketleft",
+  "backslash",
+  "bracketright",
+  "asciicircum",
+  "underscore",
+  "quoteleft",
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k",
+  "l",
+  "m",
+  "n",
+  "o",
+  "p",
+  "q",
+  "r",
+  "s",
+  "t",
+  "u",
+  "v",
+  "w",
+  "x",
+  "y",
+  "z",
+  "braceleft",
+  "bar",
+  "braceright",
+  "asciitilde",
+  "exclamdown",
+  "cent",
+  "sterling",
+  "fraction",
+  "yen",
+  "florin",
+  "section",
+  "currency",
+  "quotesingle",
+  "quotedblleft",
+  "guillemotleft",
+  "guilsinglleft",
+  "guilsinglright",
+  "fi",
+  "fl",
+  "endash",
+  "dagger",
+  "daggerdbl",
+  "periodcentered",
+  "paragraph",
+  "bullet",
+  "quotesinglbase",
+  "quotedblbase",
+  "quotedblright",
+  "guillemotright",
+  "ellipsis",
+  "perthousand",
+  "questiondown",
+  "grave",
+  "acute",
+  "circumflex",
+  "tilde",
+  "macron",
+  "breve",
+  "dotaccent",
+  "dieresis",
+  "ring",
+  "cedilla",
+  "hungarumlaut",
+  "ogonek",
+  "caron",
+  "emdash",
+  "AE",
+  "ordfeminine",
+  "Lslash",
+  "Oslash",
+  "OE",
+  "ordmasculine",
+  "ae",
+  "dotlessi",
+  "lslash",
+  "oslash",
+  "oe",
+  "germandbls",
+  "onesuperior",
+  "logicalnot",
+  "mu",
+  "trademark",
+  "Eth",
+  "onehalf",
+  "plusminus",
+  "Thorn",
+  "onequarter",
+  "divide",
+  "brokenbar",
+  "degree",
+  "thorn",
+  "threequarters",
+  "twosuperior",
+  "registered",
+  "minus",
+  "eth",
+  "multiply",
+  "threesuperior",
+  "copyright",
+  "Aacute",
+  "Acircumflex",
+  "Adieresis",
+  "Agrave",
+  "Aring",
+  "Atilde",
+  "Ccedilla",
+  "Eacute",
+  "Ecircumflex",
+  "Edieresis",
+  "Egrave",
+  "Iacute",
+  "Icircumflex",
+  "Idieresis",
+  "Igrave",
+  "Ntilde",
+  "Oacute",
+  "Ocircumflex",
+  "Odieresis",
+  "Ograve",
+  "Otilde",
+  "Scaron",
+  "Uacute",
+  "Ucircumflex",
+  "Udieresis",
+  "Ugrave",
+  "Yacute",
+  "Ydieresis",
+  "Zcaron",
+  "aacute",
+  "acircumflex",
+  "adieresis",
+  "agrave",
+  "aring",
+  "atilde",
+  "ccedilla",
+  "eacute",
+  "ecircumflex",
+  "edieresis",
+  "egrave",
+  "iacute",
+  "icircumflex",
+  "idieresis",
+  "igrave",
+  "ntilde",
+  "oacute",
+  "ocircumflex",
+  "odieresis",
+  "ograve",
+  "otilde",
+  "scaron",
+  "uacute",
+  "ucircumflex",
+  "udieresis",
+  "ugrave",
+  "yacute",
+  "ydieresis",
+  "zcaron",
+  "exclamsmall",
+  "Hungarumlautsmall",
+  "dollaroldstyle",
+  "dollarsuperior",
+  "ampersandsmall",
+  "Acutesmall",
+  "parenleftsuperior",
+  "parenrightsuperior",
+  "twodotenleader",
+  "onedotenleader",
+  "zerooldstyle",
+  "oneoldstyle",
+  "twooldstyle",
+  "threeoldstyle",
+  "fouroldstyle",
+  "fiveoldstyle",
+  "sixoldstyle",
+  "sevenoldstyle",
+  "eightoldstyle",
+  "nineoldstyle",
+  "commasuperior",
+  "threequartersemdash",
+  "periodsuperior",
+  "questionsmall",
+  "asuperior",
+  "bsuperior",
+  "centsuperior",
+  "dsuperior",
+  "esuperior",
+  "isuperior",
+  "lsuperior",
+  "msuperior",
+  "nsuperior",
+  "osuperior",
+  "rsuperior",
+  "ssuperior",
+  "tsuperior",
+  "ff",
+  "ffi",
+  "ffl",
+  "parenleftinferior",
+  "parenrightinferior",
+  "Circumflexsmall",
+  "hyphensuperior",
+  "Gravesmall",
+  "Asmall",
+  "Bsmall",
+  "Csmall",
+  "Dsmall",
+  "Esmall",
+  "Fsmall",
+  "Gsmall",
+  "Hsmall",
+  "Ismall",
+  "Jsmall",
+  "Ksmall",
+  "Lsmall",
+  "Msmall",
+  "Nsmall",
+  "Osmall",
+  "Psmall",
+  "Qsmall",
+  "Rsmall",
+  "Ssmall",
+  "Tsmall",
+  "Usmall",
+  "Vsmall",
+  "Wsmall",
+  "Xsmall",
+  "Ysmall",
+  "Zsmall",
+  "colonmonetary",
+  "onefitted",
+  "rupiah",
+  "Tildesmall",
+  "exclamdownsmall",
+  "centoldstyle",
+  "Lslashsmall",
+  "Scaronsmall",
+  "Zcaronsmall",
+  "Dieresissmall",
+  "Brevesmall",
+  "Caronsmall",
+  "Dotaccentsmall",
+  "Macronsmall",
+  "figuredash",
+  "hypheninferior",
+  "Ogoneksmall",
+  "Ringsmall",
+  "Cedillasmall",
+  "questiondownsmall",
+  "oneeighth",
+  "threeeighths",
+  "fiveeighths",
+  "seveneighths",
+  "onethird",
+  "twothirds",
+  "zerosuperior",
+  "foursuperior",
+  "fivesuperior",
+  "sixsuperior",
+  "sevensuperior",
+  "eightsuperior",
+  "ninesuperior",
+  "zeroinferior",
+  "oneinferior",
+  "twoinferior",
+  "threeinferior",
+  "fourinferior",
+  "fiveinferior",
+  "sixinferior",
+  "seveninferior",
+  "eightinferior",
+  "nineinferior",
+  "centinferior",
+  "dollarinferior",
+  "periodinferior",
+  "commainferior",
+  "Agravesmall",
+  "Aacutesmall",
+  "Acircumflexsmall",
+  "Atildesmall",
+  "Adieresissmall",
+  "Aringsmall",
+  "AEsmall",
+  "Ccedillasmall",
+  "Egravesmall",
+  "Eacutesmall",
+  "Ecircumflexsmall",
+  "Edieresissmall",
+  "Igravesmall",
+  "Iacutesmall",
+  "Icircumflexsmall",
+  "Idieresissmall",
+  "Ethsmall",
+  "Ntildesmall",
+  "Ogravesmall",
+  "Oacutesmall",
+  "Ocircumflexsmall",
+  "Otildesmall",
+  "Odieresissmall",
+  "OEsmall",
+  "Oslashsmall",
+  "Ugravesmall",
+  "Uacutesmall",
+  "Ucircumflexsmall",
+  "Udieresissmall",
+  "Yacutesmall",
+  "Thornsmall",
+  "Ydieresissmall",
+  "001.000",
+  "001.001",
+  "001.002",
+  "001.003",
+  "Black",
+  "Bold",
+  "Book",
+  "Light",
+  "Medium",
+  "Regular",
+  "Roman",
+  "Semibold",
 ];
 
 // Type1Font is also a CIDFontType0.
@@ -5501,8 +8275,11 @@ var Type1Font = function Type1Font(name, file, properties) {
   var pfbHeaderPresent = pfbHeader[0] === 0x80 && pfbHeader[1] === 0x01;
   if (pfbHeaderPresent) {
     file.skip(PFB_HEADER_SIZE);
-    headerBlockLength = (pfbHeader[5] << 24) | (pfbHeader[4] << 16) |
-                        (pfbHeader[3] << 8) | pfbHeader[2];
+    headerBlockLength =
+      (pfbHeader[5] << 24) |
+      (pfbHeader[4] << 16) |
+      (pfbHeader[3] << 8) |
+      pfbHeader[2];
   }
 
   // Get the data block containing glyphs and subrs informations
@@ -5512,8 +8289,11 @@ var Type1Font = function Type1Font(name, file, properties) {
 
   if (pfbHeaderPresent) {
     pfbHeader = file.getBytes(PFB_HEADER_SIZE);
-    eexecBlockLength = (pfbHeader[5] << 24) | (pfbHeader[4] << 16) |
-                       (pfbHeader[3] << 8) | pfbHeader[2];
+    eexecBlockLength =
+      (pfbHeader[5] << 24) |
+      (pfbHeader[4] << 16) |
+      (pfbHeader[3] << 8) |
+      pfbHeader[2];
   }
 
   // Decrypt the data blocks and retrieve it's content
@@ -5529,8 +8309,13 @@ var Type1Font = function Type1Font(name, file, properties) {
   var subrs = this.getType2Subrs(data.subrs);
 
   this.charstrings = charstrings;
-  this.data = this.wrap(name, type2Charstrings, this.charstrings,
-                        subrs, properties);
+  this.data = this.wrap(
+    name,
+    type2Charstrings,
+    this.charstrings,
+    subrs,
+    properties,
+  );
   this.seacs = this.getSeacs(data.charstrings);
 };
 
@@ -5540,7 +8325,7 @@ Type1Font.prototype = {
   },
 
   getCharset: function Type1Font_getCharset() {
-    var charset = ['.notdef'];
+    var charset = [".notdef"];
     var charstrings = this.charstrings;
     for (var glyphId = 0; glyphId < charstrings.length; glyphId++) {
       charset.push(charstrings[glyphId].glyphName);
@@ -5550,7 +8335,8 @@ Type1Font.prototype = {
 
   getGlyphMapping: function Type1Font_getGlyphMapping(properties) {
     var charstrings = this.charstrings;
-    var glyphNames = ['.notdef'], glyphId;
+    var glyphNames = [".notdef"],
+      glyphId;
     for (glyphId = 0; glyphId < charstrings.length; glyphId++) {
       glyphNames.push(charstrings[glyphId].glyphName);
     }
@@ -5582,7 +8368,8 @@ Type1Font.prototype = {
   },
 
   getType2Charstrings: function Type1Font_getType2Charstrings(
-                                  type1Charstrings) {
+    type1Charstrings,
+  ) {
     var type2Charstrings = [];
     for (var i = 0, ii = type1Charstrings.length; i < ii; i++) {
       type2Charstrings.push(type1Charstrings[i].charstring);
@@ -5605,7 +8392,7 @@ Type1Font.prototype = {
     var type2Subrs = [];
     var i;
     for (i = 0; i < bias; i++) {
-      type2Subrs.push([0x0B]);
+      type2Subrs.push([0x0b]);
     }
 
     for (i = 0; i < count; i++) {
@@ -5624,25 +8411,25 @@ Type1Font.prototype = {
     var topDict = new CFFTopDict();
     // CFF strings IDs 0...390 are predefined names, so refering
     // to entries in our own String INDEX starts at SID 391.
-    topDict.setByName('version', 391);
-    topDict.setByName('Notice', 392);
-    topDict.setByName('FullName', 393);
-    topDict.setByName('FamilyName', 394);
-    topDict.setByName('Weight', 395);
-    topDict.setByName('Encoding', null); // placeholder
-    topDict.setByName('FontMatrix', properties.fontMatrix);
-    topDict.setByName('FontBBox', properties.bbox);
-    topDict.setByName('charset', null); // placeholder
-    topDict.setByName('CharStrings', null); // placeholder
-    topDict.setByName('Private', null); // placeholder
+    topDict.setByName("version", 391);
+    topDict.setByName("Notice", 392);
+    topDict.setByName("FullName", 393);
+    topDict.setByName("FamilyName", 394);
+    topDict.setByName("Weight", 395);
+    topDict.setByName("Encoding", null); // placeholder
+    topDict.setByName("FontMatrix", properties.fontMatrix);
+    topDict.setByName("FontBBox", properties.bbox);
+    topDict.setByName("charset", null); // placeholder
+    topDict.setByName("CharStrings", null); // placeholder
+    topDict.setByName("Private", null); // placeholder
     cff.topDict = topDict;
 
     var strings = new CFFStrings();
-    strings.add('Version 0.11'); // Version
-    strings.add('See original notice'); // Notice
+    strings.add("Version 0.11"); // Version
+    strings.add("See original notice"); // Notice
     strings.add(name); // FullName
     strings.add(name); // FamilyName
-    strings.add('Medium'); // Weight
+    strings.add("Medium"); // Weight
     cff.strings = strings;
 
     cff.globalSubrIndex = new CFFIndex();
@@ -5664,29 +8451,29 @@ Type1Font.prototype = {
     cff.charset = new CFFCharset(false, 0, [], charsetArray);
 
     var charStringsIndex = new CFFIndex();
-    charStringsIndex.add([0x8B, 0x0E]); // .notdef
+    charStringsIndex.add([0x8b, 0x0e]); // .notdef
     for (i = 0; i < count; i++) {
       charStringsIndex.add(glyphs[i]);
     }
     cff.charStrings = charStringsIndex;
 
     var privateDict = new CFFPrivateDict();
-    privateDict.setByName('Subrs', null); // placeholder
+    privateDict.setByName("Subrs", null); // placeholder
     var fields = [
-      'BlueValues',
-      'OtherBlues',
-      'FamilyBlues',
-      'FamilyOtherBlues',
-      'StemSnapH',
-      'StemSnapV',
-      'BlueShift',
-      'BlueFuzz',
-      'BlueScale',
-      'LanguageGroup',
-      'ExpansionFactor',
-      'ForceBold',
-      'StdHW',
-      'StdVW'
+      "BlueValues",
+      "OtherBlues",
+      "FamilyBlues",
+      "FamilyOtherBlues",
+      "StemSnapH",
+      "StemSnapV",
+      "BlueShift",
+      "BlueFuzz",
+      "BlueScale",
+      "LanguageGroup",
+      "ExpansionFactor",
+      "ForceBold",
+      "StdHW",
+      "StdVW",
     ];
     for (i = 0, ii = fields.length; i < ii; i++) {
       var field = fields[i];
@@ -5713,7 +8500,7 @@ Type1Font.prototype = {
 
     var compiler = new CFFCompiler(cff);
     return compiler.compile();
-  }
+  },
 };
 
 var CFFFont = (function CFFFontClosure() {
@@ -5727,7 +8514,7 @@ var CFFFont = (function CFFFontClosure() {
     try {
       this.data = compiler.compile();
     } catch (e) {
-      warn('Failed to compile font ' + properties.loadedName);
+      warn("Failed to compile font " + properties.loadedName);
       // There may have just been an issue with the compiler, set the data
       // anyway and hope the font loaded.
       this.data = file;
@@ -5771,7 +8558,7 @@ var CFFFont = (function CFFFontClosure() {
       var encoding = cff.encoding ? cff.encoding.encoding : null;
       charCodeToGlyphId = type1FontGlyphMapping(properties, encoding, charsets);
       return charCodeToGlyphId;
-    }
+    },
   };
 
   return CFFFont;
@@ -5780,97 +8567,112 @@ var CFFFont = (function CFFFontClosure() {
 var CFFParser = (function CFFParserClosure() {
   var CharstringValidationData = [
     null,
-    { id: 'hstem', min: 2, stackClearing: true, stem: true },
+    { id: "hstem", min: 2, stackClearing: true, stem: true },
     null,
-    { id: 'vstem', min: 2, stackClearing: true, stem: true },
-    { id: 'vmoveto', min: 1, stackClearing: true },
-    { id: 'rlineto', min: 2, resetStack: true },
-    { id: 'hlineto', min: 1, resetStack: true },
-    { id: 'vlineto', min: 1, resetStack: true },
-    { id: 'rrcurveto', min: 6, resetStack: true },
+    { id: "vstem", min: 2, stackClearing: true, stem: true },
+    { id: "vmoveto", min: 1, stackClearing: true },
+    { id: "rlineto", min: 2, resetStack: true },
+    { id: "hlineto", min: 1, resetStack: true },
+    { id: "vlineto", min: 1, resetStack: true },
+    { id: "rrcurveto", min: 6, resetStack: true },
     null,
-    { id: 'callsubr', min: 1, undefStack: true },
-    { id: 'return', min: 0, undefStack: true },
+    { id: "callsubr", min: 1, undefStack: true },
+    { id: "return", min: 0, undefStack: true },
     null, // 12
     null,
-    { id: 'endchar', min: 0, stackClearing: true },
+    { id: "endchar", min: 0, stackClearing: true },
     null,
     null,
     null,
-    { id: 'hstemhm', min: 2, stackClearing: true, stem: true },
-    { id: 'hintmask', min: 0, stackClearing: true },
-    { id: 'cntrmask', min: 0, stackClearing: true },
-    { id: 'rmoveto', min: 2, stackClearing: true },
-    { id: 'hmoveto', min: 1, stackClearing: true },
-    { id: 'vstemhm', min: 2, stackClearing: true, stem: true },
-    { id: 'rcurveline', min: 8, resetStack: true },
-    { id: 'rlinecurve', min: 8, resetStack: true },
-    { id: 'vvcurveto', min: 4, resetStack: true },
-    { id: 'hhcurveto', min: 4, resetStack: true },
+    { id: "hstemhm", min: 2, stackClearing: true, stem: true },
+    { id: "hintmask", min: 0, stackClearing: true },
+    { id: "cntrmask", min: 0, stackClearing: true },
+    { id: "rmoveto", min: 2, stackClearing: true },
+    { id: "hmoveto", min: 1, stackClearing: true },
+    { id: "vstemhm", min: 2, stackClearing: true, stem: true },
+    { id: "rcurveline", min: 8, resetStack: true },
+    { id: "rlinecurve", min: 8, resetStack: true },
+    { id: "vvcurveto", min: 4, resetStack: true },
+    { id: "hhcurveto", min: 4, resetStack: true },
     null, // shortint
-    { id: 'callgsubr', min: 1, undefStack: true },
-    { id: 'vhcurveto', min: 4, resetStack: true },
-    { id: 'hvcurveto', min: 4, resetStack: true }
+    { id: "callgsubr", min: 1, undefStack: true },
+    { id: "vhcurveto", min: 4, resetStack: true },
+    { id: "hvcurveto", min: 4, resetStack: true },
   ];
   var CharstringValidationData12 = [
     null,
     null,
     null,
-    { id: 'and', min: 2, stackDelta: -1 },
-    { id: 'or', min: 2, stackDelta: -1 },
-    { id: 'not', min: 1, stackDelta: 0 },
+    { id: "and", min: 2, stackDelta: -1 },
+    { id: "or", min: 2, stackDelta: -1 },
+    { id: "not", min: 1, stackDelta: 0 },
     null,
     null,
     null,
-    { id: 'abs', min: 1, stackDelta: 0 },
-    { id: 'add', min: 2, stackDelta: -1,
+    { id: "abs", min: 1, stackDelta: 0 },
+    {
+      id: "add",
+      min: 2,
+      stackDelta: -1,
       stackFn: function stack_div(stack, index) {
         stack[index - 2] = stack[index - 2] + stack[index - 1];
-      }
+      },
     },
-    { id: 'sub', min: 2, stackDelta: -1,
+    {
+      id: "sub",
+      min: 2,
+      stackDelta: -1,
       stackFn: function stack_div(stack, index) {
         stack[index - 2] = stack[index - 2] - stack[index - 1];
-      }
+      },
     },
-    { id: 'div', min: 2, stackDelta: -1,
+    {
+      id: "div",
+      min: 2,
+      stackDelta: -1,
       stackFn: function stack_div(stack, index) {
         stack[index - 2] = stack[index - 2] / stack[index - 1];
-      }
+      },
     },
     null,
-    { id: 'neg', min: 1, stackDelta: 0,
+    {
+      id: "neg",
+      min: 1,
+      stackDelta: 0,
       stackFn: function stack_div(stack, index) {
         stack[index - 1] = -stack[index - 1];
-      }
+      },
     },
-    { id: 'eq', min: 2, stackDelta: -1 },
+    { id: "eq", min: 2, stackDelta: -1 },
     null,
     null,
-    { id: 'drop', min: 1, stackDelta: -1 },
+    { id: "drop", min: 1, stackDelta: -1 },
     null,
-    { id: 'put', min: 2, stackDelta: -2 },
-    { id: 'get', min: 1, stackDelta: 0 },
-    { id: 'ifelse', min: 4, stackDelta: -3 },
-    { id: 'random', min: 0, stackDelta: 1 },
-    { id: 'mul', min: 2, stackDelta: -1,
+    { id: "put", min: 2, stackDelta: -2 },
+    { id: "get", min: 1, stackDelta: 0 },
+    { id: "ifelse", min: 4, stackDelta: -3 },
+    { id: "random", min: 0, stackDelta: 1 },
+    {
+      id: "mul",
+      min: 2,
+      stackDelta: -1,
       stackFn: function stack_div(stack, index) {
         stack[index - 2] = stack[index - 2] * stack[index - 1];
-      }
+      },
     },
     null,
-    { id: 'sqrt', min: 1, stackDelta: 0 },
-    { id: 'dup', min: 1, stackDelta: 1 },
-    { id: 'exch', min: 2, stackDelta: 0 },
-    { id: 'index', min: 2, stackDelta: 0 },
-    { id: 'roll', min: 3, stackDelta: -2 },
+    { id: "sqrt", min: 1, stackDelta: 0 },
+    { id: "dup", min: 1, stackDelta: 1 },
+    { id: "exch", min: 2, stackDelta: 0 },
+    { id: "index", min: 2, stackDelta: 0 },
+    { id: "roll", min: 3, stackDelta: -2 },
     null,
     null,
     null,
-    { id: 'hflex', min: 7, resetStack: true },
-    { id: 'flex', min: 13, resetStack: true },
-    { id: 'hflex1', min: 9, resetStack: true },
-    { id: 'flex1', min: 11, resetStack: true }
+    { id: "hflex", min: 7, resetStack: true },
+    { id: "flex", min: 13, resetStack: true },
+    { id: "hflex1", min: 9, resetStack: true },
+    { id: "flex1", min: 11, resetStack: true },
   ];
 
   function CFFParser(file, properties) {
@@ -5902,20 +8704,20 @@ var CFFParser = (function CFFParserClosure() {
 
       this.parsePrivateDict(cff.topDict);
 
-      cff.isCIDFont = topDict.hasName('ROS');
+      cff.isCIDFont = topDict.hasName("ROS");
 
-      var charStringOffset = topDict.getByName('CharStrings');
+      var charStringOffset = topDict.getByName("CharStrings");
       var charStringsAndSeacs = this.parseCharStrings(charStringOffset);
       cff.charStrings = charStringsAndSeacs.charStrings;
       cff.seacs = charStringsAndSeacs.seacs;
       cff.widths = charStringsAndSeacs.widths;
 
-      var fontMatrix = topDict.getByName('FontMatrix');
+      var fontMatrix = topDict.getByName("FontMatrix");
       if (fontMatrix) {
         properties.fontMatrix = fontMatrix;
       }
 
-      var fontBBox = topDict.getByName('FontBBox');
+      var fontBBox = topDict.getByName("FontBBox");
       if (fontBBox) {
         // adjusting ascent/descent
         properties.ascent = fontBBox[3];
@@ -5925,26 +8727,42 @@ var CFFParser = (function CFFParserClosure() {
 
       var charset, encoding;
       if (cff.isCIDFont) {
-        var fdArrayIndex = this.parseIndex(topDict.getByName('FDArray')).obj;
+        var fdArrayIndex = this.parseIndex(topDict.getByName("FDArray")).obj;
         for (var i = 0, ii = fdArrayIndex.count; i < ii; ++i) {
           var dictRaw = fdArrayIndex.get(i);
-          var fontDict = this.createDict(CFFTopDict, this.parseDict(dictRaw),
-                                         cff.strings);
+          var fontDict = this.createDict(
+            CFFTopDict,
+            this.parseDict(dictRaw),
+            cff.strings,
+          );
           this.parsePrivateDict(fontDict);
           cff.fdArray.push(fontDict);
         }
         // cid fonts don't have an encoding
         encoding = null;
-        charset = this.parseCharsets(topDict.getByName('charset'),
-                                     cff.charStrings.count, cff.strings, true);
-        cff.fdSelect = this.parseFDSelect(topDict.getByName('FDSelect'),
-                                             cff.charStrings.count);
+        charset = this.parseCharsets(
+          topDict.getByName("charset"),
+          cff.charStrings.count,
+          cff.strings,
+          true,
+        );
+        cff.fdSelect = this.parseFDSelect(
+          topDict.getByName("FDSelect"),
+          cff.charStrings.count,
+        );
       } else {
-        charset = this.parseCharsets(topDict.getByName('charset'),
-                                     cff.charStrings.count, cff.strings, false);
-        encoding = this.parseEncoding(topDict.getByName('Encoding'),
-                                      properties,
-                                      cff.strings, charset.charset);
+        charset = this.parseCharsets(
+          topDict.getByName("charset"),
+          cff.charStrings.count,
+          cff.strings,
+          false,
+        );
+        encoding = this.parseEncoding(
+          topDict.getByName("Encoding"),
+          properties,
+          cff.strings,
+          charset.charset,
+        );
       }
       cff.charset = charset;
       cff.encoding = encoding;
@@ -5962,9 +8780,9 @@ var CFFParser = (function CFFParserClosure() {
         ++offset;
       }
       if (offset >= bytesLength) {
-        error('Invalid CFF header');
+        error("Invalid CFF header");
       } else if (offset !== 0) {
-        info('cff data is shifted');
+        info("cff data is shifted");
         bytes = bytes.subarray(offset);
         this.bytes = bytes;
       }
@@ -5995,20 +8813,35 @@ var CFFParser = (function CFFParserClosure() {
         } else if (value >= 32 && value <= 246) {
           return value - 139;
         } else if (value >= 247 && value <= 250) {
-          return ((value - 247) * 256) + dict[pos++] + 108;
+          return (value - 247) * 256 + dict[pos++] + 108;
         } else if (value >= 251 && value <= 254) {
           return -((value - 251) * 256) - dict[pos++] - 108;
         } else {
-          error('255 is not a valid DICT command');
+          error("255 is not a valid DICT command");
         }
         return -1;
       }
 
       function parseFloatOperand() {
-        var str = '';
+        var str = "";
         var eof = 15;
-        var lookup = ['0', '1', '2', '3', '4', '5', '6', '7', '8',
-            '9', '.', 'E', 'E-', null, '-'];
+        var lookup = [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          ".",
+          "E",
+          "E-",
+          null,
+          "-",
+        ];
         var length = dict.length;
         while (pos < length) {
           var b = dict[pos++];
@@ -6059,7 +8892,7 @@ var CFFParser = (function CFFParserClosure() {
       if (count !== 0) {
         var offsetSize = bytes[pos++];
         // add 1 for offset to determine size of last object
-        var startPos = pos + ((count + 1) * offsetSize) - 1;
+        var startPos = pos + (count + 1) * offsetSize - 1;
 
         for (i = 0, ii = count + 1; i < ii; ++i) {
           var offset = 0;
@@ -6076,7 +8909,7 @@ var CFFParser = (function CFFParserClosure() {
         var offsetEnd = offsets[i + 1];
         cffIndex.add(bytes.subarray(offsetStart, offsetEnd));
       }
-      return {obj: cffIndex, endPos: end};
+      return { obj: cffIndex, endPos: end };
     },
     parseNameIndex: function CFFParser_parseNameIndex(index) {
       var names = [];
@@ -6092,10 +8925,21 @@ var CFFParser = (function CFFParserClosure() {
             data[j] = c;
             continue;
           }
-          if ((c < 33 || c > 126) || c === 91 /* [ */ || c === 93 /* ] */ ||
-              c === 40 /* ( */ || c === 41 /* ) */ || c === 123 /* { */ ||
-              c === 125 /* } */ || c === 60 /* < */ || c === 62 /* > */ ||
-              c === 47 /* / */ || c === 37 /* % */ || c === 35 /* # */) {
+          if (
+            c < 33 ||
+            c > 126 ||
+            c === 91 /* [ */ ||
+            c === 93 /* ] */ ||
+            c === 40 /* ( */ ||
+            c === 41 /* ) */ ||
+            c === 123 /* { */ ||
+            c === 125 /* } */ ||
+            c === 60 /* < */ ||
+            c === 62 /* > */ ||
+            c === 47 /* / */ ||
+            c === 37 /* % */ ||
+            c === 35 /* # */
+          ) {
             data[j] = 95;
             continue;
           }
@@ -6139,7 +8983,7 @@ var CFFParser = (function CFFParserClosure() {
         var data = charstring;
         var length = data.length;
         var firstStackClearing = true;
-        for (var j = 0; j < length;) {
+        for (var j = 0; j < length; ) {
           var value = data[j++];
           var validationCommand = null;
           if (value === 12) {
@@ -6156,7 +9000,8 @@ var CFFParser = (function CFFParserClosure() {
             } else {
               validationCommand = CharstringValidationData12[q];
             }
-          } else if (value === 28) { // number (16 bit)
+          } else if (value === 28) {
+            // number (16 bit)
             stack[stackSize] = ((data[j] << 24) | (data[j + 1] << 16)) >> 16;
             j += 2;
             stackSize++;
@@ -6169,18 +9014,26 @@ var CFFParser = (function CFFParserClosure() {
               }
             }
             validationCommand = CharstringValidationData[value];
-          } else if (value >= 32 && value <= 246) {  // number
+          } else if (value >= 32 && value <= 246) {
+            // number
             stack[stackSize] = value - 139;
             stackSize++;
-          } else if (value >= 247 && value <= 254) {  // number (+1 bytes)
-            stack[stackSize] = (value < 251 ?
-                                ((value - 247) << 8) + data[j] + 108 :
-                                -((value - 251) << 8) - data[j] - 108);
+          } else if (value >= 247 && value <= 254) {
+            // number (+1 bytes)
+            stack[stackSize] =
+              value < 251
+                ? ((value - 247) << 8) + data[j] + 108
+                : -((value - 251) << 8) - data[j] - 108;
             j++;
             stackSize++;
-          } else if (value === 255) {  // number (32 bit)
-            stack[stackSize] = ((data[j] << 24) | (data[j + 1] << 16) |
-                                (data[j + 2] << 8) | data[j + 3]) / 65536;
+          } else if (value === 255) {
+            // number (32 bit)
+            stack[stackSize] =
+              ((data[j] << 24) |
+                (data[j + 1] << 16) |
+                (data[j + 2] << 8) |
+                data[j + 3]) /
+              65536;
             j += 4;
             stackSize++;
           } else if (value === 19 || value === 20) {
@@ -6195,11 +9048,16 @@ var CFFParser = (function CFFParserClosure() {
             if (validationCommand.stem) {
               hints += stackSize >> 1;
             }
-            if ('min' in validationCommand) {
+            if ("min" in validationCommand) {
               if (!undefStack && stackSize < validationCommand.min) {
-                warn('Not enough parameters for ' + validationCommand.id +
-                     '; actual: ' + stackSize +
-                     ', expected: ' + validationCommand.min);
+                warn(
+                  "Not enough parameters for " +
+                    validationCommand.id +
+                    "; actual: " +
+                    stackSize +
+                    ", expected: " +
+                    validationCommand.min,
+                );
                 valid = false;
                 break;
               }
@@ -6213,14 +9071,14 @@ var CFFParser = (function CFFParserClosure() {
                 // there are even amount of arguments for stem commands
                 stackSize %= 2;
               } else if (stackSize > 1) {
-                warn('Found too many parameters for stack-clearing command');
+                warn("Found too many parameters for stack-clearing command");
               }
               if (stackSize > 0 && stack[stackSize - 1] >= 0) {
                 widths[i] = stack[stackSize - 1];
               }
             }
-            if ('stackDelta' in validationCommand) {
-              if ('stackFn' in validationCommand) {
+            if ("stackDelta" in validationCommand) {
+              if ("stackFn" in validationCommand) {
                 validationCommand.stackFn(stack, stackSize);
               }
               stackSize += validationCommand.stackDelta;
@@ -6243,23 +9101,23 @@ var CFFParser = (function CFFParserClosure() {
       }
       return { charStrings: charStrings, seacs: seacs, widths: widths };
     },
-    emptyPrivateDictionary:
-      function CFFParser_emptyPrivateDictionary(parentDict) {
-      var privateDict = this.createDict(CFFPrivateDict, [],
-                                        parentDict.strings);
+    emptyPrivateDictionary: function CFFParser_emptyPrivateDictionary(
+      parentDict,
+    ) {
+      var privateDict = this.createDict(CFFPrivateDict, [], parentDict.strings);
       parentDict.setByKey(18, [0, 0]);
       parentDict.privateDict = privateDict;
     },
     parsePrivateDict: function CFFParser_parsePrivateDict(parentDict) {
       // no private dict, do nothing
-      if (!parentDict.hasName('Private')) {
+      if (!parentDict.hasName("Private")) {
         this.emptyPrivateDictionary(parentDict);
         return;
       }
-      var privateOffset = parentDict.getByName('Private');
+      var privateOffset = parentDict.getByName("Private");
       // make sure the params are formatted correctly
       if (!isArray(privateOffset) || privateOffset.length !== 2) {
-        parentDict.removeByName('Private');
+        parentDict.removeByName("Private");
         return;
       }
       var size = privateOffset[0];
@@ -6273,15 +9131,18 @@ var CFFParser = (function CFFParserClosure() {
       var privateDictEnd = offset + size;
       var dictData = this.bytes.subarray(offset, privateDictEnd);
       var dict = this.parseDict(dictData);
-      var privateDict = this.createDict(CFFPrivateDict, dict,
-                                        parentDict.strings);
+      var privateDict = this.createDict(
+        CFFPrivateDict,
+        dict,
+        parentDict.strings,
+      );
       parentDict.privateDict = privateDict;
 
       // Parse the Subrs index also since it's relative to the private dict.
-      if (!privateDict.getByName('Subrs')) {
+      if (!privateDict.getByName("Subrs")) {
         return;
       }
-      var subrsOffset = privateDict.getByName('Subrs');
+      var subrsOffset = privateDict.getByName("Subrs");
       var relativeOffset = offset + subrsOffset;
       // Validate the offset.
       if (subrsOffset === 0 || relativeOffset >= this.bytes.length) {
@@ -6293,20 +9154,29 @@ var CFFParser = (function CFFParserClosure() {
     },
     parseCharsets: function CFFParser_parseCharsets(pos, length, strings, cid) {
       if (pos === 0) {
-        return new CFFCharset(true, CFFCharsetPredefinedTypes.ISO_ADOBE,
-                              ISOAdobeCharset);
+        return new CFFCharset(
+          true,
+          CFFCharsetPredefinedTypes.ISO_ADOBE,
+          ISOAdobeCharset,
+        );
       } else if (pos === 1) {
-        return new CFFCharset(true, CFFCharsetPredefinedTypes.EXPERT,
-                              ExpertCharset);
+        return new CFFCharset(
+          true,
+          CFFCharsetPredefinedTypes.EXPERT,
+          ExpertCharset,
+        );
       } else if (pos === 2) {
-        return new CFFCharset(true, CFFCharsetPredefinedTypes.EXPERT_SUBSET,
-                              ExpertSubsetCharset);
+        return new CFFCharset(
+          true,
+          CFFCharsetPredefinedTypes.EXPERT_SUBSET,
+          ExpertSubsetCharset,
+        );
       }
 
       var bytes = this.bytes;
       var start = pos;
       var format = bytes[pos++];
-      var charset = ['.notdef'];
+      var charset = [".notdef"];
       var id, count, i;
 
       // subtract 1 for the .notdef glyph
@@ -6338,7 +9208,7 @@ var CFFParser = (function CFFParserClosure() {
           }
           break;
         default:
-          error('Unknown charset format');
+          error("Unknown charset format");
       }
       // Raw won't be needed if we actually compile the charset.
       var end = pos;
@@ -6346,10 +9216,12 @@ var CFFParser = (function CFFParserClosure() {
 
       return new CFFCharset(false, format, charset, raw);
     },
-    parseEncoding: function CFFParser_parseEncoding(pos,
-                                                    properties,
-                                                    strings,
-                                                    charset) {
+    parseEncoding: function CFFParser_parseEncoding(
+      pos,
+      properties,
+      strings,
+      charset,
+    ) {
       var encoding = {};
       var bytes = this.bytes;
       var predefined = false;
@@ -6369,8 +9241,9 @@ var CFFParser = (function CFFParserClosure() {
       if (pos === 0 || pos === 1) {
         predefined = true;
         format = pos;
-        var baseEncoding = pos ? Encodings.ExpertEncoding :
-                                 Encodings.StandardEncoding;
+        var baseEncoding = pos
+          ? Encodings.ExpertEncoding
+          : Encodings.StandardEncoding;
         for (i = 0, ii = charset.length; i < ii; i++) {
           var index = baseEncoding.indexOf(charset[i]);
           if (index !== -1) {
@@ -6401,7 +9274,7 @@ var CFFParser = (function CFFParserClosure() {
             break;
 
           default:
-            error('Unknow encoding format: ' + format + ' in CFF');
+            error("Unknow encoding format: " + format + " in CFF");
             break;
         }
         var dataEnd = pos;
@@ -6448,12 +9321,12 @@ var CFFParser = (function CFFParserClosure() {
           pos += 2;
           break;
         default:
-          error('Unknown fdselect format ' + format);
+          error("Unknown fdselect format " + format);
           break;
       }
       var end = pos;
       return new CFFFDSelect(fdSelect, bytes.subarray(start, end));
-    }
+    },
   };
   return CFFParser;
 })();
@@ -6509,7 +9382,7 @@ var CFFStrings = (function CFFStringsClosure() {
     },
     get count() {
       return this.strings.length;
-    }
+    },
   };
   return CFFStrings;
 })();
@@ -6533,7 +9406,7 @@ var CFFIndex = (function CFFIndexClosure() {
     },
     get count() {
       return this.objects.length;
-    }
+    },
   };
   return CFFIndex;
 })();
@@ -6561,7 +9434,7 @@ var CFFDict = (function CFFDictClosure() {
       }
       var type = this.types[key];
       // remove the array wrapping these types of values
-      if (type === 'num' || type === 'sid' || type === 'offset') {
+      if (type === "num" || type === "sid" || type === "offset") {
         value = value[0];
       }
       this.values[key] = value;
@@ -6588,7 +9461,7 @@ var CFFDict = (function CFFDictClosure() {
     },
     removeByName: function CFFDict_removeByName(name) {
       delete this.values[this.nameToKeyMap[name]];
-    }
+    },
   };
   CFFDict.createTables = function CFFDict_createTables(layout) {
     var tables = {
@@ -6597,7 +9470,7 @@ var CFFDict = (function CFFDictClosure() {
       defaults: {},
       types: {},
       opcodes: {},
-      order: []
+      order: [],
     };
     for (var i = 0, ii = layout.length; i < ii; ++i) {
       var entry = layout[i];
@@ -6616,43 +9489,47 @@ var CFFDict = (function CFFDictClosure() {
 
 var CFFTopDict = (function CFFTopDictClosure() {
   var layout = [
-    [[12, 30], 'ROS', ['sid', 'sid', 'num'], null],
-    [[12, 20], 'SyntheticBase', 'num', null],
-    [0, 'version', 'sid', null],
-    [1, 'Notice', 'sid', null],
-    [[12, 0], 'Copyright', 'sid', null],
-    [2, 'FullName', 'sid', null],
-    [3, 'FamilyName', 'sid', null],
-    [4, 'Weight', 'sid', null],
-    [[12, 1], 'isFixedPitch', 'num', 0],
-    [[12, 2], 'ItalicAngle', 'num', 0],
-    [[12, 3], 'UnderlinePosition', 'num', -100],
-    [[12, 4], 'UnderlineThickness', 'num', 50],
-    [[12, 5], 'PaintType', 'num', 0],
-    [[12, 6], 'CharstringType', 'num', 2],
-    [[12, 7], 'FontMatrix', ['num', 'num', 'num', 'num', 'num', 'num'],
-                            [0.001, 0, 0, 0.001, 0, 0]],
-    [13, 'UniqueID', 'num', null],
-    [5, 'FontBBox', ['num', 'num', 'num', 'num'], [0, 0, 0, 0]],
-    [[12, 8], 'StrokeWidth', 'num', 0],
-    [14, 'XUID', 'array', null],
-    [15, 'charset', 'offset', 0],
-    [16, 'Encoding', 'offset', 0],
-    [17, 'CharStrings', 'offset', 0],
-    [18, 'Private', ['offset', 'offset'], null],
-    [[12, 21], 'PostScript', 'sid', null],
-    [[12, 22], 'BaseFontName', 'sid', null],
-    [[12, 23], 'BaseFontBlend', 'delta', null],
-    [[12, 31], 'CIDFontVersion', 'num', 0],
-    [[12, 32], 'CIDFontRevision', 'num', 0],
-    [[12, 33], 'CIDFontType', 'num', 0],
-    [[12, 34], 'CIDCount', 'num', 8720],
-    [[12, 35], 'UIDBase', 'num', null],
+    [[12, 30], "ROS", ["sid", "sid", "num"], null],
+    [[12, 20], "SyntheticBase", "num", null],
+    [0, "version", "sid", null],
+    [1, "Notice", "sid", null],
+    [[12, 0], "Copyright", "sid", null],
+    [2, "FullName", "sid", null],
+    [3, "FamilyName", "sid", null],
+    [4, "Weight", "sid", null],
+    [[12, 1], "isFixedPitch", "num", 0],
+    [[12, 2], "ItalicAngle", "num", 0],
+    [[12, 3], "UnderlinePosition", "num", -100],
+    [[12, 4], "UnderlineThickness", "num", 50],
+    [[12, 5], "PaintType", "num", 0],
+    [[12, 6], "CharstringType", "num", 2],
+    [
+      [12, 7],
+      "FontMatrix",
+      ["num", "num", "num", "num", "num", "num"],
+      [0.001, 0, 0, 0.001, 0, 0],
+    ],
+    [13, "UniqueID", "num", null],
+    [5, "FontBBox", ["num", "num", "num", "num"], [0, 0, 0, 0]],
+    [[12, 8], "StrokeWidth", "num", 0],
+    [14, "XUID", "array", null],
+    [15, "charset", "offset", 0],
+    [16, "Encoding", "offset", 0],
+    [17, "CharStrings", "offset", 0],
+    [18, "Private", ["offset", "offset"], null],
+    [[12, 21], "PostScript", "sid", null],
+    [[12, 22], "BaseFontName", "sid", null],
+    [[12, 23], "BaseFontBlend", "delta", null],
+    [[12, 31], "CIDFontVersion", "num", 0],
+    [[12, 32], "CIDFontRevision", "num", 0],
+    [[12, 33], "CIDFontType", "num", 0],
+    [[12, 34], "CIDCount", "num", 8720],
+    [[12, 35], "UIDBase", "num", null],
     // XXX: CID Fonts on DirectWrite 6.1 only seem to work if FDSelect comes
     // before FDArray.
-    [[12, 37], 'FDSelect', 'offset', null],
-    [[12, 36], 'FDArray', 'offset', null],
-    [[12, 38], 'FontName', 'sid', null]
+    [[12, 37], "FDSelect", "offset", null],
+    [[12, 36], "FDArray", "offset", null],
+    [[12, 38], "FontName", "sid", null],
   ];
   var tables = null;
   function CFFTopDict(strings) {
@@ -6668,24 +9545,24 @@ var CFFTopDict = (function CFFTopDictClosure() {
 
 var CFFPrivateDict = (function CFFPrivateDictClosure() {
   var layout = [
-    [6, 'BlueValues', 'delta', null],
-    [7, 'OtherBlues', 'delta', null],
-    [8, 'FamilyBlues', 'delta', null],
-    [9, 'FamilyOtherBlues', 'delta', null],
-    [[12, 9], 'BlueScale', 'num', 0.039625],
-    [[12, 10], 'BlueShift', 'num', 7],
-    [[12, 11], 'BlueFuzz', 'num', 1],
-    [10, 'StdHW', 'num', null],
-    [11, 'StdVW', 'num', null],
-    [[12, 12], 'StemSnapH', 'delta', null],
-    [[12, 13], 'StemSnapV', 'delta', null],
-    [[12, 14], 'ForceBold', 'num', 0],
-    [[12, 17], 'LanguageGroup', 'num', 0],
-    [[12, 18], 'ExpansionFactor', 'num', 0.06],
-    [[12, 19], 'initialRandomSeed', 'num', 0],
-    [20, 'defaultWidthX', 'num', 0],
-    [21, 'nominalWidthX', 'num', 0],
-    [19, 'Subrs', 'offset', null]
+    [6, "BlueValues", "delta", null],
+    [7, "OtherBlues", "delta", null],
+    [8, "FamilyBlues", "delta", null],
+    [9, "FamilyOtherBlues", "delta", null],
+    [[12, 9], "BlueScale", "num", 0.039625],
+    [[12, 10], "BlueShift", "num", 7],
+    [[12, 11], "BlueFuzz", "num", 1],
+    [10, "StdHW", "num", null],
+    [11, "StdVW", "num", null],
+    [[12, 12], "StemSnapH", "delta", null],
+    [[12, 13], "StemSnapV", "delta", null],
+    [[12, 14], "ForceBold", "num", 0],
+    [[12, 17], "LanguageGroup", "num", 0],
+    [[12, 18], "ExpansionFactor", "num", 0.06],
+    [[12, 19], "initialRandomSeed", "num", 0],
+    [20, "defaultWidthX", "num", 0],
+    [21, "nominalWidthX", "num", 0],
+    [19, "Subrs", "offset", null],
   ];
   var tables = null;
   function CFFPrivateDict(strings) {
@@ -6702,7 +9579,7 @@ var CFFPrivateDict = (function CFFPrivateDictClosure() {
 var CFFCharsetPredefinedTypes = {
   ISO_ADOBE: 0,
   EXPERT: 1,
-  EXPERT_SUBSET: 2
+  EXPERT_SUBSET: 2,
 };
 var CFFCharset = (function CFFCharsetClosure() {
   function CFFCharset(predefined, format, charset, raw) {
@@ -6744,7 +9621,7 @@ var CFFOffsetTracker = (function CFFOffsetTrackerClosure() {
     },
     track: function CFFOffsetTracker_track(key, location) {
       if (key in this.offsets) {
-        error('Already tracking location of ' + key);
+        error("Already tracking location of " + key);
       }
       this.offsets[key] = location;
     },
@@ -6753,11 +9630,13 @@ var CFFOffsetTracker = (function CFFOffsetTrackerClosure() {
         this.offsets[key] += value;
       }
     },
-    setEntryLocation: function CFFOffsetTracker_setEntryLocation(key,
-                                                                 values,
-                                                                 output) {
+    setEntryLocation: function CFFOffsetTracker_setEntryLocation(
+      key,
+      values,
+      output,
+    ) {
       if (!(key in this.offsets)) {
-        error('Not tracking location of ' + key);
+        error("Not tracking location of " + key);
       }
       var data = output.data;
       var dataOffset = this.offsets[key];
@@ -6769,18 +9648,23 @@ var CFFOffsetTracker = (function CFFOffsetTrackerClosure() {
         var offset3 = offset0 + 3;
         var offset4 = offset0 + 4;
         // It's easy to screw up offsets so perform this sanity check.
-        if (data[offset0] !== 0x1d || data[offset1] !== 0 ||
-            data[offset2] !== 0 || data[offset3] !== 0 || data[offset4] !== 0) {
-          error('writing to an offset that is not empty');
+        if (
+          data[offset0] !== 0x1d ||
+          data[offset1] !== 0 ||
+          data[offset2] !== 0 ||
+          data[offset3] !== 0 ||
+          data[offset4] !== 0
+        ) {
+          error("writing to an offset that is not empty");
         }
         var value = values[i];
         data[offset0] = 0x1d;
-        data[offset1] = (value >> 24) & 0xFF;
-        data[offset2] = (value >> 16) & 0xFF;
-        data[offset3] = (value >> 8) & 0xFF;
-        data[offset4] = value & 0xFF;
+        data[offset1] = (value >> 24) & 0xff;
+        data[offset2] = (value >> 16) & 0xff;
+        data[offset3] = (value >> 8) & 0xff;
+        data[offset4] = value & 0xff;
       }
-    }
+    },
   };
   return CFFOffsetTracker;
 })();
@@ -6799,7 +9683,7 @@ var CFFCompiler = (function CFFCompilerClosure() {
         add: function CFFCompiler_add(data) {
           this.data = this.data.concat(data);
           this.length = this.data.length;
-        }
+        },
       };
 
       // Compile the five entries that must be in order.
@@ -6822,23 +9706,25 @@ var CFFCompiler = (function CFFCompilerClosure() {
         // - If neither have matrices, use default.
         // To make this work on all platforms we move the top matrix into each
         // sub top dict and concat if necessary.
-        if (cff.topDict.hasName('FontMatrix')) {
-          var base = cff.topDict.getByName('FontMatrix');
-          cff.topDict.removeByName('FontMatrix');
+        if (cff.topDict.hasName("FontMatrix")) {
+          var base = cff.topDict.getByName("FontMatrix");
+          cff.topDict.removeByName("FontMatrix");
           for (var i = 0, ii = cff.fdArray.length; i < ii; i++) {
             var subDict = cff.fdArray[i];
             var matrix = base.slice(0);
-            if (subDict.hasName('FontMatrix')) {
-              matrix = Util.transform(matrix, subDict.getByName('FontMatrix'));
+            if (subDict.hasName("FontMatrix")) {
+              matrix = Util.transform(matrix, subDict.getByName("FontMatrix"));
             }
-            subDict.setByName('FontMatrix', matrix);
+            subDict.setByName("FontMatrix", matrix);
           }
         }
       }
 
-      var compiled = this.compileTopDicts([cff.topDict],
-                                          output.length,
-                                          cff.isCIDFont);
+      var compiled = this.compileTopDicts(
+        [cff.topDict],
+        output.length,
+        cff.isCIDFont,
+      );
       output.add(compiled.output);
       var topDictTracker = compiled.trackers[0];
 
@@ -6849,42 +9735,48 @@ var CFFCompiler = (function CFFCompilerClosure() {
       output.add(globalSubrIndex);
 
       // Now start on the other entries that have no specfic order.
-      if (cff.encoding && cff.topDict.hasName('Encoding')) {
+      if (cff.encoding && cff.topDict.hasName("Encoding")) {
         if (cff.encoding.predefined) {
-          topDictTracker.setEntryLocation('Encoding', [cff.encoding.format],
-                                          output);
+          topDictTracker.setEntryLocation(
+            "Encoding",
+            [cff.encoding.format],
+            output,
+          );
         } else {
           var encoding = this.compileEncoding(cff.encoding);
-          topDictTracker.setEntryLocation('Encoding', [output.length], output);
+          topDictTracker.setEntryLocation("Encoding", [output.length], output);
           output.add(encoding);
         }
       }
 
-      if (cff.charset && cff.topDict.hasName('charset')) {
+      if (cff.charset && cff.topDict.hasName("charset")) {
         if (cff.charset.predefined) {
-          topDictTracker.setEntryLocation('charset', [cff.charset.format],
-                                          output);
+          topDictTracker.setEntryLocation(
+            "charset",
+            [cff.charset.format],
+            output,
+          );
         } else {
           var charset = this.compileCharset(cff.charset);
-          topDictTracker.setEntryLocation('charset', [output.length], output);
+          topDictTracker.setEntryLocation("charset", [output.length], output);
           output.add(charset);
         }
       }
 
       var charStrings = this.compileCharStrings(cff.charStrings);
-      topDictTracker.setEntryLocation('CharStrings', [output.length], output);
+      topDictTracker.setEntryLocation("CharStrings", [output.length], output);
       output.add(charStrings);
 
       if (cff.isCIDFont) {
         // For some reason FDSelect must be in front of FDArray on windows. OSX
         // and linux don't seem to care.
-        topDictTracker.setEntryLocation('FDSelect', [output.length], output);
+        topDictTracker.setEntryLocation("FDSelect", [output.length], output);
         var fdSelect = this.compileFDSelect(cff.fdSelect.raw);
         output.add(fdSelect);
         // It is unclear if the sub font dictionary can have CID related
         // dictionary keys, but the sanitizer doesn't like them so remove them.
         compiled = this.compileTopDicts(cff.fdArray, output.length, true);
-        topDictTracker.setEntryLocation('FDArray', [output.length], output);
+        topDictTracker.setEntryLocation("FDArray", [output.length], output);
         output.add(compiled.output);
         var fontDictTrackers = compiled.trackers;
 
@@ -6900,7 +9792,8 @@ var CFFCompiler = (function CFFCompilerClosure() {
       return output.data;
     },
     encodeNumber: function CFFCompiler_encodeNumber(value) {
-      if (parseFloat(value) === parseInt(value, 10) && !isNaN(value)) { // isInt
+      if (parseFloat(value) === parseInt(value, 10) && !isNaN(value)) {
+        // isInt
         return this.encodeInteger(value);
       } else {
         return this.encodeFloat(value);
@@ -6912,25 +9805,25 @@ var CFFCompiler = (function CFFCompilerClosure() {
       // rounding inaccurate doubles
       var m = /\.(\d*?)(?:9{5,20}|0{5,20})\d{0,2}(?:e(.+)|$)/.exec(value);
       if (m) {
-        var epsilon = parseFloat('1e' + ((m[2] ? +m[2] : 0) + m[1].length));
+        var epsilon = parseFloat("1e" + ((m[2] ? +m[2] : 0) + m[1].length));
         value = (Math.round(num * epsilon) / epsilon).toString();
       }
 
-      var nibbles = '';
+      var nibbles = "";
       var i, ii;
       for (i = 0, ii = value.length; i < ii; ++i) {
         var a = value[i];
-        if (a === 'e') {
-          nibbles += value[++i] === '-' ? 'c' : 'b';
-        } else if (a === '.') {
-          nibbles += 'a';
-        } else if (a === '-') {
-          nibbles += 'e';
+        if (a === "e") {
+          nibbles += value[++i] === "-" ? "c" : "b";
+        } else if (a === ".") {
+          nibbles += "a";
+        } else if (a === "-") {
+          nibbles += "e";
         } else {
           nibbles += a;
         }
       }
-      nibbles += (nibbles.length & 1) ? 'f' : 'ff';
+      nibbles += nibbles.length & 1 ? "f" : "ff";
       var out = [30];
       for (i = 0, ii = nibbles.length; i < ii; i += 2) {
         out.push(parseInt(nibbles.substr(i, 2), 16));
@@ -6943,28 +9836,25 @@ var CFFCompiler = (function CFFCompilerClosure() {
         code = [value + 139];
       } else if (value >= 108 && value <= 1131) {
         value = [value - 108];
-        code = [(value >> 8) + 247, value & 0xFF];
+        code = [(value >> 8) + 247, value & 0xff];
       } else if (value >= -1131 && value <= -108) {
         value = -value - 108;
-        code = [(value >> 8) + 251, value & 0xFF];
+        code = [(value >> 8) + 251, value & 0xff];
       } else if (value >= -32768 && value <= 32767) {
-        code = [0x1c, (value >> 8) & 0xFF, value & 0xFF];
+        code = [0x1c, (value >> 8) & 0xff, value & 0xff];
       } else {
-        code = [0x1d,
-                (value >> 24) & 0xFF,
-                (value >> 16) & 0xFF,
-                (value >> 8) & 0xFF,
-                 value & 0xFF];
+        code = [
+          0x1d,
+          (value >> 24) & 0xff,
+          (value >> 16) & 0xff,
+          (value >> 8) & 0xff,
+          value & 0xff,
+        ];
       }
       return code;
     },
     compileHeader: function CFFCompiler_compileHeader(header) {
-      return [
-        header.major,
-        header.minor,
-        header.hdrSize,
-        header.offSize
-      ];
+      return [header.major, header.minor, header.hdrSize, header.offSize];
     },
     compileNameIndex: function CFFCompiler_compileNameIndex(names) {
       var nameIndex = new CFFIndex();
@@ -6973,19 +9863,21 @@ var CFFCompiler = (function CFFCompilerClosure() {
       }
       return this.compileIndex(nameIndex);
     },
-    compileTopDicts: function CFFCompiler_compileTopDicts(dicts,
-                                                          length,
-                                                          removeCidKeys) {
+    compileTopDicts: function CFFCompiler_compileTopDicts(
+      dicts,
+      length,
+      removeCidKeys,
+    ) {
       var fontDictTrackers = [];
       var fdArrayIndex = new CFFIndex();
       for (var i = 0, ii = dicts.length; i < ii; ++i) {
         var fontDict = dicts[i];
         if (removeCidKeys) {
-          fontDict.removeByName('CIDFontVersion');
-          fontDict.removeByName('CIDFontRevision');
-          fontDict.removeByName('CIDFontType');
-          fontDict.removeByName('CIDCount');
-          fontDict.removeByName('UIDBase');
+          fontDict.removeByName("CIDFontVersion");
+          fontDict.removeByName("CIDFontRevision");
+          fontDict.removeByName("CIDFontType");
+          fontDict.removeByName("CIDCount");
+          fontDict.removeByName("UIDBase");
         }
         var fontDictTracker = new CFFOffsetTracker();
         var fontDictData = this.compileDict(fontDict, fontDictTracker);
@@ -6996,16 +9888,20 @@ var CFFCompiler = (function CFFCompilerClosure() {
       fdArrayIndex = this.compileIndex(fdArrayIndex, fontDictTrackers);
       return {
         trackers: fontDictTrackers,
-        output: fdArrayIndex
+        output: fdArrayIndex,
       };
     },
-    compilePrivateDicts: function CFFCompiler_compilePrivateDicts(dicts,
-                                                                  trackers,
-                                                                  output) {
+    compilePrivateDicts: function CFFCompiler_compilePrivateDicts(
+      dicts,
+      trackers,
+      output,
+    ) {
       for (var i = 0, ii = dicts.length; i < ii; ++i) {
         var fontDict = dicts[i];
-        assert(fontDict.privateDict && fontDict.hasName('Private'),
-               'There must be an private dictionary.');
+        assert(
+          fontDict.privateDict && fontDict.hasName("Private"),
+          "There must be an private dictionary.",
+        );
         var privateDict = fontDict.privateDict;
         var privateDictTracker = new CFFOffsetTracker();
         var privateDictData = this.compileDict(privateDict, privateDictTracker);
@@ -7019,15 +9915,20 @@ var CFFCompiler = (function CFFCompilerClosure() {
           outputLength = 0;
         }
 
-        trackers[i].setEntryLocation('Private',
-                                     [privateDictData.length, outputLength],
-                                     output);
+        trackers[i].setEntryLocation(
+          "Private",
+          [privateDictData.length, outputLength],
+          output,
+        );
         output.add(privateDictData);
 
-        if (privateDict.subrsIndex && privateDict.hasName('Subrs')) {
+        if (privateDict.subrsIndex && privateDict.hasName("Subrs")) {
           var subrs = this.compileIndex(privateDict.subrsIndex);
-          privateDictTracker.setEntryLocation('Subrs', [privateDictData.length],
-                                              output);
+          privateDictTracker.setEntryLocation(
+            "Subrs",
+            [privateDictData.length],
+            output,
+          );
           output.add(subrs);
         }
       }
@@ -7059,11 +9960,11 @@ var CFFCompiler = (function CFFCompilerClosure() {
           var type = types[j];
           var value = values[j];
           switch (type) {
-            case 'num':
-            case 'sid':
+            case "num":
+            case "sid":
               out = out.concat(this.encodeNumber(value));
               break;
-            case 'offset':
+            case "offset":
               // For offsets we just insert a 32bit integer so we don't have to
               // deal with figuring out the length of the offset when it gets
               // replaced later on by the compiler.
@@ -7075,15 +9976,15 @@ var CFFCompiler = (function CFFCompilerClosure() {
               }
               out = out.concat([0x1d, 0, 0, 0, 0]);
               break;
-            case 'array':
-            case 'delta':
+            case "array":
+            case "delta":
               out = out.concat(this.encodeNumber(value));
               for (var k = 1, kk = values.length; k < kk; ++k) {
                 out = out.concat(this.encodeNumber(values[k]));
               }
               break;
             default:
-              error('Unknown data type of ' + type);
+              error("Unknown data type of " + type);
               break;
           }
         }
@@ -7133,9 +10034,10 @@ var CFFCompiler = (function CFFCompilerClosure() {
         return [0, 0, 0];
       }
 
-      var data = [(count >> 8) & 0xFF, count & 0xff];
+      var data = [(count >> 8) & 0xff, count & 0xff];
 
-      var lastOffset = 1, i;
+      var lastOffset = 1,
+        i;
       for (i = 0; i < count; ++i) {
         lastOffset += objects[i].length;
       }
@@ -7158,19 +10060,22 @@ var CFFCompiler = (function CFFCompilerClosure() {
       var relativeOffset = 1;
       for (i = 0; i < count + 1; i++) {
         if (offsetSize === 1) {
-          data.push(relativeOffset & 0xFF);
+          data.push(relativeOffset & 0xff);
         } else if (offsetSize === 2) {
-          data.push((relativeOffset >> 8) & 0xFF,
-                     relativeOffset & 0xFF);
+          data.push((relativeOffset >> 8) & 0xff, relativeOffset & 0xff);
         } else if (offsetSize === 3) {
-          data.push((relativeOffset >> 16) & 0xFF,
-                    (relativeOffset >> 8) & 0xFF,
-                     relativeOffset & 0xFF);
+          data.push(
+            (relativeOffset >> 16) & 0xff,
+            (relativeOffset >> 8) & 0xff,
+            relativeOffset & 0xff,
+          );
         } else {
-          data.push((relativeOffset >>> 24) & 0xFF,
-                    (relativeOffset >> 16) & 0xFF,
-                    (relativeOffset >> 8) & 0xFF,
-                     relativeOffset & 0xFF);
+          data.push(
+            (relativeOffset >>> 24) & 0xff,
+            (relativeOffset >> 16) & 0xff,
+            (relativeOffset >> 8) & 0xff,
+            relativeOffset & 0xff,
+          );
         }
 
         if (objects[i]) {
@@ -7188,7 +10093,7 @@ var CFFCompiler = (function CFFCompilerClosure() {
         }
       }
       return data;
-    }
+    },
   };
   return CFFCompiler;
 })();

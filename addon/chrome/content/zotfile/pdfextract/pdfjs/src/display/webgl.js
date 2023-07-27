@@ -17,7 +17,7 @@
 /* globals PDFJS, shadow */
 /* jshint -W043 */
 
-'use strict';
+"use strict";
 
 var WebGLUtils = (function WebGLUtilsClosure() {
   function loadShader(gl, code, shaderType) {
@@ -27,7 +27,7 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
     if (!compiled) {
       var errorMsg = gl.getShaderInfoLog(shader);
-      throw new Error('Error during shader compilation: ' + errorMsg);
+      throw new Error("Error during shader compilation: " + errorMsg);
     }
     return shader;
   }
@@ -46,7 +46,7 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     var linked = gl.getProgramParameter(program, gl.LINK_STATUS);
     if (!linked) {
       var errorMsg = gl.getProgramInfoLog(program);
-      throw new Error('Error during program linking: ' + errorMsg);
+      throw new Error("Error during program linking: " + errorMsg);
     }
     return program;
   }
@@ -71,12 +71,14 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     if (currentGL) {
       return;
     }
-    currentCanvas = document.createElement('canvas');
-    currentGL = currentCanvas.getContext('webgl',
-      { premultipliedalpha: false });
+    currentCanvas = document.createElement("canvas");
+    currentGL = currentCanvas.getContext("webgl", {
+      premultipliedalpha: false,
+    });
   }
 
-  var smaskVertexShaderCode = '\
+  var smaskVertexShaderCode =
+    "\
   attribute vec2 a_position;                                    \
   attribute vec2 a_texCoord;                                    \
                                                                 \
@@ -89,9 +91,10 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);          \
                                                                 \
     v_texCoord = a_texCoord;                                    \
-  }                                                             ';
+  }                                                             ";
 
-  var smaskFragmentShaderCode = '\
+  var smaskFragmentShaderCode =
+    "\
   precision mediump float;                                      \
                                                                 \
   uniform vec4 u_backdrop;                                      \
@@ -118,7 +121,7 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     imageColor.a *= lum;                                        \
     imageColor.rgb *= imageColor.a;                             \
     gl_FragColor = imageColor;                                  \
-  }                                                             ';
+  }                                                             ";
 
   var smaskCache = null;
 
@@ -140,25 +143,25 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     var cache = {};
     cache.gl = gl;
     cache.canvas = canvas;
-    cache.resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
-    cache.positionLocation = gl.getAttribLocation(program, 'a_position');
-    cache.backdropLocation = gl.getUniformLocation(program, 'u_backdrop');
-    cache.subtypeLocation = gl.getUniformLocation(program, 'u_subtype');
+    cache.resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+    cache.positionLocation = gl.getAttribLocation(program, "a_position");
+    cache.backdropLocation = gl.getUniformLocation(program, "u_backdrop");
+    cache.subtypeLocation = gl.getUniformLocation(program, "u_subtype");
 
-    var texCoordLocation = gl.getAttribLocation(program, 'a_texCoord');
-    var texLayerLocation = gl.getUniformLocation(program, 'u_image');
-    var texMaskLocation = gl.getUniformLocation(program, 'u_mask');
+    var texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
+    var texLayerLocation = gl.getUniformLocation(program, "u_image");
+    var texMaskLocation = gl.getUniformLocation(program, "u_mask");
 
     // provide texture coordinates for the rectangle.
     var texCoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      0.0,  0.0,
-      1.0,  0.0,
-      0.0,  1.0,
-      0.0,  1.0,
-      1.0,  0.0,
-      1.0,  1.0]), gl.STATIC_DRAW);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([
+        0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0,
+      ]),
+      gl.STATIC_DRAW,
+    );
     gl.enableVertexAttribArray(texCoordLocation);
     gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
 
@@ -169,42 +172,62 @@ var WebGLUtils = (function WebGLUtilsClosure() {
   }
 
   function composeSMask(layer, mask, properties) {
-    var width = layer.width, height = layer.height;
+    var width = layer.width,
+      height = layer.height;
 
     if (!smaskCache) {
       initSmaskGL();
     }
-    var cache = smaskCache,canvas = cache.canvas, gl = cache.gl;
+    var cache = smaskCache,
+      canvas = cache.canvas,
+      gl = cache.gl;
     canvas.width = width;
     canvas.height = height;
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     gl.uniform2f(cache.resolutionLocation, width, height);
 
     if (properties.backdrop) {
-      gl.uniform4f(cache.resolutionLocation, properties.backdrop[0],
-                   properties.backdrop[1], properties.backdrop[2], 1);
+      gl.uniform4f(
+        cache.resolutionLocation,
+        properties.backdrop[0],
+        properties.backdrop[1],
+        properties.backdrop[2],
+        1,
+      );
     } else {
       gl.uniform4f(cache.resolutionLocation, 0, 0, 0, 0);
     }
-    gl.uniform1i(cache.subtypeLocation,
-                 properties.subtype === 'Luminosity' ? 1 : 0);
+    gl.uniform1i(
+      cache.subtypeLocation,
+      properties.subtype === "Luminosity" ? 1 : 0,
+    );
 
     // Create a textures
     var texture = createTexture(gl, layer, gl.TEXTURE0);
     var maskTexture = createTexture(gl, mask, gl.TEXTURE1);
 
-
     // Create a buffer and put a single clipspace rectangle in
     // it (2 triangles)
     var buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      0, 0,
-      width, 0,
-      0, height,
-      0, height,
-      width, 0,
-      width, height]), gl.STATIC_DRAW);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([
+        0,
+        0,
+        width,
+        0,
+        0,
+        height,
+        0,
+        height,
+        width,
+        0,
+        width,
+        height,
+      ]),
+      gl.STATIC_DRAW,
+    );
     gl.enableVertexAttribArray(cache.positionLocation);
     gl.vertexAttribPointer(cache.positionLocation, 2, gl.FLOAT, false, 0, 0);
 
@@ -225,7 +248,8 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     return canvas;
   }
 
-  var figuresVertexShaderCode = '\
+  var figuresVertexShaderCode =
+    "\
   attribute vec2 a_position;                                    \
   attribute vec3 a_color;                                       \
                                                                 \
@@ -241,16 +265,17 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);          \
                                                                 \
     v_color = vec4(a_color / 255.0, 1.0);                       \
-  }                                                             ';
+  }                                                             ";
 
-  var figuresFragmentShaderCode = '\
+  var figuresFragmentShaderCode =
+    "\
   precision mediump float;                                      \
                                                                 \
   varying vec4 v_color;                                         \
                                                                 \
   void main() {                                                 \
     gl_FragColor = v_color;                                     \
-  }                                                             ';
+  }                                                             ";
 
   var figuresCache = null;
 
@@ -272,11 +297,11 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     var cache = {};
     cache.gl = gl;
     cache.canvas = canvas;
-    cache.resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
-    cache.scaleLocation = gl.getUniformLocation(program, 'u_scale');
-    cache.offsetLocation = gl.getUniformLocation(program, 'u_offset');
-    cache.positionLocation = gl.getAttribLocation(program, 'a_position');
-    cache.colorLocation = gl.getAttribLocation(program, 'a_color');
+    cache.resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+    cache.scaleLocation = gl.getUniformLocation(program, "u_scale");
+    cache.offsetLocation = gl.getUniformLocation(program, "u_offset");
+    cache.positionLocation = gl.getAttribLocation(program, "a_position");
+    cache.colorLocation = gl.getAttribLocation(program, "a_color");
 
     figuresCache = cache;
   }
@@ -285,7 +310,9 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     if (!figuresCache) {
       initFiguresGL();
     }
-    var cache = figuresCache, canvas = cache.canvas, gl = cache.gl;
+    var cache = figuresCache,
+      canvas = cache.canvas,
+      gl = cache.gl;
 
     canvas.width = width;
     canvas.height = height;
@@ -297,11 +324,11 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     var i, ii, rows;
     for (i = 0, ii = figures.length; i < ii; i++) {
       switch (figures[i].type) {
-        case 'lattice':
+        case "lattice":
           rows = (figures[i].coords.length / figures[i].verticesPerRow) | 0;
           count += (rows - 1) * (figures[i].verticesPerRow - 1) * 6;
           break;
-        case 'triangles':
+        case "triangles":
           count += figures[i].coords.length;
           break;
       }
@@ -309,12 +336,16 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     // transfer data
     var coords = new Float32Array(count * 2);
     var colors = new Uint8Array(count * 3);
-    var coordsMap = context.coords, colorsMap = context.colors;
-    var pIndex = 0, cIndex = 0;
+    var coordsMap = context.coords,
+      colorsMap = context.colors;
+    var pIndex = 0,
+      cIndex = 0;
     for (i = 0, ii = figures.length; i < ii; i++) {
-      var figure = figures[i], ps = figure.coords, cs = figure.colors;
+      var figure = figures[i],
+        ps = figure.coords,
+        cs = figure.colors;
       switch (figure.type) {
-        case 'lattice':
+        case "lattice":
           var cols = figure.verticesPerRow;
           rows = (ps.length / cols) | 0;
           for (var row = 1; row < rows; row++) {
@@ -356,7 +387,7 @@ var WebGLUtils = (function WebGLUtilsClosure() {
             }
           }
           break;
-        case 'triangles':
+        case "triangles":
           for (var j = 0, jj = ps.length; j < jj; j++) {
             coords[pIndex] = coordsMap[ps[j]];
             coords[pIndex + 1] = coordsMap[ps[j] + 1];
@@ -372,8 +403,12 @@ var WebGLUtils = (function WebGLUtilsClosure() {
 
     // draw
     if (backgroundColor) {
-      gl.clearColor(backgroundColor[0] / 255, backgroundColor[1] / 255,
-                    backgroundColor[2] / 255, 1.0);
+      gl.clearColor(
+        backgroundColor[0] / 255,
+        backgroundColor[1] / 255,
+        backgroundColor[2] / 255,
+        1.0,
+      );
     } else {
       gl.clearColor(0, 0, 0, 0);
     }
@@ -389,8 +424,14 @@ var WebGLUtils = (function WebGLUtilsClosure() {
     gl.bindBuffer(gl.ARRAY_BUFFER, colorsBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
     gl.enableVertexAttribArray(cache.colorLocation);
-    gl.vertexAttribPointer(cache.colorLocation, 3, gl.UNSIGNED_BYTE, false,
-                           0, 0);
+    gl.vertexAttribPointer(
+      cache.colorLocation,
+      3,
+      gl.UNSIGNED_BYTE,
+      false,
+      0,
+      0,
+    );
 
     gl.uniform2f(cache.scaleLocation, context.scaleX, context.scaleY);
     gl.uniform2f(cache.offsetLocation, context.offsetX, context.offsetY);
@@ -427,11 +468,11 @@ var WebGLUtils = (function WebGLUtilsClosure() {
       try {
         generageGL();
         enabled = !!currentGL;
-      } catch (e) { }
-      return shadow(this, 'isEnabled', enabled);
+      } catch (e) {}
+      return shadow(this, "isEnabled", enabled);
     },
     composeSMask: composeSMask,
     drawFigures: drawFigures,
-    clear: cleanup
+    clear: cleanup,
   };
 })();

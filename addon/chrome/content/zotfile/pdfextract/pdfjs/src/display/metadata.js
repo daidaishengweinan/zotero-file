@@ -16,35 +16,43 @@
  * limitations under the License.
  */
 
-'use strict';
+"use strict";
 
-var Metadata = PDFJS.Metadata = (function MetadataClosure() {
+var Metadata = (PDFJS.Metadata = (function MetadataClosure() {
   function fixMetadata(meta) {
-    return meta.replace(/>\\376\\377([^<]+)/g, function(all, codes) {
-      var bytes = codes.replace(/\\([0-3])([0-7])([0-7])/g,
-                                function(code, d1, d2, d3) {
-        return String.fromCharCode(d1 * 64 + d2 * 8 + d3 * 1);
-      });
-      var chars = '';
+    return meta.replace(/>\\376\\377([^<]+)/g, function (all, codes) {
+      var bytes = codes.replace(
+        /\\([0-3])([0-7])([0-7])/g,
+        function (code, d1, d2, d3) {
+          return String.fromCharCode(d1 * 64 + d2 * 8 + d3 * 1);
+        },
+      );
+      var chars = "";
       for (var i = 0; i < bytes.length; i += 2) {
         var code = bytes.charCodeAt(i) * 256 + bytes.charCodeAt(i + 1);
-        chars += code >= 32 && code < 127 && code !== 60 && code !== 62 &&
-          code !== 38 && false ? String.fromCharCode(code) :
-          '&#x' + (0x10000 + code).toString(16).substring(1) + ';';
+        chars +=
+          code >= 32 &&
+          code < 127 &&
+          code !== 60 &&
+          code !== 62 &&
+          code !== 38 &&
+          false
+            ? String.fromCharCode(code)
+            : "&#x" + (0x10000 + code).toString(16).substring(1) + ";";
       }
-      return '>' + chars;
+      return ">" + chars;
     });
   }
 
   function Metadata(meta) {
-    if (typeof meta === 'string') {
+    if (typeof meta === "string") {
       // Ghostscript produces invalid metadata
       meta = fixMetadata(meta);
 
       var parser = new DOMParser();
-      meta = parser.parseFromString(meta, 'application/xml');
+      meta = parser.parseFromString(meta, "application/xml");
     } else if (!(meta instanceof Document)) {
-      error('Metadata: Invalid metadata object');
+      error("Metadata: Invalid metadata object");
     }
 
     this.metaDocument = meta;
@@ -57,27 +65,35 @@ var Metadata = PDFJS.Metadata = (function MetadataClosure() {
       var doc = this.metaDocument;
       var rdf = doc.documentElement;
 
-      if (rdf.nodeName.toLowerCase() !== 'rdf:rdf') { // Wrapped in <xmpmeta>
+      if (rdf.nodeName.toLowerCase() !== "rdf:rdf") {
+        // Wrapped in <xmpmeta>
         rdf = rdf.firstChild;
-        while (rdf && rdf.nodeName.toLowerCase() !== 'rdf:rdf') {
+        while (rdf && rdf.nodeName.toLowerCase() !== "rdf:rdf") {
           rdf = rdf.nextSibling;
         }
       }
 
-      var nodeName = (rdf) ? rdf.nodeName.toLowerCase() : null;
-      if (!rdf || nodeName !== 'rdf:rdf' || !rdf.hasChildNodes()) {
+      var nodeName = rdf ? rdf.nodeName.toLowerCase() : null;
+      if (!rdf || nodeName !== "rdf:rdf" || !rdf.hasChildNodes()) {
         return;
       }
 
-      var children = rdf.childNodes, desc, entry, name, i, ii, length, iLength;
+      var children = rdf.childNodes,
+        desc,
+        entry,
+        name,
+        i,
+        ii,
+        length,
+        iLength;
       for (i = 0, length = children.length; i < length; i++) {
         desc = children[i];
-        if (desc.nodeName.toLowerCase() !== 'rdf:description') {
+        if (desc.nodeName.toLowerCase() !== "rdf:description") {
           continue;
         }
 
         for (ii = 0, iLength = desc.childNodes.length; ii < iLength; ii++) {
-          if (desc.childNodes[ii].nodeName.toLowerCase() !== '#text') {
+          if (desc.childNodes[ii].nodeName.toLowerCase() !== "#text") {
             entry = desc.childNodes[ii];
             name = entry.nodeName.toLowerCase();
             this.metadata[name] = entry.textContent.trim();
@@ -91,9 +107,9 @@ var Metadata = PDFJS.Metadata = (function MetadataClosure() {
     },
 
     has: function Metadata_has(name) {
-      return typeof this.metadata[name] !== 'undefined';
-    }
+      return typeof this.metadata[name] !== "undefined";
+    },
   };
 
   return Metadata;
-})();
+})());

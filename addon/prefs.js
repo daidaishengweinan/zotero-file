@@ -3,7 +3,10 @@ pref("extensions.zotero.__addonRef__.enable", true);
 pref("extensions.zotfile.debug", true);
 pref("extensions.zotfile.source_dir_ff", false);
 pref("extensions.zotfile.source_dir", "D:\\Download");
-pref("extensions.zotfile.dest_dir", "E:\\OneDrive\\OneDrive - junblue\\Zotero\\JRST");
+pref(
+  "extensions.zotfile.dest_dir",
+  "E:\\OneDrive\\OneDrive - junblue\\Zotero\\JRST",
+);
 pref("extensions.zotfile.filetypes", "pdf,doc,docx,txt,rtf,djvu,epub");
 pref("extensions.zotfile.useFileTypes", true);
 pref("extensions.zotfile.allFiles", false);
@@ -41,8 +44,11 @@ pref("extensions.zotfile.version", "5.1.2");
 pref("extensions.zotfile.zotfile3update", false);
 pref("extensions.zotfile.info_window_duration_clickable", 8000);
 pref("extensions.zotfile.info_window_duration", 6000);
-pref("extensions.zotfile.wildcards.default", '{"a": "author", "A": {"field": "author", "operations":[{"function":"exec","regex": "\\\\w{1}"},{"function":"toUpperCase"}]}, "F": "authorLastF", "I": "authorInitials", "d": "editor", "D": {"field": "editor", "operations":[{"function":"exec","regex": "\\\\w{1}"},{"function":"toUpperCase"}]}, "L": "editorLastF", "l": "editorInitials", "t": "titleFormated", "h": "shortTitle", "j": "publicationTitle", "s": "journalAbbreviation", "p": "publisher", "w": {"default": "publisher", "audioRecording": "label", "bill": "legislativeBody", "case": "court", "computerProgram": "company", "film": "distributor", "journalArticle": "publicationTitle", "magazineArticle": "publicationTitle", "newspaperArticle": "publicationTitle", "patent": "issuingAuthority", "presentation": "meetingName", "radioBroadcast": "network", "report": "institution", "thesis": "university", "tvBroadcast": "network"}, "n": "patentNumber", "i": "assignee", "y": "year", "v": "volume", "e": "issue", "T": "itemType", "f": "pages", "x": "extra", "c": "collectionPaths", "g": "authorLastG", "q":"lastAuthor", "Q":"lastAuthor_lastInitial", "u":"lastAuthor_lastf", "U":"lastAuthor_initials", "b":"citekey"}');
-pref("extensions.zotfile.wildcards.user", '{}');
+pref(
+  "extensions.zotfile.wildcards.default",
+  '{"a": "author", "A": {"field": "author", "operations":[{"function":"exec","regex": "\\\\w{1}"},{"function":"toUpperCase"}]}, "F": "authorLastF", "I": "authorInitials", "d": "editor", "D": {"field": "editor", "operations":[{"function":"exec","regex": "\\\\w{1}"},{"function":"toUpperCase"}]}, "L": "editorLastF", "l": "editorInitials", "t": "titleFormated", "h": "shortTitle", "j": "publicationTitle", "s": "journalAbbreviation", "p": "publisher", "w": {"default": "publisher", "audioRecording": "label", "bill": "legislativeBody", "case": "court", "computerProgram": "company", "film": "distributor", "journalArticle": "publicationTitle", "magazineArticle": "publicationTitle", "newspaperArticle": "publicationTitle", "patent": "issuingAuthority", "presentation": "meetingName", "radioBroadcast": "network", "report": "institution", "thesis": "university", "tvBroadcast": "network"}, "n": "patentNumber", "i": "assignee", "y": "year", "v": "volume", "e": "issue", "T": "itemType", "f": "pages", "x": "extra", "c": "collectionPaths", "g": "authorLastG", "q":"lastAuthor", "Q":"lastAuthor_lastInitial", "u":"lastAuthor_lastf", "U":"lastAuthor_initials", "b":"citekey"}',
+);
+pref("extensions.zotfile.wildcards.user", "{}");
 
 pref("extensions.zotfile.tablet", false);
 pref("extensions.zotfile.tablet.dest_dir", "");
@@ -59,7 +65,7 @@ pref("extensions.zotfile.tablet.tagParentPull_tag", "_ANNOTATED");
 pref("extensions.zotfile.tablet.confirmRepush", true);
 pref("extensions.zotfile.tablet.storeCopyOfFile", false);
 pref("extensions.zotfile.tablet.storeCopyOfFile_suffix", "_annotated");
-pref("extensions.zotfile.tablet.subfolders", '[]');
+pref("extensions.zotfile.tablet.subfolders", "[]");
 pref("extensions.zotfile.tablet.projectFolders", 0);
 pref("extensions.zotfile.tablet.showwarning", true);
 pref("extensions.zotfile.tablet.projectFolders01", false);
@@ -124,15 +130,33 @@ pref("extensions.zotfile.pdfExtraction.MenuItem", true);
 pref("extensions.zotfile.pdfExtraction.NoteTruePage", true);
 pref("extensions.zotfile.pdfExtraction.NoteFullCite", true);
 pref("extensions.zotfile.pdfExtraction.NoteRemoveHyphens", true);
-pref("extensions.zotfile.pdfExtraction.formatNoteTitle", "<p><b>%(title) (%(date))</b></p>");
-pref("extensions.zotfile.pdfExtraction.formatNoteTitleColor", "<p><b>%(color) Annotations (%(date))</b></p>");
-pref("extensions.zotfile.pdfExtraction.formatAnnotationNote", '<p><i>%(content) (<a href="%(uri)">note on p.%(page)</a>)</i></p><br>');
-pref("extensions.zotfile.pdfExtraction.formatAnnotationHighlight", '<p>"%(content)" (%(cite))</p>');
-pref("extensions.zotfile.pdfExtraction.formatAnnotationUnderline", '<p>"<u>%(content)</u>" (%(cite))</p>');
-pref("extensions.zotfile.pdfExtraction.replacements", '[]');
+pref(
+  "extensions.zotfile.pdfExtraction.formatNoteTitle",
+  "<p><b>%(title) (%(date))</b></p>",
+);
+pref(
+  "extensions.zotfile.pdfExtraction.formatNoteTitleColor",
+  "<p><b>%(color) Annotations (%(date))</b></p>",
+);
+pref(
+  "extensions.zotfile.pdfExtraction.formatAnnotationNote",
+  '<p><i>%(content) (<a href="%(uri)">note on p.%(page)</a>)</i></p><br>',
+);
+pref(
+  "extensions.zotfile.pdfExtraction.formatAnnotationHighlight",
+  '<p>"%(content)" (%(cite))</p>',
+);
+pref(
+  "extensions.zotfile.pdfExtraction.formatAnnotationUnderline",
+  '<p>"<u>%(content)</u>" (%(cite))</p>',
+);
+pref("extensions.zotfile.pdfExtraction.replacements", "[]");
 pref("extensions.zotfile.pdfExtraction.isoDate", false);
 pref("extensions.zotfile.pdfExtraction.localeDateInNote", true);
 pref("extensions.zotfile.pdfExtraction.colorNotes", false);
 pref("extensions.zotfile.pdfExtraction.colorAnnotations", false);
-pref("extensions.zotfile.pdfExtraction.colorCategories", '{"Black": "#000000", "White": "#FFFFFF", "Gray": "#808080", "Red": "#FF0000", "Orange": "#FFA500", "Yellow": "#FFFF00", "Green": "#00FF00", "Cyan": "#00FFFF", "Blue": "#0000FF", "Magenta": "#FF00FF"}');
+pref(
+  "extensions.zotfile.pdfExtraction.colorCategories",
+  '{"Black": "#000000", "White": "#FFFFFF", "Gray": "#808080", "Red": "#FF0000", "Orange": "#FFA500", "Yellow": "#FFFF00", "Green": "#00FF00", "Cyan": "#00FFFF", "Blue": "#0000FF", "Magenta": "#FF00FF"}',
+);
 //pref("extensions.zotfile.pdfExtraction.format", '"<p>%(markup)s" %(cite)s</p><br><p>%(note)s</p><br>');

@@ -936,11 +936,11 @@ export class HelperExampleFactory {
   static clipboardExample() {
     new ztoolkit.Clipboard()
       .addText(
-        "![Plugin Template](https://github.com/windingwind/zotero-plugin-template)",
+        "![Plugin Template](https://github.com/muisedestiny/zotero-plugin-template)",
         "text/unicode",
       )
       .addText(
-        '<a href="https://github.com/windingwind/zotero-plugin-template">Plugin Template</a>',
+        '<a href="https://github.com/muisedestiny/zotero-plugin-template">Plugin Template</a>',
         "text/html",
       )
       .copy();

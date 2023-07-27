@@ -11,7 +11,6 @@ import { registerPrefsScripts } from "./modules/preferenceScript";
 import { createZToolkit } from "./utils/ztoolkit";
 import Views from "./modules/views";
 
-
 async function onStartup() {
   await Promise.all([
     Zotero.initializationPromise,
@@ -24,15 +23,18 @@ async function onStartup() {
 
   // Only create main object once
   if (!Zotero.ZotFile) {
-    ztoolkit.UI.appendElement({
-      tag: "script",
-      attributes: {
-        src: "chrome://zoterofile/content/zotfile/include.js"
-      }
-    }, document.documentElement)
+    ztoolkit.UI.appendElement(
+      {
+        tag: "script",
+        attributes: {
+          src: "chrome://zoterofile/content/zotfile/include.js",
+        },
+      },
+      document.documentElement,
+    );
   }
 
-  await (new Views()).init()
+  await new Views().init();
 }
 
 async function onMainWindowLoad(win: Window): Promise<void> {
@@ -40,7 +42,6 @@ async function onMainWindowLoad(win: Window): Promise<void> {
   const _ztoolkit = createZToolkit();
   addon.data.ztoolkit = _ztoolkit;
   _globalThis.ztoolkit = _ztoolkit;
-
 }
 
 async function onMainWindowUnload(win: Window): Promise<void> {

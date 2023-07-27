@@ -17,11 +17,11 @@
 /* globals Cmd, ColorSpace, Dict, MozBlobBuilder, Name, PDFJS, Ref, URL,
            Promise */
 
-'use strict';
+"use strict";
 
-var globalScope = (typeof window === 'undefined') ? this : window;
+var globalScope = typeof window === "undefined" ? this : window;
 
-var isWorker = (typeof window === 'undefined');
+var isWorker = typeof window === "undefined";
 
 var FONT_IDENTITY_MATRIX = [0.001, 0, 0, 0.001, 0, 0];
 
@@ -35,19 +35,19 @@ var TextRenderingMode = {
   FILL_STROKE_ADD_TO_PATH: 6,
   ADD_TO_PATH: 7,
   FILL_STROKE_MASK: 3,
-  ADD_TO_PATH_FLAG: 4
+  ADD_TO_PATH_FLAG: 4,
 };
 
 var ImageKind = {
   GRAYSCALE_1BPP: 1,
   RGB_24BPP: 2,
-  RGBA_32BPP: 3
+  RGBA_32BPP: 3,
 };
 
 var AnnotationType = {
   WIDGET: 1,
   TEXT: 2,
-  LINK: 3
+  LINK: 3,
 };
 
 var StreamType = {
@@ -60,7 +60,7 @@ var StreamType = {
   A85: 6,
   AHX: 7,
   CCF: 8,
-  RL: 9
+  RL: 9,
 };
 
 var FontType = {
@@ -74,7 +74,7 @@ var FontType = {
   TYPE3: 7,
   OPENTYPE: 8,
   TYPE0: 9,
-  MMTYPE1: 10
+  MMTYPE1: 10,
 };
 
 // The global PDFJS object exposes the API
@@ -89,11 +89,11 @@ globalScope.PDFJS.pdfBug = false;
 PDFJS.VERBOSITY_LEVELS = {
   errors: 0,
   warnings: 1,
-  infos: 5
+  infos: 5,
 };
 
 // All the possible operations for an operator list.
-var OPS = PDFJS.OPS = {
+var OPS = (PDFJS.OPS = {
   // Intentionally start from 1 so it is easy to spot bad operators that will be
   // 0's.
   dependency: 1,
@@ -186,22 +186,22 @@ var OPS = PDFJS.OPS = {
   paintImageXObjectRepeat: 88,
   paintImageMaskXObjectRepeat: 89,
   paintSolidColorImageMask: 90,
-  constructPath: 91
-};
+  constructPath: 91,
+});
 
 // A notice for devs. These are good for things that are helpful to devs, such
 // as warning that Workers were disabled, which is important to devs but not
 // end users.
 function info(msg) {
   if (PDFJS.verbosity >= PDFJS.VERBOSITY_LEVELS.infos) {
-    console.log('Info: ' + msg);
+    console.log("Info: " + msg);
   }
 }
 
 // Non-fatal warnings.
 function warn(msg) {
   if (PDFJS.verbosity >= PDFJS.VERBOSITY_LEVELS.warnings) {
-    console.log('Warning: ' + msg);
+    console.log("Warning: " + msg);
   }
 }
 
@@ -210,13 +210,13 @@ function warn(msg) {
 function error(msg) {
   // If multiple arguments were passed, pass them all to the log function.
   if (arguments.length > 1) {
-    var logArguments = ['Error:'];
+    var logArguments = ["Error:"];
     logArguments.push.apply(logArguments, arguments);
     console.log.apply(console, logArguments);
     // Join the arguments into a single string for the lines below.
-    msg = [].join.call(arguments, ' ');
+    msg = [].join.call(arguments, " ");
   } else {
-    console.log('Error: ' + msg);
+    console.log("Error: " + msg);
   }
   console.log(backtrace());
   UnsupportedManager.notify(UNSUPPORTED_FEATURES.unknown);
@@ -227,7 +227,7 @@ function backtrace() {
   try {
     throw new Error();
   } catch (e) {
-    return e.stack ? e.stack.split('\n').slice(2).join('\n') : '';
+    return e.stack ? e.stack.split("\n").slice(2).join("\n") : "";
   }
 }
 
@@ -237,30 +237,30 @@ function assert(cond, msg) {
   }
 }
 
-var UNSUPPORTED_FEATURES = PDFJS.UNSUPPORTED_FEATURES = {
-  unknown: 'unknown',
-  forms: 'forms',
-  javaScript: 'javaScript',
-  smask: 'smask',
-  shadingPattern: 'shadingPattern',
-  font: 'font'
-};
+var UNSUPPORTED_FEATURES = (PDFJS.UNSUPPORTED_FEATURES = {
+  unknown: "unknown",
+  forms: "forms",
+  javaScript: "javaScript",
+  smask: "smask",
+  shadingPattern: "shadingPattern",
+  font: "font",
+});
 
-var UnsupportedManager = PDFJS.UnsupportedManager =
+var UnsupportedManager = (PDFJS.UnsupportedManager =
   (function UnsupportedManagerClosure() {
-  var listeners = [];
-  return {
-    listen: function (cb) {
-      listeners.push(cb);
-    },
-    notify: function (featureId) {
-      warn('Unsupported feature "' + featureId + '"');
-      for (var i = 0, ii = listeners.length; i < ii; i++) {
-        listeners[i](featureId);
-      }
-    }
-  };
-})();
+    var listeners = [];
+    return {
+      listen: function (cb) {
+        listeners.push(cb);
+      },
+      notify: function (featureId) {
+        warn('Unsupported feature "' + featureId + '"');
+        for (var i = 0, ii = listeners.length; i < ii; i++) {
+          listeners[i](featureId);
+        }
+      },
+    };
+  })());
 
 // Combines two URLs. The baseUrl shall be absolute URL. If the url is an
 // absolute URL, it will be returned as is.
@@ -272,23 +272,23 @@ function combineUrl(baseUrl, url) {
     return url;
   }
   var i;
-  if (url.charAt(0) === '/') {
+  if (url.charAt(0) === "/") {
     // absolute path
-    i = baseUrl.indexOf('://');
-    if (url.charAt(1) === '/') {
+    i = baseUrl.indexOf("://");
+    if (url.charAt(1) === "/") {
       ++i;
     } else {
-      i = baseUrl.indexOf('/', i + 3);
+      i = baseUrl.indexOf("/", i + 3);
     }
     return baseUrl.substring(0, i) + url;
   } else {
     // relative path
     var pathLength = baseUrl.length;
-    i = baseUrl.lastIndexOf('#');
+    i = baseUrl.lastIndexOf("#");
     pathLength = i >= 0 ? i : pathLength;
-    i = baseUrl.lastIndexOf('?', pathLength);
+    i = baseUrl.lastIndexOf("?", pathLength);
     pathLength = i >= 0 ? i : pathLength;
-    var prefixLength = baseUrl.lastIndexOf('/', pathLength);
+    var prefixLength = baseUrl.lastIndexOf("/", pathLength);
     return baseUrl.substring(0, prefixLength + 1) + url;
   }
 }
@@ -306,10 +306,10 @@ function isValidUrl(url, allowRelative) {
   }
   protocol = protocol[0].toLowerCase();
   switch (protocol) {
-    case 'http':
-    case 'https':
-    case 'ftp':
-    case 'mailto':
+    case "http":
+    case "https":
+    case "ftp":
+    case "mailto":
       return true;
     default:
       return false;
@@ -318,21 +318,23 @@ function isValidUrl(url, allowRelative) {
 PDFJS.isValidUrl = isValidUrl;
 
 function shadow(obj, prop, value) {
-  Object.defineProperty(obj, prop, { value: value,
-                                     enumerable: true,
-                                     configurable: true,
-                                     writable: false });
+  Object.defineProperty(obj, prop, {
+    value: value,
+    enumerable: true,
+    configurable: true,
+    writable: false,
+  });
   return value;
 }
 
-var PasswordResponses = PDFJS.PasswordResponses = {
+var PasswordResponses = (PDFJS.PasswordResponses = {
   NEED_PASSWORD: 1,
-  INCORRECT_PASSWORD: 2
-};
+  INCORRECT_PASSWORD: 2,
+});
 
 var PasswordException = (function PasswordExceptionClosure() {
   function PasswordException(msg, code) {
-    this.name = 'PasswordException';
+    this.name = "PasswordException";
     this.message = msg;
     this.code = code;
   }
@@ -346,7 +348,7 @@ PDFJS.PasswordException = PasswordException;
 
 var UnknownErrorException = (function UnknownErrorExceptionClosure() {
   function UnknownErrorException(msg, details) {
-    this.name = 'UnknownErrorException';
+    this.name = "UnknownErrorException";
     this.message = msg;
     this.details = details;
   }
@@ -360,7 +362,7 @@ PDFJS.UnknownErrorException = UnknownErrorException;
 
 var InvalidPDFException = (function InvalidPDFExceptionClosure() {
   function InvalidPDFException(msg) {
-    this.name = 'InvalidPDFException';
+    this.name = "InvalidPDFException";
     this.message = msg;
   }
 
@@ -373,7 +375,7 @@ PDFJS.InvalidPDFException = InvalidPDFException;
 
 var MissingPDFException = (function MissingPDFExceptionClosure() {
   function MissingPDFException(msg) {
-    this.name = 'MissingPDFException';
+    this.name = "MissingPDFException";
     this.message = msg;
   }
 
@@ -385,18 +387,18 @@ var MissingPDFException = (function MissingPDFExceptionClosure() {
 PDFJS.MissingPDFException = MissingPDFException;
 
 var UnexpectedResponseException =
-    (function UnexpectedResponseExceptionClosure() {
-  function UnexpectedResponseException(msg, status) {
-    this.name = 'UnexpectedResponseException';
-    this.message = msg;
-    this.status = status;
-  }
+  (function UnexpectedResponseExceptionClosure() {
+    function UnexpectedResponseException(msg, status) {
+      this.name = "UnexpectedResponseException";
+      this.message = msg;
+      this.status = status;
+    }
 
-  UnexpectedResponseException.prototype = new Error();
-  UnexpectedResponseException.constructor = UnexpectedResponseException;
+    UnexpectedResponseException.prototype = new Error();
+    UnexpectedResponseException.constructor = UnexpectedResponseException;
 
-  return UnexpectedResponseException;
-})();
+    return UnexpectedResponseException;
+  })();
 PDFJS.UnexpectedResponseException = UnexpectedResponseException;
 
 var NotImplementedException = (function NotImplementedExceptionClosure() {
@@ -405,7 +407,7 @@ var NotImplementedException = (function NotImplementedExceptionClosure() {
   }
 
   NotImplementedException.prototype = new Error();
-  NotImplementedException.prototype.name = 'NotImplementedException';
+  NotImplementedException.prototype.name = "NotImplementedException";
   NotImplementedException.constructor = NotImplementedException;
 
   return NotImplementedException;
@@ -415,11 +417,11 @@ var MissingDataException = (function MissingDataExceptionClosure() {
   function MissingDataException(begin, end) {
     this.begin = begin;
     this.end = end;
-    this.message = 'Missing data [' + begin + ', ' + end + ')';
+    this.message = "Missing data [" + begin + ", " + end + ")";
   }
 
   MissingDataException.prototype = new Error();
-  MissingDataException.prototype.name = 'MissingDataException';
+  MissingDataException.prototype.name = "MissingDataException";
   MissingDataException.constructor = MissingDataException;
 
   return MissingDataException;
@@ -431,12 +433,11 @@ var XRefParseException = (function XRefParseExceptionClosure() {
   }
 
   XRefParseException.prototype = new Error();
-  XRefParseException.prototype.name = 'XRefParseException';
+  XRefParseException.prototype.name = "XRefParseException";
   XRefParseException.constructor = XRefParseException;
 
   return XRefParseException;
 })();
-
 
 function bytesToString(bytes) {
   var length = bytes.length;
@@ -450,25 +451,30 @@ function bytesToString(bytes) {
     var chunk = bytes.subarray(i, chunkEnd);
     strBuf.push(String.fromCharCode.apply(null, chunk));
   }
-  return strBuf.join('');
+  return strBuf.join("");
 }
 
 function stringToBytes(str) {
   var length = str.length;
   var bytes = new Uint8Array(length);
   for (var i = 0; i < length; ++i) {
-    bytes[i] = str.charCodeAt(i) & 0xFF;
+    bytes[i] = str.charCodeAt(i) & 0xff;
   }
   return bytes;
 }
 
 function string32(value) {
-  return String.fromCharCode((value >> 24) & 0xff, (value >> 16) & 0xff,
-                             (value >> 8) & 0xff, value & 0xff);
+  return String.fromCharCode(
+    (value >> 24) & 0xff,
+    (value >> 16) & 0xff,
+    (value >> 8) & 0xff,
+    value & 0xff,
+  );
 }
 
 function log2(x) {
-  var n = 1, i = 0;
+  var n = 1,
+    i = 0;
   while (x > n) {
     n <<= 1;
     i++;
@@ -485,8 +491,13 @@ function readUint16(data, offset) {
 }
 
 function readUint32(data, offset) {
-  return ((data[offset] << 24) | (data[offset + 1] << 16) |
-         (data[offset + 2] << 8) | data[offset + 3]) >>> 0;
+  return (
+    ((data[offset] << 24) |
+      (data[offset + 1] << 16) |
+      (data[offset + 2] << 8) |
+      data[offset + 3]) >>>
+    0
+  );
 }
 
 // Lazy test the endianness of the platform
@@ -495,39 +506,38 @@ function isLittleEndian() {
   var buffer8 = new Uint8Array(2);
   buffer8[0] = 1;
   var buffer16 = new Uint16Array(buffer8.buffer);
-  return (buffer16[0] === 1);
+  return buffer16[0] === 1;
 }
 
-Object.defineProperty(PDFJS, 'isLittleEndian', {
+Object.defineProperty(PDFJS, "isLittleEndian", {
   configurable: true,
   get: function PDFJS_isLittleEndian() {
-    return shadow(PDFJS, 'isLittleEndian', isLittleEndian());
-  }
+    return shadow(PDFJS, "isLittleEndian", isLittleEndian());
+  },
 });
 
 //#if !(FIREFOX || MOZCENTRAL || B2G || CHROME)
 //// Lazy test if the userAgant support CanvasTypedArrays
 function hasCanvasTypedArrays() {
-  var canvas = document.createElement('canvas');
+  var canvas = document.createElement("canvas");
   canvas.width = canvas.height = 1;
-  var ctx = canvas.getContext('2d');
+  var ctx = canvas.getContext("2d");
   var imageData = ctx.createImageData(1, 1);
-  return (typeof imageData.data.buffer !== 'undefined');
+  return typeof imageData.data.buffer !== "undefined";
 }
 
-Object.defineProperty(PDFJS, 'hasCanvasTypedArrays', {
+Object.defineProperty(PDFJS, "hasCanvasTypedArrays", {
   configurable: true,
   get: function PDFJS_hasCanvasTypedArrays() {
-    return shadow(PDFJS, 'hasCanvasTypedArrays', hasCanvasTypedArrays());
-  }
+    return shadow(PDFJS, "hasCanvasTypedArrays", hasCanvasTypedArrays());
+  },
 });
 
 var Uint32ArrayView = (function Uint32ArrayViewClosure() {
-
   function Uint32ArrayView(buffer, length) {
     this.buffer = buffer;
     this.byteLength = buffer.length;
-    this.length = length === undefined ? (this.byteLength >> 2) : length;
+    this.length = length === undefined ? this.byteLength >> 2 : length;
     ensureUint32ArrayViewProps(this.length);
   }
   Uint32ArrayView.prototype = Object.create(null);
@@ -536,25 +546,34 @@ var Uint32ArrayView = (function Uint32ArrayViewClosure() {
   function createUint32ArrayProp(index) {
     return {
       get: function () {
-        var buffer = this.buffer, offset = index << 2;
-        return (buffer[offset] | (buffer[offset + 1] << 8) |
-          (buffer[offset + 2] << 16) | (buffer[offset + 3] << 24)) >>> 0;
+        var buffer = this.buffer,
+          offset = index << 2;
+        return (
+          (buffer[offset] |
+            (buffer[offset + 1] << 8) |
+            (buffer[offset + 2] << 16) |
+            (buffer[offset + 3] << 24)) >>>
+          0
+        );
       },
       set: function (value) {
-        var buffer = this.buffer, offset = index << 2;
+        var buffer = this.buffer,
+          offset = index << 2;
         buffer[offset] = value & 255;
         buffer[offset + 1] = (value >> 8) & 255;
         buffer[offset + 2] = (value >> 16) & 255;
         buffer[offset + 3] = (value >>> 24) & 255;
-      }
+      },
     };
   }
 
   function ensureUint32ArrayViewProps(length) {
     while (uint32ArrayViewSetters < length) {
-      Object.defineProperty(Uint32ArrayView.prototype,
+      Object.defineProperty(
+        Uint32ArrayView.prototype,
         uint32ArrayViewSetters,
-        createUint32ArrayProp(uint32ArrayViewSetters));
+        createUint32ArrayProp(uint32ArrayViewSetters),
+      );
       uint32ArrayViewSetters++;
     }
   }
@@ -567,10 +586,10 @@ var Uint32ArrayView = (function Uint32ArrayViewClosure() {
 
 var IDENTITY_MATRIX = [1, 0, 0, 1, 0, 0];
 
-var Util = PDFJS.Util = (function UtilClosure() {
+var Util = (PDFJS.Util = (function UtilClosure() {
   function Util() {}
 
-  var rgbBuf = ['rgb(', 0, ',', 0, ',', 0, ')'];
+  var rgbBuf = ["rgb(", 0, ",", 0, ",", 0, ")"];
 
   // makeCssRgb() can be called thousands of times. Using |rgbBuf| avoids
   // creating many intermediate strings.
@@ -578,7 +597,7 @@ var Util = PDFJS.Util = (function UtilClosure() {
     rgbBuf[1] = rgb[0];
     rgbBuf[3] = rgb[1];
     rgbBuf[5] = rgb[2];
-    return rgbBuf.join('');
+    return rgbBuf.join("");
   };
 
   // Concatenates two transformation matrices together and returns the result.
@@ -589,7 +608,7 @@ var Util = PDFJS.Util = (function UtilClosure() {
       m1[0] * m2[2] + m1[2] * m2[3],
       m1[1] * m2[2] + m1[3] * m2[3],
       m1[0] * m2[4] + m1[2] * m2[5] + m1[4],
-      m1[1] * m2[4] + m1[3] * m2[5] + m1[5]
+      m1[1] * m2[4] + m1[3] * m2[5] + m1[5],
     ];
   };
 
@@ -598,7 +617,7 @@ var Util = PDFJS.Util = (function UtilClosure() {
     var xt = p[0] * m[0] + p[1] * m[2] + m[4];
     var yt = p[0] * m[1] + p[1] * m[3] + m[5];
     return [xt, yt];
-  };  
+  };
   Util.applyTransformX = function Util_applyTransformX(p, m) {
     var xt = p[0] * m[0] + p[1] * m[2] + m[4];
     return xt;
@@ -613,9 +632,10 @@ var Util = PDFJS.Util = (function UtilClosure() {
 
   // Applies the transform to the rectangle and finds the minimum axially
   // aligned bounding box.
-  Util.getAxialAlignedBoundingBox =
-    function Util_getAxialAlignedBoundingBox(r, m) {
-
+  Util.getAxialAlignedBoundingBox = function Util_getAxialAlignedBoundingBox(
+    r,
+    m,
+  ) {
     var p1 = Util.applyTransform(r, m);
     var p2 = Util.applyTransform(r.slice(2, 4), m);
     var p3 = Util.applyTransform([r[0], r[3]], m);
@@ -624,14 +644,20 @@ var Util = PDFJS.Util = (function UtilClosure() {
       Math.min(p1[0], p2[0], p3[0], p4[0]),
       Math.min(p1[1], p2[1], p3[1], p4[1]),
       Math.max(p1[0], p2[0], p3[0], p4[0]),
-      Math.max(p1[1], p2[1], p3[1], p4[1])
+      Math.max(p1[1], p2[1], p3[1], p4[1]),
     ];
   };
 
   Util.inverseTransform = function Util_inverseTransform(m) {
     var d = m[0] * m[3] - m[1] * m[2];
-    return [m[3] / d, -m[1] / d, -m[2] / d, m[0] / d,
-      (m[2] * m[5] - m[4] * m[3]) / d, (m[4] * m[1] - m[5] * m[0]) / d];
+    return [
+      m[3] / d,
+      -m[1] / d,
+      -m[2] / d,
+      m[0] / d,
+      (m[2] * m[5] - m[4] * m[3]) / d,
+      (m[4] * m[1] - m[5] * m[0]) / d,
+    ];
   };
 
   // Apply a generic 3d matrix M on a 3-vector v:
@@ -644,7 +670,7 @@ var Util = PDFJS.Util = (function UtilClosure() {
     return [
       m[0] * v[0] + m[1] * v[1] + m[2] * v[2],
       m[3] * v[0] + m[4] * v[1] + m[5] * v[2],
-      m[6] * v[0] + m[7] * v[1] + m[8] * v[2]
+      m[6] * v[0] + m[7] * v[1] + m[8] * v[2],
     ];
   };
 
@@ -653,24 +679,23 @@ var Util = PDFJS.Util = (function UtilClosure() {
   // matrix S here because it represents the scale values.
   Util.singularValueDecompose2dScale =
     function Util_singularValueDecompose2dScale(m) {
+      var transpose = [m[0], m[2], m[1], m[3]];
 
-    var transpose = [m[0], m[2], m[1], m[3]];
+      // Multiply matrix m with its transpose.
+      var a = m[0] * transpose[0] + m[1] * transpose[2];
+      var b = m[0] * transpose[1] + m[1] * transpose[3];
+      var c = m[2] * transpose[0] + m[3] * transpose[2];
+      var d = m[2] * transpose[1] + m[3] * transpose[3];
 
-    // Multiply matrix m with its transpose.
-    var a = m[0] * transpose[0] + m[1] * transpose[2];
-    var b = m[0] * transpose[1] + m[1] * transpose[3];
-    var c = m[2] * transpose[0] + m[3] * transpose[2];
-    var d = m[2] * transpose[1] + m[3] * transpose[3];
+      // Solve the second degree polynomial to get roots.
+      var first = (a + d) / 2;
+      var second = Math.sqrt((a + d) * (a + d) - 4 * (a * d - c * b)) / 2;
+      var sx = first + second || 1;
+      var sy = first - second || 1;
 
-    // Solve the second degree polynomial to get roots.
-    var first = (a + d) / 2;
-    var second = Math.sqrt((a + d) * (a + d) - 4 * (a * d - c * b)) / 2;
-    var sx = first + second || 1;
-    var sy = first - second || 1;
-
-    // Scale values are the square roots of the eigenvalues.
-    return [Math.sqrt(sx), Math.sqrt(sy)];
-  };
+      // Scale values are the square roots of the eigenvalues.
+      return [Math.sqrt(sx), Math.sqrt(sy)];
+    };
 
   // Normalize rectangle rect=[x1, y1, x2, y2] so that (x1,y1) < (x2,y2)
   // For coordinate systems whose origin lies in the bottom-left, this
@@ -699,15 +724,17 @@ var Util = PDFJS.Util = (function UtilClosure() {
 
     // Order points along the axes
     var orderedX = [rect1[0], rect1[2], rect2[0], rect2[2]].sort(compare),
-        orderedY = [rect1[1], rect1[3], rect2[1], rect2[3]].sort(compare),
-        result = [];
+      orderedY = [rect1[1], rect1[3], rect2[1], rect2[3]].sort(compare),
+      result = [];
 
     rect1 = Util.normalizeRect(rect1);
     rect2 = Util.normalizeRect(rect2);
 
     // X: first and second points belong to different rectangles?
-    if ((orderedX[0] === rect1[0] && orderedX[1] === rect2[0]) ||
-        (orderedX[0] === rect2[0] && orderedX[1] === rect1[0])) {
+    if (
+      (orderedX[0] === rect1[0] && orderedX[1] === rect2[0]) ||
+      (orderedX[0] === rect2[0] && orderedX[1] === rect1[0])
+    ) {
       // Intersection must be between second and third points
       result[0] = orderedX[1];
       result[2] = orderedX[2];
@@ -716,8 +743,10 @@ var Util = PDFJS.Util = (function UtilClosure() {
     }
 
     // Y: first and second points belong to different rectangles?
-    if ((orderedY[0] === rect1[1] && orderedY[1] === rect2[1]) ||
-        (orderedY[0] === rect2[1] && orderedY[1] === rect1[1])) {
+    if (
+      (orderedY[0] === rect1[1] && orderedY[1] === rect2[1]) ||
+      (orderedY[0] === rect2[1] && orderedY[1] === rect1[1])
+    ) {
       // Intersection must be between second and third points
       result[1] = orderedY[1];
       result[3] = orderedY[2];
@@ -746,10 +775,12 @@ var Util = PDFJS.Util = (function UtilClosure() {
     }
   };
 
-  Util.getInheritableProperty = function Util_getInheritableProperty(dict,
-                                                                     name) {
+  Util.getInheritableProperty = function Util_getInheritableProperty(
+    dict,
+    name,
+  ) {
     while (dict && !dict.has(name)) {
-      dict = dict.get('Parent');
+      dict = dict.get("Parent");
     }
     if (!dict) {
       return null;
@@ -766,29 +797,29 @@ var Util = PDFJS.Util = (function UtilClosure() {
   };
 
   Util.loadScript = function Util_loadScript(src, callback) {
-    var script = document.createElement('script');
+    var script = document.createElement("script");
     var loaded = false;
-    script.setAttribute('src', src);
+    script.setAttribute("src", src);
     if (callback) {
-      script.onload = function() {
+      script.onload = function () {
         if (!loaded) {
           callback();
         }
         loaded = true;
       };
     }
-    document.getElementsByTagName('head')[0].appendChild(script);
+    document.getElementsByTagName("head")[0].appendChild(script);
   };
 
   return Util;
-})();
+})());
 
 /**
  * PDF page viewport created based on scale, rotation and offset.
  * @class
  * @alias PDFJS.PageViewport
  */
-var PageViewport = PDFJS.PageViewport = (function PageViewportClosure() {
+var PageViewport = (PDFJS.PageViewport = (function PageViewportClosure() {
   /**
    * @constructor
    * @private
@@ -815,22 +846,35 @@ var PageViewport = PDFJS.PageViewport = (function PageViewportClosure() {
     rotation = rotation < 0 ? rotation + 360 : rotation;
     switch (rotation) {
       case 180:
-        rotateA = -1; rotateB = 0; rotateC = 0; rotateD = 1;
+        rotateA = -1;
+        rotateB = 0;
+        rotateC = 0;
+        rotateD = 1;
         break;
       case 90:
-        rotateA = 0; rotateB = 1; rotateC = 1; rotateD = 0;
+        rotateA = 0;
+        rotateB = 1;
+        rotateC = 1;
+        rotateD = 0;
         break;
       case 270:
-        rotateA = 0; rotateB = -1; rotateC = -1; rotateD = 0;
+        rotateA = 0;
+        rotateB = -1;
+        rotateC = -1;
+        rotateD = 0;
         break;
       //case 0:
       default:
-        rotateA = 1; rotateB = 0; rotateC = 0; rotateD = -1;
+        rotateA = 1;
+        rotateB = 0;
+        rotateC = 0;
+        rotateD = -1;
         break;
     }
 
     if (dontFlip) {
-      rotateC = -rotateC; rotateD = -rotateD;
+      rotateC = -rotateC;
+      rotateD = -rotateD;
     }
 
     var offsetCanvasX, offsetCanvasY;
@@ -855,7 +899,7 @@ var PageViewport = PDFJS.PageViewport = (function PageViewportClosure() {
       rotateC * scale,
       rotateD * scale,
       offsetCanvasX - rotateA * scale * centerX - rotateC * scale * centerY,
-      offsetCanvasY - rotateB * scale * centerX - rotateD * scale * centerY
+      offsetCanvasY - rotateB * scale * centerX - rotateD * scale * centerY,
     ];
 
     this.width = width;
@@ -872,10 +916,16 @@ var PageViewport = PDFJS.PageViewport = (function PageViewportClosure() {
      */
     clone: function PageViewPort_clone(args) {
       args = args || {};
-      var scale = 'scale' in args ? args.scale : this.scale;
-      var rotation = 'rotation' in args ? args.rotation : this.rotation;
-      return new PageViewport(this.viewBox.slice(), scale, rotation,
-                              this.offsetX, this.offsetY, args.dontFlip);
+      var scale = "scale" in args ? args.scale : this.scale;
+      var rotation = "rotation" in args ? args.rotation : this.rotation;
+      return new PageViewport(
+        this.viewBox.slice(),
+        scale,
+        rotation,
+        this.offsetX,
+        this.offsetY,
+        args.dontFlip,
+      );
     },
     /**
      * Converts PDF point to the viewport coordinates. For examples, useful for
@@ -899,10 +949,10 @@ var PageViewport = PDFJS.PageViewport = (function PageViewportClosure() {
      */
     convertToViewportRectangle:
       function PageViewport_convertToViewportRectangle(rect) {
-      var tl = Util.applyTransform([rect[0], rect[1]], this.transform);
-      var br = Util.applyTransform([rect[2], rect[3]], this.transform);
-      return [tl[0], tl[1], br[0], br[1]];
-    },
+        var tl = Util.applyTransform([rect[0], rect[1]], this.transform);
+        var br = Util.applyTransform([rect[2], rect[3]], this.transform);
+        return [tl[0], tl[1], br[0], br[1]];
+      },
     /**
      * Converts viewport coordinates to the PDF location. For examples, useful
      * for converting canvas pixel location into PDF one.
@@ -914,30 +964,33 @@ var PageViewport = PDFJS.PageViewport = (function PageViewportClosure() {
      */
     convertToPdfPoint: function PageViewport_convertToPdfPoint(x, y) {
       return Util.applyInverseTransform([x, y], this.transform);
-    }
+    },
   };
   return PageViewport;
-})();
+})());
 
 var PDFStringTranslateTable = [
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0x2D8, 0x2C7, 0x2C6, 0x2D9, 0x2DD, 0x2DB, 0x2DA, 0x2DC, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x2d8,
+  0x2c7, 0x2c6, 0x2d9, 0x2dd, 0x2db, 0x2da, 0x2dc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x2022, 0x2020, 0x2021, 0x2026, 0x2014,
-  0x2013, 0x192, 0x2044, 0x2039, 0x203A, 0x2212, 0x2030, 0x201E, 0x201C,
-  0x201D, 0x2018, 0x2019, 0x201A, 0x2122, 0xFB01, 0xFB02, 0x141, 0x152, 0x160,
-  0x178, 0x17D, 0x131, 0x142, 0x153, 0x161, 0x17E, 0, 0x20AC
+  0, 0, 0, 0, 0, 0, 0, 0, 0x2022, 0x2020, 0x2021, 0x2026, 0x2014, 0x2013, 0x192,
+  0x2044, 0x2039, 0x203a, 0x2212, 0x2030, 0x201e, 0x201c, 0x201d, 0x2018,
+  0x2019, 0x201a, 0x2122, 0xfb01, 0xfb02, 0x141, 0x152, 0x160, 0x178, 0x17d,
+  0x131, 0x142, 0x153, 0x161, 0x17e, 0, 0x20ac,
 ];
 
 function stringToPDFString(str) {
-  var i, n = str.length, strBuf = [];
-  if (str[0] === '\xFE' && str[1] === '\xFF') {
+  var i,
+    n = str.length,
+    strBuf = [];
+  if (str[0] === "\xFE" && str[1] === "\xFF") {
     // UTF16BE BOM
     for (i = 2; i < n; i += 2) {
-      strBuf.push(String.fromCharCode(
-        (str.charCodeAt(i) << 8) | str.charCodeAt(i + 1)));
+      strBuf.push(
+        String.fromCharCode((str.charCodeAt(i) << 8) | str.charCodeAt(i + 1)),
+      );
     }
   } else {
     for (i = 0; i < n; ++i) {
@@ -945,7 +998,7 @@ function stringToPDFString(str) {
       strBuf.push(code ? String.fromCharCode(code) : str.charAt(i));
     }
   }
-  return strBuf.join('');
+  return strBuf.join("");
 }
 
 function stringToUTF8String(str) {
@@ -960,19 +1013,19 @@ function isEmptyObj(obj) {
 }
 
 function isBool(v) {
-  return typeof v === 'boolean';
+  return typeof v === "boolean";
 }
 
 function isInt(v) {
-  return typeof v === 'number' && ((v | 0) === v);
+  return typeof v === "number" && (v | 0) === v;
 }
 
 function isNum(v) {
-  return typeof v === 'number';
+  return typeof v === "number";
 }
 
 function isString(v) {
-  return typeof v === 'string';
+  return typeof v === "string";
 }
 
 function isNull(v) {
@@ -994,7 +1047,7 @@ function isDict(v, type) {
   if (!type) {
     return true;
   }
-  var dictType = v.get('Type');
+  var dictType = v.get("Type");
   return isName(dictType) && dictType.name === type;
 }
 
@@ -1003,11 +1056,11 @@ function isArray(v) {
 }
 
 function isStream(v) {
-  return typeof v === 'object' && v !== null && v.getBytes !== undefined;
+  return typeof v === "object" && v !== null && v.getBytes !== undefined;
 }
 
 function isArrayBuffer(v) {
-  return typeof v === 'object' && v !== null && v.byteLength !== undefined;
+  return typeof v === "object" && v !== null && v.byteLength !== undefined;
 }
 
 function isRef(v) {
@@ -1054,9 +1107,12 @@ PDFJS.createPromiseCapability = createPromiseCapability;
 (function PromiseClosure() {
   if (globalScope.Promise) {
     // Promises existing in the DOM/Worker, checking presence of all/resolve
-    if (typeof globalScope.Promise.all !== 'function') {
+    if (typeof globalScope.Promise.all !== "function") {
       globalScope.Promise.all = function (iterable) {
-        var count = 0, results = [], resolve, reject;
+        var count = 0,
+          results = [],
+          resolve,
+          reject;
         var promise = new globalScope.Promise(function (resolve_, reject_) {
           resolve = resolve_;
           reject = reject_;
@@ -1077,26 +1133,28 @@ PDFJS.createPromiseCapability = createPromiseCapability;
         return promise;
       };
     }
-    if (typeof globalScope.Promise.resolve !== 'function') {
+    if (typeof globalScope.Promise.resolve !== "function") {
       globalScope.Promise.resolve = function (value) {
-        return new globalScope.Promise(function (resolve) { resolve(value); });
+        return new globalScope.Promise(function (resolve) {
+          resolve(value);
+        });
       };
     }
-    if (typeof globalScope.Promise.reject !== 'function') {
+    if (typeof globalScope.Promise.reject !== "function") {
       globalScope.Promise.reject = function (reason) {
         return new globalScope.Promise(function (resolve, reject) {
           reject(reason);
         });
       };
     }
-    if (typeof globalScope.Promise.prototype.catch !== 'function') {
+    if (typeof globalScope.Promise.prototype.catch !== "function") {
       globalScope.Promise.prototype.catch = function (onReject) {
         return globalScope.Promise.prototype.then(undefined, onReject);
       };
     }
     return;
   }
-//#if !MOZCENTRAL
+  //#if !MOZCENTRAL
   var STATUS_PENDING = 0;
   var STATUS_RESOLVED = 1;
   var STATUS_REJECTED = 2;
@@ -1139,16 +1197,16 @@ PDFJS.createPromiseCapability = createPromiseCapability;
 
         try {
           if (nextStatus === STATUS_RESOLVED) {
-            if (typeof handler.onResolve === 'function') {
+            if (typeof handler.onResolve === "function") {
               nextValue = handler.onResolve(nextValue);
             }
-          } else if (typeof handler.onReject === 'function') {
-              nextValue = handler.onReject(nextValue);
-              nextStatus = STATUS_RESOLVED;
+          } else if (typeof handler.onReject === "function") {
+            nextValue = handler.onReject(nextValue);
+            nextStatus = STATUS_RESOLVED;
 
-              if (handler.thisPromise._unhandledRejection) {
-                this.removeUnhandeledRejection(handler.thisPromise);
-              }
+            if (handler.thisPromise._unhandledRejection) {
+              this.removeUnhandeledRejection(handler.thisPromise);
+            }
           }
         } catch (ex) {
           nextStatus = STATUS_REJECTED;
@@ -1172,7 +1230,7 @@ PDFJS.createPromiseCapability = createPromiseCapability;
     addUnhandledRejection: function addUnhandledRejection(promise) {
       this.unhandledRejections.push({
         promise: promise,
-        time: Date.now()
+        time: Date.now(),
       });
       this.scheduleRejectionCheck();
     },
@@ -1192,26 +1250,29 @@ PDFJS.createPromiseCapability = createPromiseCapability;
         return;
       }
       this.pendingRejectionCheck = true;
-      setTimeout(function rejectionCheck() {
-        this.pendingRejectionCheck = false;
-        var now = Date.now();
-        for (var i = 0; i < this.unhandledRejections.length; i++) {
-          if (now - this.unhandledRejections[i].time > REJECTION_TIMEOUT) {
-            var unhandled = this.unhandledRejections[i].promise._value;
-            var msg = 'Unhandled rejection: ' + unhandled;
-            if (unhandled.stack) {
-              msg += '\n' + unhandled.stack;
+      setTimeout(
+        function rejectionCheck() {
+          this.pendingRejectionCheck = false;
+          var now = Date.now();
+          for (var i = 0; i < this.unhandledRejections.length; i++) {
+            if (now - this.unhandledRejections[i].time > REJECTION_TIMEOUT) {
+              var unhandled = this.unhandledRejections[i].promise._value;
+              var msg = "Unhandled rejection: " + unhandled;
+              if (unhandled.stack) {
+                msg += "\n" + unhandled.stack;
+              }
+              warn(msg);
+              this.unhandledRejections.splice(i);
+              i--;
             }
-            warn(msg);
-            this.unhandledRejections.splice(i);
-            i--;
           }
-        }
-        if (this.unhandledRejections.length) {
-          this.scheduleRejectionCheck();
-        }
-      }.bind(this), REJECTION_TIMEOUT);
-    }
+          if (this.unhandledRejections.length) {
+            this.scheduleRejectionCheck();
+          }
+        }.bind(this),
+        REJECTION_TIMEOUT,
+      );
+    },
   };
 
   function Promise(resolver) {
@@ -1250,8 +1311,8 @@ PDFJS.createPromiseCapability = createPromiseCapability;
     }
     for (var i = 0, ii = promises.length; i < ii; ++i) {
       var promise = promises[i];
-      var resolve = (function(i) {
-        return function(value) {
+      var resolve = (function (i) {
+        return function (value) {
           if (deferred._status === STATUS_REJECTED) {
             return;
           }
@@ -1276,7 +1337,7 @@ PDFJS.createPromiseCapability = createPromiseCapability;
    * @return {boolean} true if value is thenable
    */
   Promise.isPromise = function Promise_isPromise(value) {
-    return value && typeof value.then === 'function';
+    return value && typeof value.then === "function";
   };
 
   /**
@@ -1285,7 +1346,9 @@ PDFJS.createPromiseCapability = createPromiseCapability;
    * @returns {Promise}
    */
   Promise.resolve = function Promise_resolve(value) {
-    return new Promise(function (resolve) { resolve(value); });
+    return new Promise(function (resolve) {
+      resolve(value);
+    });
   };
 
   /**
@@ -1294,7 +1357,9 @@ PDFJS.createPromiseCapability = createPromiseCapability;
    * @returns {Promise}
    */
   Promise.reject = function Promise_reject(reason) {
-    return new Promise(function (resolve, reject) { reject(reason); });
+    return new Promise(function (resolve, reject) {
+      reject(reason);
+    });
   };
 
   Promise.prototype = {
@@ -1304,15 +1369,18 @@ PDFJS.createPromiseCapability = createPromiseCapability;
     _unhandledRejection: null,
 
     _updateStatus: function Promise__updateStatus(status, value) {
-      if (this._status === STATUS_RESOLVED ||
-          this._status === STATUS_REJECTED) {
+      if (
+        this._status === STATUS_RESOLVED ||
+        this._status === STATUS_REJECTED
+      ) {
         return;
       }
 
-      if (status === STATUS_RESOLVED &&
-          Promise.isPromise(value)) {
-        value.then(this._updateStatus.bind(this, STATUS_RESOLVED),
-                   this._updateStatus.bind(this, STATUS_REJECTED));
+      if (status === STATUS_RESOLVED && Promise.isPromise(value)) {
+        value.then(
+          this._updateStatus.bind(this, STATUS_RESOLVED),
+          this._updateStatus.bind(this, STATUS_REJECTED),
+        );
         return;
       }
 
@@ -1344,7 +1412,7 @@ PDFJS.createPromiseCapability = createPromiseCapability;
         thisPromise: this,
         onResolve: onResolve,
         onReject: onReject,
-        nextPromise: nextPromise
+        nextPromise: nextPromise,
       });
       HandlerManager.scheduleHandlers(this);
       return nextPromise;
@@ -1352,13 +1420,13 @@ PDFJS.createPromiseCapability = createPromiseCapability;
 
     catch: function Promise_catch(onReject) {
       return this.then(undefined, onReject);
-    }
+    },
   };
 
   globalScope.Promise = Promise;
-//#else
-//throw new Error('DOM Promise is not present');
-//#endif
+  //#else
+  //throw new Error('DOM Promise is not present');
+  //#endif
 })();
 
 var StatTimer = (function StatTimerClosure() {
@@ -1379,7 +1447,7 @@ var StatTimer = (function StatTimerClosure() {
         return;
       }
       if (name in this.started) {
-        warn('Timer is already running for ' + name);
+        warn("Timer is already running for " + name);
       }
       this.started[name] = Date.now();
     },
@@ -1388,12 +1456,12 @@ var StatTimer = (function StatTimerClosure() {
         return;
       }
       if (!(name in this.started)) {
-        warn('Timer has not been started for ' + name);
+        warn("Timer has not been started for " + name);
       }
       this.times.push({
-        'name': name,
-        'start': this.started[name],
-        'end': Date.now()
+        name: name,
+        start: this.started[name],
+        end: Date.now(),
       });
       // Remove timer from started so it can be called again.
       delete this.started[name];
@@ -1401,11 +1469,11 @@ var StatTimer = (function StatTimerClosure() {
     toString: function StatTimer_toString() {
       var i, ii;
       var times = this.times;
-      var out = '';
+      var out = "";
       // Find the longest name for padding purposes.
       var longest = 0;
       for (i = 0, ii = times.length; i < ii; ++i) {
-        var name = times[i]['name'];
+        var name = times[i]["name"];
         if (name.length > longest) {
           longest = name.length;
         }
@@ -1413,16 +1481,16 @@ var StatTimer = (function StatTimerClosure() {
       for (i = 0, ii = times.length; i < ii; ++i) {
         var span = times[i];
         var duration = span.end - span.start;
-        out += rpad(span['name'], ' ', longest) + ' ' + duration + 'ms\n';
+        out += rpad(span["name"], " ", longest) + " " + duration + "ms\n";
       }
       return out;
-    }
+    },
   };
   return StatTimer;
 })();
 
 PDFJS.createBlob = function createBlob(data, contentType) {
-  if (typeof Blob !== 'undefined') {
+  if (typeof Blob !== "undefined") {
     return new Blob([data], { type: contentType });
   }
   // Blob builder is deprecated in FF14 and removed in FF18.
@@ -1434,23 +1502,27 @@ PDFJS.createBlob = function createBlob(data, contentType) {
 PDFJS.createObjectURL = (function createObjectURLClosure() {
   // Blob/createObjectURL is not available, falling back to data schema.
   var digits =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
   return function createObjectURL(data, contentType) {
-    if (!PDFJS.disableCreateObjectURL &&
-        typeof URL !== 'undefined' && URL.createObjectURL) {
+    if (
+      !PDFJS.disableCreateObjectURL &&
+      typeof URL !== "undefined" &&
+      URL.createObjectURL
+    ) {
       var blob = PDFJS.createBlob(data, contentType);
       return URL.createObjectURL(blob);
     }
 
-    var buffer = 'data:' + contentType + ';base64,';
+    var buffer = "data:" + contentType + ";base64,";
     for (var i = 0, ii = data.length; i < ii; i += 3) {
-      var b1 = data[i] & 0xFF;
-      var b2 = data[i + 1] & 0xFF;
-      var b3 = data[i + 2] & 0xFF;
-      var d1 = b1 >> 2, d2 = ((b1 & 3) << 4) | (b2 >> 4);
-      var d3 = i + 1 < ii ? ((b2 & 0xF) << 2) | (b3 >> 6) : 64;
-      var d4 = i + 2 < ii ? (b3 & 0x3F) : 64;
+      var b1 = data[i] & 0xff;
+      var b2 = data[i + 1] & 0xff;
+      var b3 = data[i + 2] & 0xff;
+      var d1 = b1 >> 2,
+        d2 = ((b1 & 3) << 4) | (b2 >> 4);
+      var d3 = i + 1 < ii ? ((b2 & 0xf) << 2) | (b3 >> 6) : 64;
+      var d4 = i + 2 < ii ? b3 & 0x3f : 64;
       buffer += digits[d1] + digits[d2] + digits[d3] + digits[d4];
     }
     return buffer;
@@ -1462,18 +1534,24 @@ function MessageHandler(name, comObj) {
   this.comObj = comObj;
   this.callbackIndex = 1;
   this.postMessageTransfers = true;
-  var callbacksCapabilities = this.callbacksCapabilities = {};
-  var ah = this.actionHandler = {};
+  var callbacksCapabilities = (this.callbacksCapabilities = {});
+  var ah = (this.actionHandler = {});
 
-  ah['console_log'] = [function ahConsoleLog(data) {
-    console.log.apply(console, data);
-  }];
-  ah['console_error'] = [function ahConsoleError(data) {
-    console.error.apply(console, data);
-  }];
-  ah['_unsupported_feature'] = [function ah_unsupportedFeature(data) {
-    UnsupportedManager.notify(data);
-  }];
+  ah["console_log"] = [
+    function ahConsoleLog(data) {
+      console.log.apply(console, data);
+    },
+  ];
+  ah["console_error"] = [
+    function ahConsoleError(data) {
+      console.error.apply(console, data);
+    },
+  ];
+  ah["_unsupported_feature"] = [
+    function ah_unsupportedFeature(data) {
+      UnsupportedManager.notify(data);
+    },
+  ];
 
   comObj.onmessage = function messageHandlerComObjOnMessage(event) {
     var data = event.data;
@@ -1482,37 +1560,42 @@ function MessageHandler(name, comObj) {
       if (data.callbackId in callbacksCapabilities) {
         var callback = callbacksCapabilities[callbackId];
         delete callbacksCapabilities[callbackId];
-        if ('error' in data) {
+        if ("error" in data) {
           callback.reject(data.error);
         } else {
           callback.resolve(data.data);
         }
       } else {
-        error('Cannot resolve callback ' + callbackId);
+        error("Cannot resolve callback " + callbackId);
       }
     } else if (data.action in ah) {
       var action = ah[data.action];
       if (data.callbackId) {
-        Promise.resolve().then(function () {
-          return action[0].call(action[1], data.data);
-        }).then(function (result) {
-          comObj.postMessage({
-            isReply: true,
-            callbackId: data.callbackId,
-            data: result
-          });
-        }, function (reason) {
-          comObj.postMessage({
-            isReply: true,
-            callbackId: data.callbackId,
-            error: reason
-          });
-        });
+        Promise.resolve()
+          .then(function () {
+            return action[0].call(action[1], data.data);
+          })
+          .then(
+            function (result) {
+              comObj.postMessage({
+                isReply: true,
+                callbackId: data.callbackId,
+                data: result,
+              });
+            },
+            function (reason) {
+              comObj.postMessage({
+                isReply: true,
+                callbackId: data.callbackId,
+                error: reason,
+              });
+            },
+          );
       } else {
         action[0].call(action[1], data.data);
       }
     } else {
-      error('Unknown action from worker: ' + data.action);
+      error("Unknown action from worker: " + data.action);
     }
   };
 }
@@ -1534,7 +1617,7 @@ MessageHandler.prototype = {
   send: function messageHandlerSend(actionName, data, transfers) {
     var message = {
       action: actionName,
-      data: data
+      data: data,
     };
     this.postMessage(message, transfers);
   },
@@ -1546,13 +1629,16 @@ MessageHandler.prototype = {
    * @param {Array} [transfers] Optional list of transfers/ArrayBuffers.
    * @returns {Promise} Promise to be resolved with response data.
    */
-  sendWithPromise:
-    function messageHandlerSendWithPromise(actionName, data, transfers) {
+  sendWithPromise: function messageHandlerSendWithPromise(
+    actionName,
+    data,
+    transfers,
+  ) {
     var callbackId = this.callbackIndex++;
     var message = {
       action: actionName,
       data: data,
-      callbackId: callbackId
+      callbackId: callbackId,
     };
     var capability = createPromiseCapability();
     this.callbacksCapabilities[callbackId] = capability;
@@ -1575,17 +1661,17 @@ MessageHandler.prototype = {
     } else {
       this.comObj.postMessage(message);
     }
-  }
+  },
 };
 
 function loadJpegStream(id, imageUrl, objs) {
   var img = new Image();
-  img.onload = (function loadJpegStream_onloadClosure() {
+  img.onload = function loadJpegStream_onloadClosure() {
     objs.resolve(id, img);
-  });
-  img.onerror = (function loadJpegStream_onerrorClosure() {
+  };
+  img.onerror = function loadJpegStream_onerrorClosure() {
     objs.resolve(id, null);
-    warn('Error during JPEG image loading');
-  });
+    warn("Error during JPEG image loading");
+  };
   img.src = imageUrl;
 }

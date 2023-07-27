@@ -16,56 +16,527 @@
  * limitations under the License.
  */
 
-'use strict';
+"use strict";
 
-var bidi = PDFJS.bidi = (function bidiClosure() {
+var bidi = (PDFJS.bidi = (function bidiClosure() {
   // Character types for symbols from 0000 to 00FF.
   var baseTypes = [
-    'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'S', 'B', 'S', 'WS',
-    'B', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN',
-    'BN', 'BN', 'B', 'B', 'B', 'S', 'WS', 'ON', 'ON', 'ET', 'ET', 'ET', 'ON',
-    'ON', 'ON', 'ON', 'ON', 'ON', 'CS', 'ON', 'CS', 'ON', 'EN', 'EN', 'EN',
-    'EN', 'EN', 'EN', 'EN', 'EN', 'EN', 'EN', 'ON', 'ON', 'ON', 'ON', 'ON',
-    'ON', 'ON', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L',
-    'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'ON', 'ON',
-    'ON', 'ON', 'ON', 'ON', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L',
-    'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L',
-    'L', 'ON', 'ON', 'ON', 'ON', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'B', 'BN',
-    'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN',
-    'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN', 'BN',
-    'BN', 'CS', 'ON', 'ET', 'ET', 'ET', 'ET', 'ON', 'ON', 'ON', 'ON', 'L', 'ON',
-    'ON', 'ON', 'ON', 'ON', 'ET', 'ET', 'EN', 'EN', 'ON', 'L', 'ON', 'ON', 'ON',
-    'EN', 'L', 'ON', 'ON', 'ON', 'ON', 'ON', 'L', 'L', 'L', 'L', 'L', 'L', 'L',
-    'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L',
-    'L', 'ON', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L',
-    'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L',
-    'L', 'L', 'L', 'ON', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L'
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "S",
+    "B",
+    "S",
+    "WS",
+    "B",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "B",
+    "B",
+    "B",
+    "S",
+    "WS",
+    "ON",
+    "ON",
+    "ET",
+    "ET",
+    "ET",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "CS",
+    "ON",
+    "CS",
+    "ON",
+    "EN",
+    "EN",
+    "EN",
+    "EN",
+    "EN",
+    "EN",
+    "EN",
+    "EN",
+    "EN",
+    "EN",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "B",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "BN",
+    "CS",
+    "ON",
+    "ET",
+    "ET",
+    "ET",
+    "ET",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "L",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "ET",
+    "ET",
+    "EN",
+    "EN",
+    "ON",
+    "L",
+    "ON",
+    "ON",
+    "ON",
+    "EN",
+    "L",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "ON",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "ON",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "ON",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
+    "L",
   ];
 
   // Character types for symbols from 0600 to 06FF
   var arabicTypes = [
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'CS', 'AL', 'ON', 'ON', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM',
-    'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AN', 'AN', 'AN', 'AN', 'AN', 'AN', 'AN', 'AN', 'AN',
-    'AN', 'ET', 'AN', 'AN', 'AL', 'AL', 'AL', 'NSM', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM',
-    'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'NSM', 'ON', 'NSM',
-    'NSM', 'NSM', 'NSM', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL',
-    'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL', 'AL'
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "CS",
+    "AL",
+    "ON",
+    "ON",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AN",
+    "AN",
+    "AN",
+    "AN",
+    "AN",
+    "AN",
+    "AN",
+    "AN",
+    "AN",
+    "AN",
+    "ET",
+    "AN",
+    "AN",
+    "AL",
+    "AL",
+    "AL",
+    "NSM",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "ON",
+    "NSM",
+    "NSM",
+    "NSM",
+    "NSM",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
+    "AL",
   ];
 
   function isOdd(i) {
@@ -102,7 +573,7 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
   function createBidiText(str, isLTR, vertical) {
     return {
       str: str,
-      dir: (vertical ? 'ttb' : (isLTR ? 'ltr' : 'rtl'))
+      dir: vertical ? "ttb" : isLTR ? "ltr" : "rtl",
     };
   }
 
@@ -128,17 +599,17 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
       chars[i] = str.charAt(i);
 
       var charCode = str.charCodeAt(i);
-      var charType = 'L';
+      var charType = "L";
       if (charCode <= 0x00ff) {
         charType = baseTypes[charCode];
       } else if (0x0590 <= charCode && charCode <= 0x05f4) {
-        charType = 'R';
+        charType = "R";
       } else if (0x0600 <= charCode && charCode <= 0x06ff) {
         charType = arabicTypes[charCode & 0xff];
-      } else if (0x0700 <= charCode && charCode <= 0x08AC) {
-        charType = 'AL';
+      } else if (0x0700 <= charCode && charCode <= 0x08ac) {
+        charType = "AL";
       }
-      if (charType === 'R' || charType === 'AL' || charType === 'AN') {
+      if (charType === "R" || charType === "AL" || charType === "AN") {
         numBidi++;
       }
       types[i] = charType;
@@ -154,7 +625,7 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
     }
 
     if (startLevel === -1) {
-      if ((strLength / numBidi) < 0.3) {
+      if (strLength / numBidi < 0.3) {
         isLTR = true;
         startLevel = 0;
       } else {
@@ -171,7 +642,7 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
     /*
      X1-X10: skip most of this, since we are NOT doing the embeddings.
      */
-    var e = (isOdd(startLevel) ? 'R' : 'L');
+    var e = isOdd(startLevel) ? "R" : "L";
     var sor = e;
     var eor = sor;
 
@@ -182,7 +653,7 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
      */
     var lastType = sor;
     for (i = 0; i < strLength; ++i) {
-      if (types[i] === 'NSM') {
+      if (types[i] === "NSM") {
         types[i] = lastType;
       } else {
         lastType = types[i];
@@ -198,9 +669,9 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
     var t;
     for (i = 0; i < strLength; ++i) {
       t = types[i];
-      if (t === 'EN') {
-        types[i] = (lastType === 'AL') ? 'AN' : 'EN';
-      } else if (t === 'R' || t === 'L' || t === 'AL') {
+      if (t === "EN") {
+        types[i] = lastType === "AL" ? "AN" : "EN";
+      } else if (t === "R" || t === "L" || t === "AL") {
         lastType = t;
       }
     }
@@ -210,8 +681,8 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
      */
     for (i = 0; i < strLength; ++i) {
       t = types[i];
-      if (t === 'AL') {
-        types[i] = 'R';
+      if (t === "AL") {
+        types[i] = "R";
       }
     }
 
@@ -221,12 +692,14 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
      type changes to that type:
      */
     for (i = 1; i < strLength - 1; ++i) {
-      if (types[i] === 'ES' && types[i - 1] === 'EN' && types[i + 1] === 'EN') {
-        types[i] = 'EN';
+      if (types[i] === "ES" && types[i - 1] === "EN" && types[i + 1] === "EN") {
+        types[i] = "EN";
       }
-      if (types[i] === 'CS' &&
-          (types[i - 1] === 'EN' || types[i - 1] === 'AN') &&
-          types[i + 1] === types[i - 1]) {
+      if (
+        types[i] === "CS" &&
+        (types[i - 1] === "EN" || types[i - 1] === "AN") &&
+        types[i + 1] === types[i - 1]
+      ) {
         types[i] = types[i - 1];
       }
     }
@@ -236,21 +709,21 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
      to all European numbers:
      */
     for (i = 0; i < strLength; ++i) {
-      if (types[i] === 'EN') {
+      if (types[i] === "EN") {
         // do before
         var j;
         for (j = i - 1; j >= 0; --j) {
-          if (types[j] !== 'ET') {
+          if (types[j] !== "ET") {
             break;
           }
-          types[j] = 'EN';
+          types[j] = "EN";
         }
         // do after
         for (j = i + 1; j < strLength; --j) {
-          if (types[j] !== 'ET') {
+          if (types[j] !== "ET") {
             break;
           }
-          types[j] = 'EN';
+          types[j] = "EN";
         }
       }
     }
@@ -260,8 +733,8 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
      */
     for (i = 0; i < strLength; ++i) {
       t = types[i];
-      if (t === 'WS' || t === 'ES' || t === 'ET' || t === 'CS') {
-        types[i] = 'ON';
+      if (t === "WS" || t === "ES" || t === "ET" || t === "CS") {
+        types[i] = "ON";
       }
     }
 
@@ -273,9 +746,9 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
     lastType = sor;
     for (i = 0; i < strLength; ++i) {
       t = types[i];
-      if (t === 'EN') {
-        types[i] = ((lastType === 'L') ? 'L' : 'EN');
-      } else if (t === 'R' || t === 'L') {
+      if (t === "EN") {
+        types[i] = lastType === "L" ? "L" : "EN";
+      } else if (t === "R" || t === "L") {
         lastType = t;
       }
     }
@@ -287,8 +760,8 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
      end-of-level-run (eor) are used at level run boundaries.
      */
     for (i = 0; i < strLength; ++i) {
-      if (types[i] === 'ON') {
-        var end = findUnequal(types, i + 1, 'ON');
+      if (types[i] === "ON") {
+        var end = findUnequal(types, i + 1, "ON");
         var before = sor;
         if (i > 0) {
           before = types[i - 1];
@@ -298,11 +771,11 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
         if (end + 1 < strLength) {
           after = types[end + 1];
         }
-        if (before !== 'L') {
-          before = 'R';
+        if (before !== "L") {
+          before = "R";
         }
-        if (after !== 'L') {
-          after = 'R';
+        if (after !== "L") {
+          after = "R";
         }
         if (before === after) {
           setValues(types, i, end, before);
@@ -315,7 +788,7 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
      N2. Any remaining neutrals take the embedding direction.
      */
     for (i = 0; i < strLength; ++i) {
-      if (types[i] === 'ON') {
+      if (types[i] === "ON") {
         types[i] = e;
       }
     }
@@ -330,13 +803,14 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
     for (i = 0; i < strLength; ++i) {
       t = types[i];
       if (isEven(levels[i])) {
-        if (t === 'R') {
+        if (t === "R") {
           levels[i] += 1;
-        } else if (t === 'AN' || t === 'EN') {
+        } else if (t === "AN" || t === "EN") {
           levels[i] += 2;
         }
-      } else { // isOdd
-        if (t === 'L' || t === 'AN' || t === 'EN') {
+      } else {
+        // isOdd
+        if (t === "L" || t === "AN" || t === "EN") {
           levels[i] += 1;
         }
       }
@@ -412,10 +886,10 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
     // don't mirror as characters are already mirrored in the pdf
 
     // Finally, return string
-    var result = '';
+    var result = "";
     for (i = 0, ii = chars.length; i < ii; ++i) {
       var ch = chars[i];
-      if (ch !== '<' && ch !== '>') {
+      if (ch !== "<" && ch !== ">") {
         result += ch;
       }
     }
@@ -423,5 +897,4 @@ var bidi = PDFJS.bidi = (function bidiClosure() {
   }
 
   return bidi;
-})();
-
+})());

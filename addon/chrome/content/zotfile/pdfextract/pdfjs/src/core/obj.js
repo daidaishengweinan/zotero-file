@@ -21,7 +21,7 @@
            Promise, MissingDataException, XRefParseException, Stream,
            ChunkedStream, createPromiseCapability */
 
-'use strict';
+"use strict";
 
 var Name = (function NameClosure() {
   function Name(name) {
@@ -34,7 +34,7 @@ var Name = (function NameClosure() {
 
   Name.get = function Name_get(name) {
     var nameValue = nameCache[name];
-    return (nameValue ? nameValue : (nameCache[name] = new Name(name)));
+    return nameValue ? nameValue : (nameCache[name] = new Name(name));
   };
 
   return Name;
@@ -51,7 +51,7 @@ var Cmd = (function CmdClosure() {
 
   Cmd.get = function Cmd_get(cmd) {
     var cmdValue = cmdCache[cmd];
-    return (cmdValue ? cmdValue : (cmdCache[cmd] = new Cmd(cmd)));
+    return cmdValue ? cmdValue : (cmdCache[cmd] = new Cmd(cmd));
   };
 
   return Cmd;
@@ -63,13 +63,13 @@ var Dict = (function DictClosure() {
   };
 
   var GETALL_DICTIONARY_TYPES_WHITELIST = {
-    'Background': true,
-    'ExtGState': true,
-    'Halftone': true,
-    'Layout': true,
-    'Mask': true,
-    'Pagination': true,
-    'Printing': true
+    Background: true,
+    ExtGState: true,
+    Halftone: true,
+    Layout: true,
+    Mask: true,
+    Pagination: true,
+    Printing: true,
   };
 
   function isRecursionAllowedFor(dict) {
@@ -98,12 +98,18 @@ var Dict = (function DictClosure() {
     get: function Dict_get(key1, key2, key3) {
       var value;
       var xref = this.xref;
-      if (typeof (value = this.map[key1]) !== 'undefined' || key1 in this.map ||
-          typeof key2 === 'undefined') {
+      if (
+        typeof (value = this.map[key1]) !== "undefined" ||
+        key1 in this.map ||
+        typeof key2 === "undefined"
+      ) {
         return xref ? xref.fetchIfRef(value) : value;
       }
-      if (typeof (value = this.map[key2]) !== 'undefined' || key2 in this.map ||
-          typeof key3 === 'undefined') {
+      if (
+        typeof (value = this.map[key2]) !== "undefined" ||
+        key2 in this.map ||
+        typeof key3 === "undefined"
+      ) {
         return xref ? xref.fetchIfRef(value) : value;
       }
       value = this.map[key3] || null;
@@ -114,15 +120,21 @@ var Dict = (function DictClosure() {
     getAsync: function Dict_getAsync(key1, key2, key3) {
       var value;
       var xref = this.xref;
-      if (typeof (value = this.map[key1]) !== 'undefined' || key1 in this.map ||
-          typeof key2 === 'undefined') {
+      if (
+        typeof (value = this.map[key1]) !== "undefined" ||
+        key1 in this.map ||
+        typeof key2 === "undefined"
+      ) {
         if (xref) {
           return xref.fetchIfRefAsync(value);
         }
         return Promise.resolve(value);
       }
-      if (typeof (value = this.map[key2]) !== 'undefined' || key2 in this.map ||
-          typeof key3 === 'undefined') {
+      if (
+        typeof (value = this.map[key2]) !== "undefined" ||
+        key2 in this.map ||
+        typeof key3 === "undefined"
+      ) {
         if (xref) {
           return xref.fetchIfRefAsync(value);
         }
@@ -149,7 +161,7 @@ var Dict = (function DictClosure() {
         obj = this.get(key);
         if (obj instanceof Dict) {
           if (isRecursionAllowedFor(obj)) {
-            (queue || (queue = [])).push({target: all, key: key, obj: obj});
+            (queue || (queue = [])).push({ target: all, key: key, obj: obj });
           } else {
             all[key] = this.getRaw(key);
           }
@@ -176,7 +188,7 @@ var Dict = (function DictClosure() {
           obj = itemObj.get(key);
           if (obj instanceof Dict) {
             if (isRecursionAllowedFor(obj)) {
-              queue.push({target: dereferenced, key: key, obj: obj});
+              queue.push({ target: dereferenced, key: key, obj: obj });
             } else {
               dereferenced[key] = itemObj.getRaw(key);
             }
@@ -204,7 +216,7 @@ var Dict = (function DictClosure() {
       for (var key in this.map) {
         callback(key, this.get(key));
       }
-    }
+    },
   };
 
   Dict.empty = new Dict(null);
@@ -222,12 +234,12 @@ var Ref = (function RefClosure() {
     toString: function Ref_toString() {
       // This function is hot, so we make the string as compact as possible.
       // |this.gen| is almost always zero, so we treat that case specially.
-      var str = this.num + 'R';
+      var str = this.num + "R";
       if (this.gen !== 0) {
         str += this.gen;
       }
       return str;
-    }
+    },
   };
 
   return Ref;
@@ -251,7 +263,7 @@ var RefSet = (function RefSetClosure() {
 
     remove: function RefSet_remove(ref) {
       delete this.dict[ref.toString()];
-    }
+    },
   };
 
   return RefSet;
@@ -287,7 +299,7 @@ var RefSetCache = (function RefSetCacheClosure() {
 
     clear: function RefSetCache_clear() {
       this.dict = Object.create(null);
-    }
+    },
   };
 
   return RefSetCache;
@@ -299,30 +311,34 @@ var Catalog = (function CatalogClosure() {
     this.xref = xref;
     this.catDict = xref.getCatalogObj();
     this.fontCache = new RefSetCache();
-    assert(isDict(this.catDict),
-      'catalog object is not a dictionary');
+    assert(isDict(this.catDict), "catalog object is not a dictionary");
 
     this.pagePromises = [];
   }
 
   Catalog.prototype = {
     get metadata() {
-      var streamRef = this.catDict.getRaw('Metadata');
+      var streamRef = this.catDict.getRaw("Metadata");
       if (!isRef(streamRef)) {
-        return shadow(this, 'metadata', null);
+        return shadow(this, "metadata", null);
       }
 
-      var encryptMetadata = (!this.xref.encrypt ? false :
-                             this.xref.encrypt.encryptMetadata);
+      var encryptMetadata = !this.xref.encrypt
+        ? false
+        : this.xref.encrypt.encryptMetadata;
 
       var stream = this.xref.fetch(streamRef, !encryptMetadata);
       var metadata;
       if (stream && isDict(stream.dict)) {
-        var type = stream.dict.get('Type');
-        var subtype = stream.dict.get('Subtype');
+        var type = stream.dict.get("Type");
+        var subtype = stream.dict.get("Subtype");
 
-        if (isName(type) && isName(subtype) &&
-            type.name === 'Metadata' && subtype.name === 'XML') {
+        if (
+          isName(type) &&
+          isName(subtype) &&
+          type.name === "Metadata" &&
+          subtype.name === "XML"
+        ) {
           // XXX: This should examine the charset the XML document defines,
           // however since there are currently no real means to decode
           // arbitrary charsets, let's just hope that the author of the PDF
@@ -331,18 +347,18 @@ var Catalog = (function CatalogClosure() {
           try {
             metadata = stringToUTF8String(bytesToString(stream.getBytes()));
           } catch (e) {
-            info('Skipping invalid metadata.');
+            info("Skipping invalid metadata.");
           }
         }
       }
 
-      return shadow(this, 'metadata', metadata);
+      return shadow(this, "metadata", metadata);
     },
     get toplevelPagesDict() {
-      var pagesObj = this.catDict.get('Pages');
-      assert(isDict(pagesObj), 'invalid top-level pages dictionary');
+      var pagesObj = this.catDict.get("Pages");
+      assert(isDict(pagesObj), "invalid top-level pages dictionary");
       // shadow the prototype getter
-      return shadow(this, 'toplevelPagesDict', pagesObj);
+      return shadow(this, "toplevelPagesDict", pagesObj);
     },
     get documentOutline() {
       var obj = null;
@@ -352,19 +368,19 @@ var Catalog = (function CatalogClosure() {
         if (ex instanceof MissingDataException) {
           throw ex;
         }
-        warn('Unable to read document outline');
+        warn("Unable to read document outline");
       }
-      return shadow(this, 'documentOutline', obj);
+      return shadow(this, "documentOutline", obj);
     },
     readDocumentOutline: function Catalog_readDocumentOutline() {
       var xref = this.xref;
-      var obj = this.catDict.get('Outlines');
+      var obj = this.catDict.get("Outlines");
       var root = { items: [] };
       if (isDict(obj)) {
-        obj = obj.getRaw('First');
+        obj = obj.getRaw("First");
         var processed = new RefSet();
         if (isRef(obj)) {
-          var queue = [{obj: obj, parent: root}];
+          var queue = [{ obj: obj, parent: root }];
           // to avoid recursion keeping track of the items
           // in the processed dictionary
           processed.put(obj);
@@ -374,65 +390,67 @@ var Catalog = (function CatalogClosure() {
             if (outlineDict === null) {
               continue;
             }
-            if (!outlineDict.has('Title')) {
-              error('Invalid outline item');
+            if (!outlineDict.has("Title")) {
+              error("Invalid outline item");
             }
-            var dest = outlineDict.get('A');
+            var dest = outlineDict.get("A");
             if (dest) {
-              dest = dest.get('D');
-            } else if (outlineDict.has('Dest')) {
-              dest = outlineDict.getRaw('Dest');
+              dest = dest.get("D");
+            } else if (outlineDict.has("Dest")) {
+              dest = outlineDict.getRaw("Dest");
               if (isName(dest)) {
                 dest = dest.name;
               }
             }
-            var title = outlineDict.get('Title');
+            var title = outlineDict.get("Title");
             var outlineItem = {
               dest: dest,
               title: stringToPDFString(title),
-              color: outlineDict.get('C') || [0, 0, 0],
-              count: outlineDict.get('Count'),
-              bold: !!(outlineDict.get('F') & 2),
-              italic: !!(outlineDict.get('F') & 1),
-              items: []
+              color: outlineDict.get("C") || [0, 0, 0],
+              count: outlineDict.get("Count"),
+              bold: !!(outlineDict.get("F") & 2),
+              italic: !!(outlineDict.get("F") & 1),
+              items: [],
             };
             i.parent.items.push(outlineItem);
-            obj = outlineDict.getRaw('First');
+            obj = outlineDict.getRaw("First");
             if (isRef(obj) && !processed.has(obj)) {
-              queue.push({obj: obj, parent: outlineItem});
+              queue.push({ obj: obj, parent: outlineItem });
               processed.put(obj);
             }
-            obj = outlineDict.getRaw('Next');
+            obj = outlineDict.getRaw("Next");
             if (isRef(obj) && !processed.has(obj)) {
-              queue.push({obj: obj, parent: i.parent});
+              queue.push({ obj: obj, parent: i.parent });
               processed.put(obj);
             }
           }
         }
       }
-      return (root.items.length > 0 ? root.items : null);
+      return root.items.length > 0 ? root.items : null;
     },
     get numPages() {
-      var obj = this.toplevelPagesDict.get('Count');
+      var obj = this.toplevelPagesDict.get("Count");
       assert(
         isInt(obj),
-        'page count in top level pages object is not an integer'
+        "page count in top level pages object is not an integer",
       );
       // shadow the prototype getter
-      return shadow(this, 'num', obj);
+      return shadow(this, "num", obj);
     },
     get destinations() {
       function fetchDestination(dest) {
-        return isDict(dest) ? dest.get('D') : dest;
+        return isDict(dest) ? dest.get("D") : dest;
       }
 
       var xref = this.xref;
-      var dests = {}, nameTreeRef, nameDictionaryRef;
-      var obj = this.catDict.get('Names');
-      if (obj && obj.has('Dests')) {
-        nameTreeRef = obj.getRaw('Dests');
-      } else if (this.catDict.has('Dests')) {
-        nameDictionaryRef = this.catDict.get('Dests');
+      var dests = {},
+        nameTreeRef,
+        nameDictionaryRef;
+      var obj = this.catDict.get("Names");
+      if (obj && obj.has("Dests")) {
+        nameTreeRef = obj.getRaw("Dests");
+      } else if (this.catDict.has("Dests")) {
+        nameDictionaryRef = this.catDict.get("Dests");
       }
 
       if (nameDictionaryRef) {
@@ -455,20 +473,20 @@ var Catalog = (function CatalogClosure() {
           dests[name] = fetchDestination(names[name]);
         }
       }
-      return shadow(this, 'destinations', dests);
+      return shadow(this, "destinations", dests);
     },
     getDestination: function Catalog_getDestination(destinationId) {
       function fetchDestination(dest) {
-        return isDict(dest) ? dest.get('D') : dest;
+        return isDict(dest) ? dest.get("D") : dest;
       }
 
       var xref = this.xref;
       var dest, nameTreeRef, nameDictionaryRef;
-      var obj = this.catDict.get('Names');
-      if (obj && obj.has('Dests')) {
-        nameTreeRef = obj.getRaw('Dests');
-      } else if (this.catDict.has('Dests')) {
-        nameDictionaryRef = this.catDict.get('Dests');
+      var obj = this.catDict.get("Names");
+      if (obj && obj.has("Dests")) {
+        nameTreeRef = obj.getRaw("Dests");
+      } else if (this.catDict.has("Dests")) {
+        nameDictionaryRef = this.catDict.get("Dests");
       }
 
       if (nameDictionaryRef) {
@@ -491,10 +509,11 @@ var Catalog = (function CatalogClosure() {
     },
     get attachments() {
       var xref = this.xref;
-      var attachments = null, nameTreeRef;
-      var obj = this.catDict.get('Names');
+      var attachments = null,
+        nameTreeRef;
+      var obj = this.catDict.get("Names");
       if (obj) {
-        nameTreeRef = obj.getRaw('EmbeddedFiles');
+        nameTreeRef = obj.getRaw("EmbeddedFiles");
       }
 
       if (nameTreeRef) {
@@ -511,15 +530,15 @@ var Catalog = (function CatalogClosure() {
           attachments[stringToPDFString(name)] = fs.serializable;
         }
       }
-      return shadow(this, 'attachments', attachments);
+      return shadow(this, "attachments", attachments);
     },
     get javaScript() {
       var xref = this.xref;
-      var obj = this.catDict.get('Names');
+      var obj = this.catDict.get("Names");
 
       var javaScript = [];
-      if (obj && obj.has('JavaScript')) {
-        var nameTree = new NameTree(obj.getRaw('JavaScript'), xref);
+      if (obj && obj.has("JavaScript")) {
+        var nameTree = new NameTree(obj.getRaw("JavaScript"), xref);
         var names = nameTree.getAll();
         for (var name in names) {
           if (!names.hasOwnProperty(name)) {
@@ -531,11 +550,11 @@ var Catalog = (function CatalogClosure() {
           if (!isDict(jsDict)) {
             continue;
           }
-          var type = jsDict.get('S');
-          if (!isName(type) || type.name !== 'JavaScript') {
+          var type = jsDict.get("S");
+          if (!isName(type) || type.name !== "JavaScript") {
             continue;
           }
-          var js = jsDict.get('JS');
+          var js = jsDict.get("JS");
           if (!isString(js) && !isStream(js)) {
             continue;
           }
@@ -547,21 +566,25 @@ var Catalog = (function CatalogClosure() {
       }
 
       // Append OpenAction actions to javaScript array
-      var openactionDict = this.catDict.get('OpenAction');
+      var openactionDict = this.catDict.get("OpenAction");
       if (isDict(openactionDict)) {
-        var objType = openactionDict.get('Type');
-        var actionType = openactionDict.get('S');
-        var action = openactionDict.get('N');
-        var isPrintAction = (isName(objType) && objType.name === 'Action' &&
-                            isName(actionType) && actionType.name === 'Named' &&
-                            isName(action) && action.name === 'Print');
-        
+        var objType = openactionDict.get("Type");
+        var actionType = openactionDict.get("S");
+        var action = openactionDict.get("N");
+        var isPrintAction =
+          isName(objType) &&
+          objType.name === "Action" &&
+          isName(actionType) &&
+          actionType.name === "Named" &&
+          isName(action) &&
+          action.name === "Print";
+
         if (isPrintAction) {
-          javaScript.push('print(true);');
+          javaScript.push("print(true);");
         }
       }
 
-      return shadow(this, 'javaScript', javaScript);
+      return shadow(this, "javaScript", javaScript);
     },
 
     cleanup: function Catalog_cleanup() {
@@ -569,13 +592,15 @@ var Catalog = (function CatalogClosure() {
       this.fontCache.forEach(function (promise) {
         promises.push(promise);
       });
-      return Promise.all(promises).then(function (translatedFonts) {
-        for (var i = 0, ii = translatedFonts.length; i < ii; i++) {
-          var font = translatedFonts[i].dict;
-          delete font.translated;
-        }
-        this.fontCache.clear();
-      }.bind(this));
+      return Promise.all(promises).then(
+        function (translatedFonts) {
+          for (var i = 0, ii = translatedFonts.length; i < ii; i++) {
+            var font = translatedFonts[i].dict;
+            delete font.translated;
+          }
+          this.fontCache.clear();
+        }.bind(this),
+      );
     },
 
     getPage: function Catalog_getPage(pageIndex) {
@@ -584,9 +609,15 @@ var Catalog = (function CatalogClosure() {
           function (a) {
             var dict = a[0];
             var ref = a[1];
-            return new Page(this.pdfManager, this.xref, pageIndex, dict, ref,
-                            this.fontCache);
-          }.bind(this)
+            return new Page(
+              this.pdfManager,
+              this.xref,
+              pageIndex,
+              dict,
+              ref,
+              this.fontCache,
+            );
+          }.bind(this),
         );
       }
       return this.pagePromises[pageIndex];
@@ -594,7 +625,7 @@ var Catalog = (function CatalogClosure() {
 
     getPageDict: function Catalog_getPageDict(pageIndex) {
       var capability = createPromiseCapability();
-      var nodesToVisit = [this.catDict.getRaw('Pages')];
+      var nodesToVisit = [this.catDict.getRaw("Pages")];
       var currentPageIndex = 0;
       var xref = this.xref;
 
@@ -604,7 +635,7 @@ var Catalog = (function CatalogClosure() {
 
           if (isRef(currentNode)) {
             xref.fetchAsync(currentNode).then(function (obj) {
-              if ((isDict(obj, 'Page') || (isDict(obj) && !obj.has('Kids')))) {
+              if (isDict(obj, "Page") || (isDict(obj) && !obj.has("Kids"))) {
                 if (pageIndex === currentPageIndex) {
                   capability.resolve([obj, currentNode]);
                 } else {
@@ -622,17 +653,17 @@ var Catalog = (function CatalogClosure() {
           // must be a child page dictionary
           assert(
             isDict(currentNode),
-            'page dictionary kid reference points to wrong type of object'
+            "page dictionary kid reference points to wrong type of object",
           );
-          var count = currentNode.get('Count');
+          var count = currentNode.get("Count");
           // Skip nodes where the page can't be.
           if (currentPageIndex + count <= pageIndex) {
             currentPageIndex += count;
             continue;
           }
 
-          var kids = currentNode.get('Kids');
-          assert(isArray(kids), 'page dictionary kids object is not an array');
+          var kids = currentNode.get("Kids");
+          assert(isArray(kids), "page dictionary kids object is not an array");
           if (count === kids.length) {
             // Nodes that don't have the page have been skipped and this is the
             // bottom of the tree which means the page requested must be a
@@ -650,7 +681,7 @@ var Catalog = (function CatalogClosure() {
             }
           }
         }
-        capability.reject('Page index ' + pageIndex + ' not found.');
+        capability.reject("Page index " + pageIndex + " not found.");
       }
       next();
       return capability.promise;
@@ -664,46 +695,53 @@ var Catalog = (function CatalogClosure() {
       function pagesBeforeRef(kidRef) {
         var total = 0;
         var parentRef;
-        return xref.fetchAsync(kidRef).then(function (node) {
-          if (!node) {
-            return null;
-          }
-          parentRef = node.getRaw('Parent');
-          return node.getAsync('Parent');
-        }).then(function (parent) {
-          if (!parent) {
-            return null;
-          }
-          return parent.getAsync('Kids');
-        }).then(function (kids) {
-          if (!kids) {
-            return null;
-          }
-          var kidPromises = [];
-          var found = false;
-          for (var i = 0; i < kids.length; i++) {
-            var kid = kids[i];
-            assert(isRef(kid), 'kids must be a ref');
-            if (kid.num === kidRef.num) {
-              found = true;
-              break;
+        return xref
+          .fetchAsync(kidRef)
+          .then(function (node) {
+            if (!node) {
+              return null;
             }
-            kidPromises.push(xref.fetchAsync(kid).then(function (kid) {
-              if (kid.has('Count')) {
-                var count = kid.get('Count');
-                total += count;
-              } else { // page leaf node
-                total++;
+            parentRef = node.getRaw("Parent");
+            return node.getAsync("Parent");
+          })
+          .then(function (parent) {
+            if (!parent) {
+              return null;
+            }
+            return parent.getAsync("Kids");
+          })
+          .then(function (kids) {
+            if (!kids) {
+              return null;
+            }
+            var kidPromises = [];
+            var found = false;
+            for (var i = 0; i < kids.length; i++) {
+              var kid = kids[i];
+              assert(isRef(kid), "kids must be a ref");
+              if (kid.num === kidRef.num) {
+                found = true;
+                break;
               }
-            }));
-          }
-          if (!found) {
-            error('kid ref not found in parents kids');
-          }
-          return Promise.all(kidPromises).then(function () {
-            return [total, parentRef];
+              kidPromises.push(
+                xref.fetchAsync(kid).then(function (kid) {
+                  if (kid.has("Count")) {
+                    var count = kid.get("Count");
+                    total += count;
+                  } else {
+                    // page leaf node
+                    total++;
+                  }
+                }),
+              );
+            }
+            if (!found) {
+              error("kid ref not found in parents kids");
+            }
+            return Promise.all(kidPromises).then(function () {
+              return [total, parentRef];
+            });
           });
-        });
       }
 
       var total = 0;
@@ -720,7 +758,7 @@ var Catalog = (function CatalogClosure() {
       }
 
       return next(ref);
-    }
+    },
   };
 
   return Catalog;
@@ -736,7 +774,7 @@ var XRef = (function XRefClosure() {
     this.password = password;
     this.stats = {
       streamTypes: [],
-      fontTypes: []
+      fontTypes: [],
     };
   }
 
@@ -752,42 +790,45 @@ var XRef = (function XRefClosure() {
       if (!recoveryMode) {
         trailerDict = this.readXRef();
       } else {
-        warn('Indexing all PDF objects');
+        warn("Indexing all PDF objects");
         trailerDict = this.indexObjects();
       }
       trailerDict.assignXref(this);
       this.trailer = trailerDict;
-      var encrypt = trailerDict.get('Encrypt');
+      var encrypt = trailerDict.get("Encrypt");
       if (encrypt) {
-        var ids = trailerDict.get('ID');
-        var fileId = (ids && ids.length) ? ids[0] : '';
-        this.encrypt = new CipherTransformFactory(encrypt, fileId,
-                                                  this.password);
+        var ids = trailerDict.get("ID");
+        var fileId = ids && ids.length ? ids[0] : "";
+        this.encrypt = new CipherTransformFactory(
+          encrypt,
+          fileId,
+          this.password,
+        );
       }
 
       // get the root dictionary (catalog) object
-      if (!(this.root = trailerDict.get('Root'))) {
-        error('Invalid root reference');
+      if (!(this.root = trailerDict.get("Root"))) {
+        error("Invalid root reference");
       }
     },
 
     processXRefTable: function XRef_processXRefTable(parser) {
-      if (!('tableState' in this)) {
+      if (!("tableState" in this)) {
         // Stores state of the table as we process it so we can resume
         // from middle of table in case of missing data error
         this.tableState = {
           entryNum: 0,
           streamPos: parser.lexer.stream.pos,
           parserBuf1: parser.buf1,
-          parserBuf2: parser.buf2
+          parserBuf2: parser.buf2,
         };
       }
 
       var obj = this.readXRefTable(parser);
 
       // Sanity check
-      if (!isCmd(obj, 'trailer')) {
-        error('Invalid XRef table: could not find trailer dictionary');
+      if (!isCmd(obj, "trailer")) {
+        error("Invalid XRef table: could not find trailer dictionary");
       }
       // Read trailer dictionary, e.g.
       // trailer
@@ -805,7 +846,7 @@ var XRef = (function XRefClosure() {
         dict = dict.dict;
       }
       if (!isDict(dict)) {
-        error('Invalid XRef table: could not parse trailer dictionary');
+        error("Invalid XRef table: could not parse trailer dictionary");
       }
       delete this.tableState;
 
@@ -833,8 +874,8 @@ var XRef = (function XRefClosure() {
       var obj;
 
       while (true) {
-        if (!('firstEntryNum' in tableState) || !('entryCount' in tableState)) {
-          if (isCmd(obj = parser.getObj(), 'trailer')) {
+        if (!("firstEntryNum" in tableState) || !("entryCount" in tableState)) {
+          if (isCmd((obj = parser.getObj()), "trailer")) {
             break;
           }
           tableState.firstEntryNum = obj;
@@ -844,7 +885,7 @@ var XRef = (function XRefClosure() {
         var first = tableState.firstEntryNum;
         var count = tableState.entryCount;
         if (!isInt(first) || !isInt(count)) {
-          error('Invalid XRef table: wrong types in subsection header');
+          error("Invalid XRef table: wrong types in subsection header");
         }
         // Inner loop is over objects themselves
         for (var i = tableState.entryNum; i < count; i++) {
@@ -858,16 +899,19 @@ var XRef = (function XRefClosure() {
           entry.gen = parser.getObj();
           var type = parser.getObj();
 
-          if (isCmd(type, 'f')) {
+          if (isCmd(type, "f")) {
             entry.free = true;
-          } else if (isCmd(type, 'n')) {
+          } else if (isCmd(type, "n")) {
             entry.uncompressed = true;
           }
 
           // Validate entry obj
-          if (!isInt(entry.offset) || !isInt(entry.gen) ||
-              !(entry.free || entry.uncompressed)) {
-            error('Invalid entry in XRef subsection: ' + first + ', ' + count);
+          if (
+            !isInt(entry.offset) ||
+            !isInt(entry.gen) ||
+            !(entry.free || entry.uncompressed)
+          ) {
+            error("Invalid entry in XRef subsection: " + first + ", " + count);
           }
 
           if (!this.entries[i + first]) {
@@ -891,27 +935,27 @@ var XRef = (function XRefClosure() {
 
       // Sanity check: as per spec, first object must be free
       if (this.entries[0] && !this.entries[0].free) {
-        error('Invalid XRef table: unexpected first object');
+        error("Invalid XRef table: unexpected first object");
       }
       return obj;
     },
 
     processXRefStream: function XRef_processXRefStream(stream) {
-      if (!('streamState' in this)) {
+      if (!("streamState" in this)) {
         // Stores state of the stream as we process it so we can resume
         // from middle of stream in case of missing data error
         var streamParameters = stream.dict;
-        var byteWidths = streamParameters.get('W');
-        var range = streamParameters.get('Index');
+        var byteWidths = streamParameters.get("W");
+        var range = streamParameters.get("Index");
         if (!range) {
-          range = [0, streamParameters.get('Size')];
+          range = [0, streamParameters.get("Size")];
         }
 
         this.streamState = {
           entryRanges: range,
           byteWidths: byteWidths,
           entryNum: 0,
-          streamPos: stream.pos
+          streamPos: stream.pos,
         };
       }
       this.readXRefStream(stream);
@@ -936,17 +980,22 @@ var XRef = (function XRefClosure() {
         var n = entryRanges[1];
 
         if (!isInt(first) || !isInt(n)) {
-          error('Invalid XRef range fields: ' + first + ', ' + n);
+          error("Invalid XRef range fields: " + first + ", " + n);
         }
-        if (!isInt(typeFieldWidth) || !isInt(offsetFieldWidth) ||
-            !isInt(generationFieldWidth)) {
-          error('Invalid XRef entry fields length: ' + first + ', ' + n);
+        if (
+          !isInt(typeFieldWidth) ||
+          !isInt(offsetFieldWidth) ||
+          !isInt(generationFieldWidth)
+        ) {
+          error("Invalid XRef entry fields length: " + first + ", " + n);
         }
         for (i = streamState.entryNum; i < n; ++i) {
           streamState.entryNum = i;
           streamState.streamPos = stream.pos;
 
-          var type = 0, offset = 0, generation = 0;
+          var type = 0,
+            offset = 0,
+            generation = 0;
           for (j = 0; j < typeFieldWidth; ++j) {
             type = (type << 8) | stream.getByte();
           }
@@ -973,7 +1022,7 @@ var XRef = (function XRefClosure() {
             case 2:
               break;
             default:
-              error('Invalid XRef entry type: ' + type);
+              error("Invalid XRef entry type: " + type);
           }
           if (!this.entries[first + i]) {
             this.entries[first + i] = entry;
@@ -990,7 +1039,8 @@ var XRef = (function XRefClosure() {
       // Simple scan through the PDF content to find objects,
       // trailers and XRef streams.
       function readToken(data, offset) {
-        var token = '', ch = data[offset];
+        var token = "",
+          ch = data[offset];
         while (ch !== 13 && ch !== 10) {
           if (++offset >= data.length) {
             break;
@@ -1001,7 +1051,8 @@ var XRef = (function XRefClosure() {
         return token;
       }
       function skipUntil(data, offset, what) {
-        var length = what.length, dataLength = data.length;
+        var length = what.length,
+          dataLength = data.length;
         var skipped = 0;
         // finding byte sequence
         while (offset < dataLength) {
@@ -1018,23 +1069,27 @@ var XRef = (function XRefClosure() {
         return skipped;
       }
       var trailerBytes = new Uint8Array([116, 114, 97, 105, 108, 101, 114]);
-      var startxrefBytes = new Uint8Array([115, 116, 97, 114, 116, 120, 114,
-                                          101, 102]);
+      var startxrefBytes = new Uint8Array([
+        115, 116, 97, 114, 116, 120, 114, 101, 102,
+      ]);
       var endobjBytes = new Uint8Array([101, 110, 100, 111, 98, 106]);
       var xrefBytes = new Uint8Array([47, 88, 82, 101, 102]);
 
       var stream = this.stream;
       stream.pos = 0;
       var buffer = stream.getBytes();
-      var position = stream.start, length = buffer.length;
-      var trailers = [], xrefStms = [];
+      var position = stream.start,
+        length = buffer.length;
+      var trailers = [],
+        xrefStms = [];
       while (position < length) {
         var ch = buffer[position];
         if (ch === 32 || ch === 9 || ch === 13 || ch === 10) {
           ++position;
           continue;
         }
-        if (ch === 37) { // %-comment
+        if (ch === 37) {
+          // %-comment
           do {
             ++position;
             if (position >= length) {
@@ -1046,7 +1101,7 @@ var XRef = (function XRefClosure() {
         }
         var token = readToken(buffer, position);
         var m;
-        if (token === 'xref') {
+        if (token === "xref") {
           position += skipUntil(buffer, position, trailerBytes);
           trailers.push(position);
           position += skipUntil(buffer, position, startxrefBytes);
@@ -1054,7 +1109,7 @@ var XRef = (function XRefClosure() {
           this.entries[m[1]] = {
             offset: position,
             gen: m[2] | 0,
-            uncompressed: true
+            uncompressed: true,
           };
 
           var contentLength = skipUntil(buffer, position, endobjBytes) + 7;
@@ -1063,8 +1118,10 @@ var XRef = (function XRefClosure() {
           // checking XRef stream suspect
           // (it shall have '/XRef' and next char is not a letter)
           var xrefTagOffset = skipUntil(content, 0, xrefBytes);
-          if (xrefTagOffset < contentLength &&
-              content[xrefTagOffset + 5] < 64) {
+          if (
+            xrefTagOffset < contentLength &&
+            content[xrefTagOffset + 5] < 64
+          ) {
             xrefStms.push(position);
             this.xrefstms[position] = 1; // don't read it recursively
           }
@@ -1086,15 +1143,15 @@ var XRef = (function XRefClosure() {
         stream.pos = trailers[i];
         var parser = new Parser(new Lexer(stream), true, this);
         var obj = parser.getObj();
-        if (!isCmd(obj, 'trailer')) {
+        if (!isCmd(obj, "trailer")) {
           continue;
         }
         // read the trailer dictionary
-        if (!isDict(dict = parser.getObj())) {
+        if (!isDict((dict = parser.getObj()))) {
           continue;
         }
         // taking the first one with 'ID'
-        if (dict.has('ID')) {
+        if (dict.has("ID")) {
           return dict;
         }
       }
@@ -1104,7 +1161,7 @@ var XRef = (function XRefClosure() {
       }
       // nothing helps
       // calling error() would reject worker with an UnknownErrorException.
-      throw new InvalidPDFException('Invalid PDF structure');
+      throw new InvalidPDFException("Invalid PDF structure");
     },
 
     readXRef: function XRef_readXRef(recoveryMode) {
@@ -1121,7 +1178,7 @@ var XRef = (function XRefClosure() {
           var dict;
 
           // Get dictionary
-          if (isCmd(obj, 'xref')) {
+          if (isCmd(obj, "xref")) {
             // Parse end-of-file XRef
             dict = this.processXRefTable(parser);
             if (!this.topDict) {
@@ -1129,7 +1186,7 @@ var XRef = (function XRefClosure() {
             }
 
             // Recursively get other XRefs 'XRefStm', if any
-            obj = dict.get('XRefStm');
+            obj = dict.get("XRefStm");
             if (isInt(obj)) {
               var pos = obj;
               // ignore previously loaded xref streams
@@ -1141,24 +1198,26 @@ var XRef = (function XRefClosure() {
             }
           } else if (isInt(obj)) {
             // Parse in-stream XRef
-            if (!isInt(parser.getObj()) ||
-                !isCmd(parser.getObj(), 'obj') ||
-                !isStream(obj = parser.getObj())) {
-              error('Invalid XRef stream');
+            if (
+              !isInt(parser.getObj()) ||
+              !isCmd(parser.getObj(), "obj") ||
+              !isStream((obj = parser.getObj()))
+            ) {
+              error("Invalid XRef stream");
             }
             dict = this.processXRefStream(obj);
             if (!this.topDict) {
               this.topDict = dict;
             }
             if (!dict) {
-              error('Failed to read XRef stream');
+              error("Failed to read XRef stream");
             }
           } else {
-            error('Invalid XRef stream header');
+            error("Invalid XRef stream header");
           }
 
           // Recursively get previous dictionary, if any
-          obj = dict.get('Prev');
+          obj = dict.get("Prev");
           if (isInt(obj)) {
             this.startXRefQueue.push(obj);
           } else if (isRef(obj)) {
@@ -1175,7 +1234,7 @@ var XRef = (function XRefClosure() {
         if (e instanceof MissingDataException) {
           throw e;
         }
-        info('(while reading XRef): ' + e);
+        info("(while reading XRef): " + e);
       }
 
       if (recoveryMode) {
@@ -1200,7 +1259,7 @@ var XRef = (function XRefClosure() {
     },
 
     fetch: function XRef_fetch(ref, suppressEncryption) {
-      assert(isRef(ref), 'ref object is not a reference');
+      assert(isRef(ref), "ref object is not a reference");
       var num = ref.num;
       if (num in this.cache) {
         var cacheEntry = this.cache[num];
@@ -1219,7 +1278,7 @@ var XRef = (function XRefClosure() {
       } else {
         xrefEntry = this.fetchCompressed(xrefEntry, suppressEncryption);
       }
-      if (isDict(xrefEntry)){
+      if (isDict(xrefEntry)) {
         xrefEntry.objId = ref.toString();
       } else if (isStream(xrefEntry)) {
         xrefEntry.dict.objId = ref.toString();
@@ -1227,33 +1286,41 @@ var XRef = (function XRefClosure() {
       return xrefEntry;
     },
 
-    fetchUncompressed: function XRef_fetchUncompressed(ref, xrefEntry,
-                                                       suppressEncryption) {
+    fetchUncompressed: function XRef_fetchUncompressed(
+      ref,
+      xrefEntry,
+      suppressEncryption,
+    ) {
       var gen = ref.gen;
       var num = ref.num;
       if (xrefEntry.gen !== gen) {
-        error('inconsistent generation in XRef');
+        error("inconsistent generation in XRef");
       }
-      var stream = this.stream.makeSubStream(xrefEntry.offset +
-                                             this.stream.start);
+      var stream = this.stream.makeSubStream(
+        xrefEntry.offset + this.stream.start,
+      );
       var parser = new Parser(new Lexer(stream), true, this);
       var obj1 = parser.getObj();
       var obj2 = parser.getObj();
       var obj3 = parser.getObj();
-      if (!isInt(obj1) || parseInt(obj1, 10) !== num ||
-          !isInt(obj2) || parseInt(obj2, 10) !== gen ||
-          !isCmd(obj3)) {
-        error('bad XRef entry');
+      if (
+        !isInt(obj1) ||
+        parseInt(obj1, 10) !== num ||
+        !isInt(obj2) ||
+        parseInt(obj2, 10) !== gen ||
+        !isCmd(obj3)
+      ) {
+        error("bad XRef entry");
       }
-      if (!isCmd(obj3, 'obj')) {
+      if (!isCmd(obj3, "obj")) {
         // some bad PDFs use "obj1234" and really mean 1234
-        if (obj3.cmd.indexOf('obj') === 0) {
+        if (obj3.cmd.indexOf("obj") === 0) {
           num = parseInt(obj3.cmd.substring(3), 10);
           if (!isNaN(num)) {
             return num;
           }
         }
-        error('bad XRef entry');
+        error("bad XRef entry");
       }
       if (this.encrypt && !suppressEncryption) {
         xrefEntry = parser.getObj(this.encrypt.createCipherTransform(num, gen));
@@ -1266,31 +1333,36 @@ var XRef = (function XRefClosure() {
       return xrefEntry;
     },
 
-    fetchCompressed: function XRef_fetchCompressed(xrefEntry,
-                                                   suppressEncryption) {
+    fetchCompressed: function XRef_fetchCompressed(
+      xrefEntry,
+      suppressEncryption,
+    ) {
       var tableOffset = xrefEntry.offset;
       var stream = this.fetch(new Ref(tableOffset, 0));
       if (!isStream(stream)) {
-        error('bad ObjStm stream');
+        error("bad ObjStm stream");
       }
-      var first = stream.dict.get('First');
-      var n = stream.dict.get('N');
+      var first = stream.dict.get("First");
+      var n = stream.dict.get("N");
       if (!isInt(first) || !isInt(n)) {
-        error('invalid first and n parameters for ObjStm stream');
+        error("invalid first and n parameters for ObjStm stream");
       }
       var parser = new Parser(new Lexer(stream), false, this);
       parser.allowStreams = true;
-      var i, entries = [], num, nums = [];
+      var i,
+        entries = [],
+        num,
+        nums = [];
       // read the object numbers to populate cache
       for (i = 0; i < n; ++i) {
         num = parser.getObj();
         if (!isInt(num)) {
-          error('invalid object number in the ObjStm stream: ' + num);
+          error("invalid object number in the ObjStm stream: " + num);
         }
         nums.push(num);
         var offset = parser.getObj();
         if (!isInt(offset)) {
-          error('invalid object offset in the ObjStm stream: ' + offset);
+          error("invalid object offset in the ObjStm stream: " + offset);
         }
       }
       // read stream objects for cache
@@ -1304,7 +1376,7 @@ var XRef = (function XRefClosure() {
       }
       xrefEntry = entries[xrefEntry.gen];
       if (xrefEntry === undefined) {
-        error('bad XRef entry for compressed object');
+        error("bad XRef entry for compressed object");
       }
       return xrefEntry;
     },
@@ -1336,7 +1408,7 @@ var XRef = (function XRefClosure() {
 
     getCatalogObj: function XRef_getCatalogObj() {
       return this.root;
-    }
+    },
   };
 
   return XRef;
@@ -1370,19 +1442,19 @@ var NameTree = (function NameTreeClosure() {
         if (!isDict(obj)) {
           continue;
         }
-        if (obj.has('Kids')) {
-          var kids = obj.get('Kids');
+        if (obj.has("Kids")) {
+          var kids = obj.get("Kids");
           for (i = 0, n = kids.length; i < n; i++) {
             var kid = kids[i];
             if (processed.has(kid)) {
-              error('invalid destinations');
+              error("invalid destinations");
             }
             queue.push(kid);
             processed.put(kid);
           }
           continue;
         }
-        var names = obj.get('Names');
+        var names = obj.get("Names");
         if (names) {
           for (i = 0, n = names.length; i < n; i += 2) {
             dict[names[i]] = xref.fetchIfRef(names[i + 1]);
@@ -1405,14 +1477,14 @@ var NameTree = (function NameTreeClosure() {
 
       // Perform a binary search to quickly find the entry that
       // contains the named destination we are looking for.
-      while (kidsOrNames.has('Kids')) {
+      while (kidsOrNames.has("Kids")) {
         loopCount++;
         if (loopCount > MAX_NAMES_LEVELS) {
-          warn('Search depth limit for named destionations has been reached.');
+          warn("Search depth limit for named destionations has been reached.");
           return null;
         }
-        
-        var kids = kidsOrNames.get('Kids');
+
+        var kids = kidsOrNames.get("Kids");
         if (!isArray(kids)) {
           return null;
         }
@@ -1422,7 +1494,7 @@ var NameTree = (function NameTreeClosure() {
         while (l <= r) {
           m = (l + r) >> 1;
           var kid = xref.fetchIfRef(kids[m]);
-          var limits = kid.get('Limits');
+          var limits = kid.get("Limits");
 
           if (destinationId < limits[0]) {
             r = m - 1;
@@ -1441,7 +1513,7 @@ var NameTree = (function NameTreeClosure() {
       // If we get here, then we have found the right entry. Now
       // go through the named destinations in the Named dictionary
       // until we find the exact destination we're looking for.
-      var names = kidsOrNames.get('Names');
+      var names = kidsOrNames.get("Names");
       if (isArray(names)) {
         // Perform a binary search to reduce the lookup time.
         l = 0;
@@ -1460,16 +1532,16 @@ var NameTree = (function NameTreeClosure() {
         }
       }
       return null;
-    }
+    },
   };
   return NameTree;
 })();
 
 /**
- * "A PDF file can refer to the contents of another file by using a File 
+ * "A PDF file can refer to the contents of another file by using a File
  * Specification (PDF 1.1)", see the spec (7.11) for more details.
  * NOTE: Only embedded files are supported (as part of the attachments support)
- * TODO: support the 'URL' file system (with caching if !/V), portable 
+ * TODO: support the 'URL' file system (with caching if !/V), portable
  * collections attributes and related files (/RF)
  */
 var FileSpec = (function FileSpecClosure() {
@@ -1479,35 +1551,35 @@ var FileSpec = (function FileSpecClosure() {
     }
     this.xref = xref;
     this.root = root;
-    if (root.has('FS')) {
-      this.fs = root.get('FS');
+    if (root.has("FS")) {
+      this.fs = root.get("FS");
     }
-    this.description = root.has('Desc') ?
-                         stringToPDFString(root.get('Desc')) :
-                         '';
-    if (root.has('RF')) {
-      warn('Related file specifications are not supported');
+    this.description = root.has("Desc")
+      ? stringToPDFString(root.get("Desc"))
+      : "";
+    if (root.has("RF")) {
+      warn("Related file specifications are not supported");
     }
     this.contentAvailable = true;
-    if (!root.has('EF')) {
+    if (!root.has("EF")) {
       this.contentAvailable = false;
-      warn('Non-embedded file specifications are not supported');
+      warn("Non-embedded file specifications are not supported");
     }
   }
 
   function pickPlatformItem(dict) {
     // Look for the filename in this order:
     // UF, F, Unix, Mac, DOS
-    if (dict.has('UF')) {
-      return dict.get('UF');
-    } else if (dict.has('F')) {
-      return dict.get('F');
-    } else if (dict.has('Unix')) {
-      return dict.get('Unix');
-    } else if (dict.has('Mac')) {
-      return dict.get('Mac');
-    } else if (dict.has('DOS')) {
-      return dict.get('DOS');
+    if (dict.has("UF")) {
+      return dict.get("UF");
+    } else if (dict.has("F")) {
+      return dict.get("F");
+    } else if (dict.has("Unix")) {
+      return dict.get("Unix");
+    } else if (dict.has("Mac")) {
+      return dict.get("Mac");
+    } else if (dict.has("DOS")) {
+      return dict.get("DOS");
     } else {
       return null;
     }
@@ -1516,11 +1588,11 @@ var FileSpec = (function FileSpecClosure() {
   FileSpec.prototype = {
     get filename() {
       if (!this._filename && this.root) {
-        var filename = pickPlatformItem(this.root) || 'unnamed';
-        this._filename = stringToPDFString(filename).
-          replace(/\\\\/g, '\\').
-          replace(/\\\//g, '/').
-          replace(/\\/g, '/');
+        var filename = pickPlatformItem(this.root) || "unnamed";
+        this._filename = stringToPDFString(filename)
+          .replace(/\\\\/g, "\\")
+          .replace(/\\\//g, "/")
+          .replace(/\\/g, "/");
       }
       return this._filename;
     },
@@ -1529,7 +1601,7 @@ var FileSpec = (function FileSpecClosure() {
         return null;
       }
       if (!this.contentRef && this.root) {
-        this.contentRef = pickPlatformItem(this.root.get('EF'));
+        this.contentRef = pickPlatformItem(this.root.get("EF"));
       }
       var content = null;
       if (this.contentRef) {
@@ -1538,20 +1610,22 @@ var FileSpec = (function FileSpecClosure() {
         if (fileObj && isStream(fileObj)) {
           content = fileObj.getBytes();
         } else {
-          warn('Embedded file specification points to non-existing/invalid ' +
-            'content');
+          warn(
+            "Embedded file specification points to non-existing/invalid " +
+              "content",
+          );
         }
       } else {
-        warn('Embedded file specification does not have a content');
+        warn("Embedded file specification does not have a content");
       }
       return content;
     },
     get serializable() {
       return {
         filename: this.filename,
-        content: this.content
+        content: this.content,
       };
-    }
+    },
   };
   return FileSpec;
 })();
@@ -1567,7 +1641,7 @@ var FileSpec = (function FileSpecClosure() {
  * that have references to the catalog or other pages since that will cause the
  * entire PDF document object graph to be traversed.
  */
-var ObjectLoader = (function() {
+var ObjectLoader = (function () {
   function mayHaveChildren(value) {
     return isRef(value) || isDict(value) || isArray(value) || isStream(value);
   }
@@ -1609,8 +1683,10 @@ var ObjectLoader = (function() {
       var keys = this.keys;
       this.capability = createPromiseCapability();
       // Don't walk the graph if all the data is already loaded.
-      if (!(this.xref.stream instanceof ChunkedStream) ||
-          this.xref.stream.getMissingChunks().length === 0) {
+      if (
+        !(this.xref.stream instanceof ChunkedStream) ||
+        this.xref.stream.getMissingChunks().length === 0
+      ) {
         this.capability.resolve();
         return this.capability.promise;
       }
@@ -1660,7 +1736,7 @@ var ObjectLoader = (function() {
               foundMissingData = true;
               pendingRequests.push({
                 begin: stream.start,
-                end: stream.end
+                end: stream.end,
               });
             }
           }
@@ -1673,25 +1749,27 @@ var ObjectLoader = (function() {
       }
 
       if (pendingRequests.length) {
-        this.xref.stream.manager.requestRanges(pendingRequests,
-            function pendingRequestCallback() {
-          nodesToVisit = nodesToRevisit;
-          for (var i = 0; i < nodesToRevisit.length; i++) {
-            var node = nodesToRevisit[i];
-            // Remove any reference nodes from the currrent refset so they
-            // aren't skipped when we revist them.
-            if (isRef(node)) {
-              this.refSet.remove(node);
+        this.xref.stream.manager.requestRanges(
+          pendingRequests,
+          function pendingRequestCallback() {
+            nodesToVisit = nodesToRevisit;
+            for (var i = 0; i < nodesToRevisit.length; i++) {
+              var node = nodesToRevisit[i];
+              // Remove any reference nodes from the currrent refset so they
+              // aren't skipped when we revist them.
+              if (isRef(node)) {
+                this.refSet.remove(node);
+              }
             }
-          }
-          this.walk(nodesToVisit);
-        }.bind(this));
+            this.walk(nodesToVisit);
+          }.bind(this),
+        );
         return;
       }
       // Everything is loaded.
       this.refSet = null;
       this.capability.resolve();
-    }
+    },
   };
 
   return ObjectLoader;

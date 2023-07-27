@@ -17,20 +17,23 @@
 /* globals bytesToString, DecryptStream, error, isInt, isName, Name,
            PasswordException, PasswordResponses, stringToBytes */
 
-'use strict';
+"use strict";
 
 var ARCFourCipher = (function ARCFourCipherClosure() {
   function ARCFourCipher(key) {
     this.a = 0;
     this.b = 0;
     var s = new Uint8Array(256);
-    var i, j = 0, tmp, keyLength = key.length;
+    var i,
+      j = 0,
+      tmp,
+      keyLength = key.length;
     for (i = 0; i < 256; ++i) {
       s[i] = i;
     }
     for (i = 0; i < 256; ++i) {
       tmp = s[i];
-      j = (j + tmp + key[i % keyLength]) & 0xFF;
+      j = (j + tmp + key[i % keyLength]) & 0xff;
       s[i] = s[j];
       s[j] = tmp;
     }
@@ -39,22 +42,27 @@ var ARCFourCipher = (function ARCFourCipherClosure() {
 
   ARCFourCipher.prototype = {
     encryptBlock: function ARCFourCipher_encryptBlock(data) {
-      var i, n = data.length, tmp, tmp2;
-      var a = this.a, b = this.b, s = this.s;
+      var i,
+        n = data.length,
+        tmp,
+        tmp2;
+      var a = this.a,
+        b = this.b,
+        s = this.s;
       var output = new Uint8Array(n);
       for (i = 0; i < n; ++i) {
-        a = (a + 1) & 0xFF;
+        a = (a + 1) & 0xff;
         tmp = s[a];
-        b = (b + tmp) & 0xFF;
+        b = (b + tmp) & 0xff;
         tmp2 = s[b];
         s[a] = tmp2;
         s[b] = tmp;
-        output[i] = data[i] ^ s[(tmp + tmp2) & 0xFF];
+        output[i] = data[i] ^ s[(tmp + tmp2) & 0xff];
       }
       this.a = a;
       this.b = b;
       return output;
-    }
+    },
   };
   ARCFourCipher.prototype.decryptBlock = ARCFourCipher.prototype.encryptBlock;
 
@@ -63,10 +71,11 @@ var ARCFourCipher = (function ARCFourCipherClosure() {
 
 var calculateMD5 = (function calculateMD5Closure() {
   var r = new Uint8Array([
-    7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
-    5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
-    4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
-    6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21]);
+    7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5,
+    9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11,
+    16, 23, 4, 11, 16, 23, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10,
+    15, 21,
+  ]);
 
   var k = new Int32Array([
     -680876936, -389564586, 606105819, -1044525330, -176418897, 1200080426,
@@ -79,10 +88,14 @@ var calculateMD5 = (function calculateMD5Closure() {
     -722521979, 76029189, -640364487, -421815835, 530742520, -995338651,
     -198630844, 1126891415, -1416354905, -57434055, 1700485571, -1894986606,
     -1051523, -2054922799, 1873313359, -30611744, -1560198380, 1309151649,
-    -145523070, -1120210379, 718787259, -343485551]);
+    -145523070, -1120210379, 718787259, -343485551,
+  ]);
 
   function hash(data, offset, length) {
-    var h0 = 1732584193, h1 = -271733879, h2 = -1732584194, h3 = 271733878;
+    var h0 = 1732584193,
+      h1 = -271733879,
+      h2 = -1732584194,
+      h3 = 271733878;
     // pre-processing
     var paddedLength = (length + 72) & ~63; // data + 9 extra bytes
     var padded = new Uint8Array(paddedLength);
@@ -95,36 +108,46 @@ var calculateMD5 = (function calculateMD5Closure() {
     while (i < n) {
       padded[i++] = 0;
     }
-    padded[i++] = (length << 3) & 0xFF;
-    padded[i++] = (length >> 5) & 0xFF;
-    padded[i++] = (length >> 13) & 0xFF;
-    padded[i++] = (length >> 21) & 0xFF;
-    padded[i++] = (length >>> 29) & 0xFF;
+    padded[i++] = (length << 3) & 0xff;
+    padded[i++] = (length >> 5) & 0xff;
+    padded[i++] = (length >> 13) & 0xff;
+    padded[i++] = (length >> 21) & 0xff;
+    padded[i++] = (length >>> 29) & 0xff;
     padded[i++] = 0;
     padded[i++] = 0;
     padded[i++] = 0;
     var w = new Int32Array(16);
-    for (i = 0; i < paddedLength;) {
+    for (i = 0; i < paddedLength; ) {
       for (j = 0; j < 16; ++j, i += 4) {
-        w[j] = (padded[i] | (padded[i + 1] << 8) |
-               (padded[i + 2] << 16) | (padded[i + 3] << 24));
+        w[j] =
+          padded[i] |
+          (padded[i + 1] << 8) |
+          (padded[i + 2] << 16) |
+          (padded[i + 3] << 24);
       }
-      var a = h0, b = h1, c = h2, d = h3, f, g;
+      var a = h0,
+        b = h1,
+        c = h2,
+        d = h3,
+        f,
+        g;
       for (j = 0; j < 64; ++j) {
         if (j < 16) {
-          f = (b & c) | ((~b) & d);
+          f = (b & c) | (~b & d);
           g = j;
         } else if (j < 32) {
-          f = (d & b) | ((~d) & c);
+          f = (d & b) | (~d & c);
           g = (5 * j + 1) & 15;
         } else if (j < 48) {
           f = b ^ c ^ d;
           g = (3 * j + 5) & 15;
         } else {
-          f = c ^ (b | (~d));
+          f = c ^ (b | ~d);
           g = (7 * j) & 15;
         }
-        var tmp = d, rotateArg = (a + f + k[j] + w[g]) | 0, rotate = r[j];
+        var tmp = d,
+          rotateArg = (a + f + k[j] + w[g]) | 0,
+          rotate = r[j];
         d = c;
         c = b;
         b = (b + ((rotateArg << rotate) | (rotateArg >>> (32 - rotate)))) | 0;
@@ -136,10 +159,22 @@ var calculateMD5 = (function calculateMD5Closure() {
       h3 = (h3 + d) | 0;
     }
     return new Uint8Array([
-      h0 & 0xFF, (h0 >> 8) & 0xFF, (h0 >> 16) & 0xFF, (h0 >>> 24) & 0xFF,
-      h1 & 0xFF, (h1 >> 8) & 0xFF, (h1 >> 16) & 0xFF, (h1 >>> 24) & 0xFF,
-      h2 & 0xFF, (h2 >> 8) & 0xFF, (h2 >> 16) & 0xFF, (h2 >>> 24) & 0xFF,
-      h3 & 0xFF, (h3 >> 8) & 0xFF, (h3 >> 16) & 0xFF, (h3 >>> 24) & 0xFF
+      h0 & 0xff,
+      (h0 >> 8) & 0xff,
+      (h0 >> 16) & 0xff,
+      (h0 >>> 24) & 0xff,
+      h1 & 0xff,
+      (h1 >> 8) & 0xff,
+      (h1 >> 16) & 0xff,
+      (h1 >>> 24) & 0xff,
+      h2 & 0xff,
+      (h2 >> 8) & 0xff,
+      (h2 >> 16) & 0xff,
+      (h2 >>> 24) & 0xff,
+      h3 & 0xff,
+      (h3 >> 8) & 0xff,
+      (h3 >> 16) & 0xff,
+      (h3 >>> 24) & 0xff,
     ]);
   }
 
@@ -156,8 +191,8 @@ var Word64 = (function Word64Closure() {
       this.low &= word.low;
     },
     xor: function Word64_xor(word) {
-     this.high ^= word.high;
-     this.low ^= word.low;
+      this.high ^= word.high;
+      this.low ^= word.low;
     },
 
     or: function Word64_or(word) {
@@ -207,7 +242,7 @@ var Word64 = (function Word64Closure() {
     add: function Word64_add(word) {
       var lowAdd = (this.low >>> 0) + (word.low >>> 0);
       var highAdd = (this.high >>> 0) + (word.high >>> 0);
-      if (lowAdd > 0xFFFFFFFF) {
+      if (lowAdd > 0xffffffff) {
         highAdd += 1;
       }
       this.low = lowAdd | 0;
@@ -215,27 +250,27 @@ var Word64 = (function Word64Closure() {
     },
 
     copyTo: function Word64_copyTo(bytes, offset) {
-      bytes[offset] = (this.high >>> 24) & 0xFF;
-      bytes[offset + 1] = (this.high >> 16) & 0xFF;
-      bytes[offset + 2] = (this.high >> 8) & 0xFF;
-      bytes[offset + 3] = this.high & 0xFF;
-      bytes[offset + 4] = (this.low >>> 24) & 0xFF;
-      bytes[offset + 5] = (this.low >> 16) & 0xFF;
-      bytes[offset + 6] = (this.low >> 8) & 0xFF;
-      bytes[offset + 7] = this.low & 0xFF;
+      bytes[offset] = (this.high >>> 24) & 0xff;
+      bytes[offset + 1] = (this.high >> 16) & 0xff;
+      bytes[offset + 2] = (this.high >> 8) & 0xff;
+      bytes[offset + 3] = this.high & 0xff;
+      bytes[offset + 4] = (this.low >>> 24) & 0xff;
+      bytes[offset + 5] = (this.low >> 16) & 0xff;
+      bytes[offset + 6] = (this.low >> 8) & 0xff;
+      bytes[offset + 7] = this.low & 0xff;
     },
 
     assign: function Word64_assign(word) {
       this.high = word.high;
       this.low = word.low;
-    }
+    },
   };
   return Word64;
 })();
 
 var calculateSHA256 = (function calculateSHA256Closure() {
   function rotr(x, n) {
-    return (x >>> n) | (x << 32 - n);
+    return (x >>> n) | (x << (32 - n));
   }
 
   function ch(x, y, z) {
@@ -255,35 +290,37 @@ var calculateSHA256 = (function calculateSHA256Closure() {
   }
 
   function littleSigma(x) {
-    return rotr(x, 7) ^ rotr(x, 18) ^ x >>> 3;
+    return rotr(x, 7) ^ rotr(x, 18) ^ (x >>> 3);
   }
 
   function littleSigmaPrime(x) {
-    return rotr(x, 17) ^ rotr(x, 19) ^ x >>> 10;
+    return rotr(x, 17) ^ rotr(x, 19) ^ (x >>> 10);
   }
 
-  var k = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
-           0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-           0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
-           0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-           0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
-           0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-           0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
-           0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-           0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
-           0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-           0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
-           0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-           0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
-           0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-           0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
-           0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];
+  var k = [
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
+    0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+    0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
+    0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147,
+    0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+    0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b,
+    0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a,
+    0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+    0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+  ];
 
   function hash(data, offset, length) {
     // initial hash values
-    var h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372,
-        h3 = 0xa54ff53a, h4 = 0x510e527f, h5 = 0x9b05688c,
-        h6 = 0x1f83d9ab, h7 = 0x5be0cd19;
+    var h0 = 0x6a09e667,
+      h1 = 0xbb67ae85,
+      h2 = 0x3c6ef372,
+      h3 = 0xa54ff53a,
+      h4 = 0x510e527f,
+      h5 = 0x9b05688c,
+      h6 = 0x1f83d9ab,
+      h7 = 0x5be0cd19;
     // pre-processing
     var paddedLength = Math.ceil((length + 9) / 64) * 64;
     var padded = new Uint8Array(paddedLength);
@@ -299,26 +336,41 @@ var calculateSHA256 = (function calculateSHA256Closure() {
     padded[i++] = 0;
     padded[i++] = 0;
     padded[i++] = 0;
-    padded[i++] = (length >>> 29) & 0xFF;
-    padded[i++] = (length >> 21) & 0xFF;
-    padded[i++] = (length >> 13) & 0xFF;
-    padded[i++] = (length >> 5) & 0xFF;
-    padded[i++] = (length << 3) & 0xFF;
+    padded[i++] = (length >>> 29) & 0xff;
+    padded[i++] = (length >> 21) & 0xff;
+    padded[i++] = (length >> 13) & 0xff;
+    padded[i++] = (length >> 5) & 0xff;
+    padded[i++] = (length << 3) & 0xff;
     var w = new Uint32Array(64);
     // for each 512 bit block
-    for (i = 0; i < paddedLength;) {
+    for (i = 0; i < paddedLength; ) {
       for (j = 0; j < 16; ++j) {
-        w[j] = (padded[i] << 24 | (padded[i + 1] << 16) |
-               (padded[i + 2] << 8) | (padded[i + 3]));
+        w[j] =
+          (padded[i] << 24) |
+          (padded[i + 1] << 16) |
+          (padded[i + 2] << 8) |
+          padded[i + 3];
         i += 4;
       }
 
       for (j = 16; j < 64; ++j) {
-        w[j] = littleSigmaPrime(w[j - 2]) + w[j - 7] +
-               littleSigma(w[j - 15]) + w[j - 16] | 0;
+        w[j] =
+          (littleSigmaPrime(w[j - 2]) +
+            w[j - 7] +
+            littleSigma(w[j - 15]) +
+            w[j - 16]) |
+          0;
       }
-      var a = h0, b = h1, c = h2, d = h3, e = h4,
-          f = h5, g = h6, h = h7, t1, t2;
+      var a = h0,
+        b = h1,
+        c = h2,
+        d = h3,
+        e = h4,
+        f = h5,
+        g = h6,
+        h = h7,
+        t1,
+        t2;
       for (j = 0; j < 64; ++j) {
         t1 = h + sigmaPrime(e) + ch(e, f, g) + k[j] + w[j];
         t2 = sigma(a) + maj(a, b, c);
@@ -341,14 +393,38 @@ var calculateSHA256 = (function calculateSHA256Closure() {
       h7 = (h7 + h) | 0;
     }
     return new Uint8Array([
-      (h0 >> 24) & 0xFF, (h0 >> 16) & 0xFF, (h0 >> 8) & 0xFF, (h0) & 0xFF,
-      (h1 >> 24) & 0xFF, (h1 >> 16) & 0xFF, (h1 >> 8) & 0xFF, (h1) & 0xFF,
-      (h2 >> 24) & 0xFF, (h2 >> 16) & 0xFF, (h2 >> 8) & 0xFF, (h2) & 0xFF,
-      (h3 >> 24) & 0xFF, (h3 >> 16) & 0xFF, (h3 >> 8) & 0xFF, (h3) & 0xFF,
-      (h4 >> 24) & 0xFF, (h4 >> 16) & 0xFF, (h4 >> 8) & 0xFF, (h4) & 0xFF,
-      (h5 >> 24) & 0xFF, (h5 >> 16) & 0xFF, (h5 >> 8) & 0xFF, (h5) & 0xFF,
-      (h6 >> 24) & 0xFF, (h6 >> 16) & 0xFF, (h6 >> 8) & 0xFF, (h6) & 0xFF,
-      (h7 >> 24) & 0xFF, (h7 >> 16) & 0xFF, (h7 >> 8) & 0xFF, (h7) & 0xFF
+      (h0 >> 24) & 0xff,
+      (h0 >> 16) & 0xff,
+      (h0 >> 8) & 0xff,
+      h0 & 0xff,
+      (h1 >> 24) & 0xff,
+      (h1 >> 16) & 0xff,
+      (h1 >> 8) & 0xff,
+      h1 & 0xff,
+      (h2 >> 24) & 0xff,
+      (h2 >> 16) & 0xff,
+      (h2 >> 8) & 0xff,
+      h2 & 0xff,
+      (h3 >> 24) & 0xff,
+      (h3 >> 16) & 0xff,
+      (h3 >> 8) & 0xff,
+      h3 & 0xff,
+      (h4 >> 24) & 0xff,
+      (h4 >> 16) & 0xff,
+      (h4 >> 8) & 0xff,
+      h4 & 0xff,
+      (h5 >> 24) & 0xff,
+      (h5 >> 16) & 0xff,
+      (h5 >> 8) & 0xff,
+      h5 & 0xff,
+      (h6 >> 24) & 0xff,
+      (h6 >> 16) & 0xff,
+      (h6 >> 8) & 0xff,
+      h6 & 0xff,
+      (h7 >> 24) & 0xff,
+      (h7 >> 16) & 0xff,
+      (h7 >> 8) & 0xff,
+      h7 & 0xff,
     ]);
   }
 
@@ -421,46 +497,87 @@ var calculateSHA512 = (function calculateSHA512Closure() {
   }
 
   var k = [
-    new Word64(0x428a2f98, 0xd728ae22), new Word64(0x71374491, 0x23ef65cd),
-    new Word64(0xb5c0fbcf, 0xec4d3b2f), new Word64(0xe9b5dba5, 0x8189dbbc),
-    new Word64(0x3956c25b, 0xf348b538), new Word64(0x59f111f1, 0xb605d019),
-    new Word64(0x923f82a4, 0xaf194f9b), new Word64(0xab1c5ed5, 0xda6d8118),
-    new Word64(0xd807aa98, 0xa3030242), new Word64(0x12835b01, 0x45706fbe),
-    new Word64(0x243185be, 0x4ee4b28c), new Word64(0x550c7dc3, 0xd5ffb4e2),
-    new Word64(0x72be5d74, 0xf27b896f), new Word64(0x80deb1fe, 0x3b1696b1),
-    new Word64(0x9bdc06a7, 0x25c71235), new Word64(0xc19bf174, 0xcf692694),
-    new Word64(0xe49b69c1, 0x9ef14ad2), new Word64(0xefbe4786, 0x384f25e3),
-    new Word64(0x0fc19dc6, 0x8b8cd5b5), new Word64(0x240ca1cc, 0x77ac9c65),
-    new Word64(0x2de92c6f, 0x592b0275), new Word64(0x4a7484aa, 0x6ea6e483),
-    new Word64(0x5cb0a9dc, 0xbd41fbd4), new Word64(0x76f988da, 0x831153b5),
-    new Word64(0x983e5152, 0xee66dfab), new Word64(0xa831c66d, 0x2db43210),
-    new Word64(0xb00327c8, 0x98fb213f), new Word64(0xbf597fc7, 0xbeef0ee4),
-    new Word64(0xc6e00bf3, 0x3da88fc2), new Word64(0xd5a79147, 0x930aa725),
-    new Word64(0x06ca6351, 0xe003826f), new Word64(0x14292967, 0x0a0e6e70),
-    new Word64(0x27b70a85, 0x46d22ffc), new Word64(0x2e1b2138, 0x5c26c926),
-    new Word64(0x4d2c6dfc, 0x5ac42aed), new Word64(0x53380d13, 0x9d95b3df),
-    new Word64(0x650a7354, 0x8baf63de), new Word64(0x766a0abb, 0x3c77b2a8),
-    new Word64(0x81c2c92e, 0x47edaee6), new Word64(0x92722c85, 0x1482353b),
-    new Word64(0xa2bfe8a1, 0x4cf10364), new Word64(0xa81a664b, 0xbc423001),
-    new Word64(0xc24b8b70, 0xd0f89791), new Word64(0xc76c51a3, 0x0654be30),
-    new Word64(0xd192e819, 0xd6ef5218), new Word64(0xd6990624, 0x5565a910),
-    new Word64(0xf40e3585, 0x5771202a), new Word64(0x106aa070, 0x32bbd1b8),
-    new Word64(0x19a4c116, 0xb8d2d0c8), new Word64(0x1e376c08, 0x5141ab53),
-    new Word64(0x2748774c, 0xdf8eeb99), new Word64(0x34b0bcb5, 0xe19b48a8),
-    new Word64(0x391c0cb3, 0xc5c95a63), new Word64(0x4ed8aa4a, 0xe3418acb),
-    new Word64(0x5b9cca4f, 0x7763e373), new Word64(0x682e6ff3, 0xd6b2b8a3),
-    new Word64(0x748f82ee, 0x5defb2fc), new Word64(0x78a5636f, 0x43172f60),
-    new Word64(0x84c87814, 0xa1f0ab72), new Word64(0x8cc70208, 0x1a6439ec),
-    new Word64(0x90befffa, 0x23631e28), new Word64(0xa4506ceb, 0xde82bde9),
-    new Word64(0xbef9a3f7, 0xb2c67915), new Word64(0xc67178f2, 0xe372532b),
-    new Word64(0xca273ece, 0xea26619c), new Word64(0xd186b8c7, 0x21c0c207),
-    new Word64(0xeada7dd6, 0xcde0eb1e), new Word64(0xf57d4f7f, 0xee6ed178),
-    new Word64(0x06f067aa, 0x72176fba), new Word64(0x0a637dc5, 0xa2c898a6),
-    new Word64(0x113f9804, 0xbef90dae), new Word64(0x1b710b35, 0x131c471b),
-    new Word64(0x28db77f5, 0x23047d84), new Word64(0x32caab7b, 0x40c72493),
-    new Word64(0x3c9ebe0a, 0x15c9bebc), new Word64(0x431d67c4, 0x9c100d4c),
-    new Word64(0x4cc5d4be, 0xcb3e42b6), new Word64(0x597f299c, 0xfc657e2a),
-    new Word64(0x5fcb6fab, 0x3ad6faec), new Word64(0x6c44198c, 0x4a475817)];
+    new Word64(0x428a2f98, 0xd728ae22),
+    new Word64(0x71374491, 0x23ef65cd),
+    new Word64(0xb5c0fbcf, 0xec4d3b2f),
+    new Word64(0xe9b5dba5, 0x8189dbbc),
+    new Word64(0x3956c25b, 0xf348b538),
+    new Word64(0x59f111f1, 0xb605d019),
+    new Word64(0x923f82a4, 0xaf194f9b),
+    new Word64(0xab1c5ed5, 0xda6d8118),
+    new Word64(0xd807aa98, 0xa3030242),
+    new Word64(0x12835b01, 0x45706fbe),
+    new Word64(0x243185be, 0x4ee4b28c),
+    new Word64(0x550c7dc3, 0xd5ffb4e2),
+    new Word64(0x72be5d74, 0xf27b896f),
+    new Word64(0x80deb1fe, 0x3b1696b1),
+    new Word64(0x9bdc06a7, 0x25c71235),
+    new Word64(0xc19bf174, 0xcf692694),
+    new Word64(0xe49b69c1, 0x9ef14ad2),
+    new Word64(0xefbe4786, 0x384f25e3),
+    new Word64(0x0fc19dc6, 0x8b8cd5b5),
+    new Word64(0x240ca1cc, 0x77ac9c65),
+    new Word64(0x2de92c6f, 0x592b0275),
+    new Word64(0x4a7484aa, 0x6ea6e483),
+    new Word64(0x5cb0a9dc, 0xbd41fbd4),
+    new Word64(0x76f988da, 0x831153b5),
+    new Word64(0x983e5152, 0xee66dfab),
+    new Word64(0xa831c66d, 0x2db43210),
+    new Word64(0xb00327c8, 0x98fb213f),
+    new Word64(0xbf597fc7, 0xbeef0ee4),
+    new Word64(0xc6e00bf3, 0x3da88fc2),
+    new Word64(0xd5a79147, 0x930aa725),
+    new Word64(0x06ca6351, 0xe003826f),
+    new Word64(0x14292967, 0x0a0e6e70),
+    new Word64(0x27b70a85, 0x46d22ffc),
+    new Word64(0x2e1b2138, 0x5c26c926),
+    new Word64(0x4d2c6dfc, 0x5ac42aed),
+    new Word64(0x53380d13, 0x9d95b3df),
+    new Word64(0x650a7354, 0x8baf63de),
+    new Word64(0x766a0abb, 0x3c77b2a8),
+    new Word64(0x81c2c92e, 0x47edaee6),
+    new Word64(0x92722c85, 0x1482353b),
+    new Word64(0xa2bfe8a1, 0x4cf10364),
+    new Word64(0xa81a664b, 0xbc423001),
+    new Word64(0xc24b8b70, 0xd0f89791),
+    new Word64(0xc76c51a3, 0x0654be30),
+    new Word64(0xd192e819, 0xd6ef5218),
+    new Word64(0xd6990624, 0x5565a910),
+    new Word64(0xf40e3585, 0x5771202a),
+    new Word64(0x106aa070, 0x32bbd1b8),
+    new Word64(0x19a4c116, 0xb8d2d0c8),
+    new Word64(0x1e376c08, 0x5141ab53),
+    new Word64(0x2748774c, 0xdf8eeb99),
+    new Word64(0x34b0bcb5, 0xe19b48a8),
+    new Word64(0x391c0cb3, 0xc5c95a63),
+    new Word64(0x4ed8aa4a, 0xe3418acb),
+    new Word64(0x5b9cca4f, 0x7763e373),
+    new Word64(0x682e6ff3, 0xd6b2b8a3),
+    new Word64(0x748f82ee, 0x5defb2fc),
+    new Word64(0x78a5636f, 0x43172f60),
+    new Word64(0x84c87814, 0xa1f0ab72),
+    new Word64(0x8cc70208, 0x1a6439ec),
+    new Word64(0x90befffa, 0x23631e28),
+    new Word64(0xa4506ceb, 0xde82bde9),
+    new Word64(0xbef9a3f7, 0xb2c67915),
+    new Word64(0xc67178f2, 0xe372532b),
+    new Word64(0xca273ece, 0xea26619c),
+    new Word64(0xd186b8c7, 0x21c0c207),
+    new Word64(0xeada7dd6, 0xcde0eb1e),
+    new Word64(0xf57d4f7f, 0xee6ed178),
+    new Word64(0x06f067aa, 0x72176fba),
+    new Word64(0x0a637dc5, 0xa2c898a6),
+    new Word64(0x113f9804, 0xbef90dae),
+    new Word64(0x1b710b35, 0x131c471b),
+    new Word64(0x28db77f5, 0x23047d84),
+    new Word64(0x32caab7b, 0x40c72493),
+    new Word64(0x3c9ebe0a, 0x15c9bebc),
+    new Word64(0x431d67c4, 0x9c100d4c),
+    new Word64(0x4cc5d4be, 0xcb3e42b6),
+    new Word64(0x597f299c, 0xfc657e2a),
+    new Word64(0x5fcb6fab, 0x3ad6faec),
+    new Word64(0x6c44198c, 0x4a475817),
+  ];
 
   function hash(data, offset, length, mode384) {
     mode384 = !!mode384;
@@ -475,8 +592,7 @@ var calculateSHA512 = (function calculateSHA512Closure() {
       h5 = new Word64(0x9b05688c, 0x2b3e6c1f);
       h6 = new Word64(0x1f83d9ab, 0xfb41bd6b);
       h7 = new Word64(0x5be0cd19, 0x137e2179);
-    }
-    else {
+    } else {
       // SHA384 is exactly the same
       // except with different starting values and a trimmed result
       h0 = new Word64(0xcbbb9d5d, 0xc1059ed8);
@@ -512,29 +628,43 @@ var calculateSHA512 = (function calculateSHA512Closure() {
     padded[i++] = 0;
     padded[i++] = 0;
     padded[i++] = 0;
-    padded[i++] = (length >>> 29) & 0xFF;
-    padded[i++] = (length >> 21) & 0xFF;
-    padded[i++] = (length >> 13) & 0xFF;
-    padded[i++] = (length >> 5) & 0xFF;
-    padded[i++] = (length << 3) & 0xFF;
+    padded[i++] = (length >>> 29) & 0xff;
+    padded[i++] = (length >> 21) & 0xff;
+    padded[i++] = (length >> 13) & 0xff;
+    padded[i++] = (length >> 5) & 0xff;
+    padded[i++] = (length << 3) & 0xff;
 
     var w = new Array(80);
     for (i = 0; i < 80; i++) {
       w[i] = new Word64(0, 0);
     }
-    var a = new Word64(0, 0), b = new Word64(0, 0), c = new Word64(0, 0);
-    var d = new Word64(0, 0), e = new Word64(0, 0), f = new Word64(0, 0);
-    var g = new Word64(0, 0), h = new Word64(0, 0);
-    var t1 = new Word64(0, 0), t2 = new Word64(0, 0);
-    var tmp1 = new Word64(0, 0), tmp2 = new Word64(0, 0), tmp3;
+    var a = new Word64(0, 0),
+      b = new Word64(0, 0),
+      c = new Word64(0, 0);
+    var d = new Word64(0, 0),
+      e = new Word64(0, 0),
+      f = new Word64(0, 0);
+    var g = new Word64(0, 0),
+      h = new Word64(0, 0);
+    var t1 = new Word64(0, 0),
+      t2 = new Word64(0, 0);
+    var tmp1 = new Word64(0, 0),
+      tmp2 = new Word64(0, 0),
+      tmp3;
 
     // for each 1024 bit block
-    for (i = 0; i < paddedLength;) {
+    for (i = 0; i < paddedLength; ) {
       for (j = 0; j < 16; ++j) {
-        w[j].high = (padded[i] << 24) | (padded[i + 1] << 16) |
-                    (padded[i + 2] << 8) | (padded[i + 3]);
-        w[j].low = (padded[i + 4]) << 24 | (padded[i + 5]) << 16 |
-                   (padded[i + 6]) << 8 | (padded[i + 7]);
+        w[j].high =
+          (padded[i] << 24) |
+          (padded[i + 1] << 16) |
+          (padded[i + 2] << 8) |
+          padded[i + 3];
+        w[j].low =
+          (padded[i + 4] << 24) |
+          (padded[i + 5] << 16) |
+          (padded[i + 6] << 8) |
+          padded[i + 7];
         i += 8;
       }
       for (j = 16; j < 80; ++j) {
@@ -546,8 +676,14 @@ var calculateSHA512 = (function calculateSHA512Closure() {
         tmp3.add(w[j - 16]);
       }
 
-      a.assign(h0); b.assign(h1); c.assign(h2); d.assign(h3);
-      e.assign(h4); f.assign(h5); g.assign(h6); h.assign(h7);
+      a.assign(h0);
+      b.assign(h1);
+      c.assign(h2);
+      d.assign(h3);
+      e.assign(h4);
+      f.assign(h5);
+      g.assign(h6);
+      h.assign(h7);
       for (j = 0; j < 80; ++j) {
         t1.assign(h);
         sigmaPrime(tmp1, e, tmp2);
@@ -587,23 +723,22 @@ var calculateSHA512 = (function calculateSHA512Closure() {
     var result;
     if (!mode384) {
       result = new Uint8Array(64);
-      h0.copyTo(result,0);
-      h1.copyTo(result,8);
-      h2.copyTo(result,16);
-      h3.copyTo(result,24);
-      h4.copyTo(result,32);
-      h5.copyTo(result,40);
-      h6.copyTo(result,48);
-      h7.copyTo(result,56);
-    }
-    else {
+      h0.copyTo(result, 0);
+      h1.copyTo(result, 8);
+      h2.copyTo(result, 16);
+      h3.copyTo(result, 24);
+      h4.copyTo(result, 32);
+      h5.copyTo(result, 40);
+      h6.copyTo(result, 48);
+      h7.copyTo(result, 56);
+    } else {
       result = new Uint8Array(48);
-      h0.copyTo(result,0);
-      h1.copyTo(result,8);
-      h2.copyTo(result,16);
-      h3.copyTo(result,24);
-      h4.copyTo(result,32);
-      h5.copyTo(result,40);
+      h0.copyTo(result, 0);
+      h1.copyTo(result, 8);
+      h2.copyTo(result, 16);
+      h3.copyTo(result, 24);
+      h4.copyTo(result, 32);
+      h5.copyTo(result, 40);
     }
     return result;
   }
@@ -618,13 +753,12 @@ var calculateSHA384 = (function calculateSHA384Closure() {
   return hash;
 })();
 var NullCipher = (function NullCipherClosure() {
-  function NullCipher() {
-  }
+  function NullCipher() {}
 
   NullCipher.prototype = {
     decryptBlock: function NullCipher_decryptBlock(data) {
       return data;
-    }
+    },
   };
 
   return NullCipher;
@@ -653,7 +787,8 @@ var AES128Cipher = (function AES128CipherClosure() {
     0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a,
     0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd,
     0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a,
-    0x74, 0xe8, 0xcb, 0x8d]);
+    0x74, 0xe8, 0xcb, 0x8d,
+  ]);
 
   var s = new Uint8Array([
     0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b,
@@ -677,7 +812,8 @@ var AES128Cipher = (function AES128CipherClosure() {
     0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e, 0xe1, 0xf8, 0x98, 0x11,
     0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
     0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f,
-    0xb0, 0x54, 0xbb, 0x16]);
+    0xb0, 0x54, 0xbb, 0x16,
+  ]);
 
   var inv_s = new Uint8Array([
     0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e,
@@ -701,7 +837,8 @@ var AES128Cipher = (function AES128CipherClosure() {
     0x2d, 0xe5, 0x7a, 0x9f, 0x93, 0xc9, 0x9c, 0xef, 0xa0, 0xe0, 0x3b, 0x4d,
     0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61,
     0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63,
-    0x55, 0x21, 0x0c, 0x7d]);
+    0x55, 0x21, 0x0c, 0x7d,
+  ]);
   var mixCol = new Uint8Array(256);
   for (var i = 0; i < 256; i++) {
     if (i < 128) {
@@ -753,15 +890,19 @@ var AES128Cipher = (function AES128CipherClosure() {
     0x5bfb7e34, 0x55f2733f, 0x7fcd500e, 0x71c45d05, 0x63df4a18, 0x6dd64713,
     0xd731dcca, 0xd938d1c1, 0xcb23c6dc, 0xc52acbd7, 0xef15e8e6, 0xe11ce5ed,
     0xf307f2f0, 0xfd0efffb, 0xa779b492, 0xa970b999, 0xbb6bae84, 0xb562a38f,
-    0x9f5d80be, 0x91548db5, 0x834f9aa8, 0x8d4697a3]);
+    0x9f5d80be, 0x91548db5, 0x834f9aa8, 0x8d4697a3,
+  ]);
 
   function expandKey128(cipherKey) {
-    var b = 176, result = new Uint8Array(b);
+    var b = 176,
+      result = new Uint8Array(b);
     result.set(cipherKey);
     for (var j = 16, i = 1; j < b; ++i) {
       // RotWord
-      var t1 = result[j - 3], t2 = result[j - 2],
-          t3 = result[j - 1], t4 = result[j - 4];
+      var t1 = result[j - 3],
+        t2 = result[j - 2],
+        t3 = result[j - 1],
+        t4 = result[j - 4];
       // SubWord
       t1 = s[t1];
       t2 = s[t2];
@@ -770,13 +911,13 @@ var AES128Cipher = (function AES128CipherClosure() {
       // Rcon
       t1 = t1 ^ rcon[i];
       for (var n = 0; n < 4; ++n) {
-        result[j] = (t1 ^= result[j - 16]);
+        result[j] = t1 ^= result[j - 16];
         j++;
-        result[j] = (t2 ^= result[j - 16]);
+        result[j] = t2 ^= result[j - 16];
         j++;
-        result[j] = (t3 ^= result[j - 16]);
+        result[j] = t3 ^= result[j - 16];
         j++;
-        result[j] = (t4 ^= result[j - 16]);
+        result[j] = t4 ^= result[j - 16];
         j++;
       }
     }
@@ -822,14 +963,22 @@ var AES128Cipher = (function AES128CipherClosure() {
       }
       // InvMixColumns
       for (j = 0; j < 16; j += 4) {
-        var s0 = mix[state[j]], s1 = mix[state[j + 1]],
-          s2 = mix[state[j + 2]], s3 = mix[state[j + 3]];
-        t = (s0 ^ (s1 >>> 8) ^ (s1 << 24) ^ (s2 >>> 16) ^ (s2 << 16) ^
-          (s3 >>> 24) ^ (s3 << 8));
-        state[j] = (t >>> 24) & 0xFF;
-        state[j + 1] = (t >> 16) & 0xFF;
-        state[j + 2] = (t >> 8) & 0xFF;
-        state[j + 3] = t & 0xFF;
+        var s0 = mix[state[j]],
+          s1 = mix[state[j + 1]],
+          s2 = mix[state[j + 2]],
+          s3 = mix[state[j + 3]];
+        t =
+          s0 ^
+          (s1 >>> 8) ^
+          (s1 << 24) ^
+          (s2 >>> 16) ^
+          (s2 << 16) ^
+          (s3 >>> 24) ^
+          (s3 << 8);
+        state[j] = (t >>> 24) & 0xff;
+        state[j + 1] = (t >> 16) & 0xff;
+        state[j + 2] = (t >> 8) & 0xff;
+        state[j + 3] = t & 0xff;
       }
     }
     // InvShiftRows
@@ -895,8 +1044,10 @@ var AES128Cipher = (function AES128CipherClosure() {
       state[15] = t;
       //MixColumns
       for (var j = 0; j < 16; j += 4) {
-        var s0 = state[j + 0], s1 = state[j + 1];
-        var s2 = state[j + 2], s3 = state[j + 3];
+        var s0 = state[j + 0],
+          s1 = state[j + 1];
+        var s2 = state[j + 2],
+          s3 = state[j + 3];
         t = s0 ^ s1 ^ s2 ^ s3;
         state[j + 0] ^= t ^ mixCol[s0 ^ s1];
         state[j + 1] ^= t ^ mixCol[s1 ^ s2];
@@ -946,9 +1097,14 @@ var AES128Cipher = (function AES128CipherClosure() {
   }
 
   function decryptBlock2(data, finalize) {
-    var i, j, ii, sourceLength = data.length,
-        buffer = this.buffer, bufferLength = this.bufferPosition,
-        result = [], iv = this.iv;
+    var i,
+      j,
+      ii,
+      sourceLength = data.length,
+      buffer = this.buffer,
+      bufferLength = this.bufferPosition,
+      result = [],
+      iv = this.iv;
     for (i = 0; i < sourceLength; ++i) {
       buffer[bufferLength] = data[i];
       ++bufferLength;
@@ -1000,8 +1156,10 @@ var AES128Cipher = (function AES128CipherClosure() {
 
   AES128Cipher.prototype = {
     decryptBlock: function AES128Cipher_decryptBlock(data, finalize) {
-      var i, sourceLength = data.length;
-      var buffer = this.buffer, bufferLength = this.bufferPosition;
+      var i,
+        sourceLength = data.length;
+      var buffer = this.buffer,
+        bufferLength = this.bufferPosition;
       // waiting for IV values -- they are at the start of the stream
       for (i = 0; bufferLength < 16 && i < sourceLength; ++i, ++bufferLength) {
         buffer[bufferLength] = data[i];
@@ -1019,9 +1177,13 @@ var AES128Cipher = (function AES128CipherClosure() {
       return this.decryptBlock(data.subarray(16), finalize);
     },
     encrypt: function AES128Cipher_encrypt(data, iv) {
-      var i, j, ii, sourceLength = data.length,
-          buffer = this.buffer, bufferLength = this.bufferPosition,
-          result = [];
+      var i,
+        j,
+        ii,
+        sourceLength = data.length,
+        buffer = this.buffer,
+        bufferLength = this.bufferPosition,
+        result = [];
       if (!iv) {
         iv = new Uint8Array(16);
       }
@@ -1056,7 +1218,7 @@ var AES128Cipher = (function AES128CipherClosure() {
         output.set(result[i], j);
       }
       return output;
-    }
+    },
   };
 
   return AES128Cipher;
@@ -1085,7 +1247,8 @@ var AES256Cipher = (function AES256CipherClosure() {
     0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a,
     0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd,
     0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a,
-    0x74, 0xe8, 0xcb, 0x8d]);
+    0x74, 0xe8, 0xcb, 0x8d,
+  ]);
 
   var s = new Uint8Array([
     0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b,
@@ -1109,7 +1272,8 @@ var AES256Cipher = (function AES256CipherClosure() {
     0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e, 0xe1, 0xf8, 0x98, 0x11,
     0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
     0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f,
-    0xb0, 0x54, 0xbb, 0x16]);
+    0xb0, 0x54, 0xbb, 0x16,
+  ]);
 
   var inv_s = new Uint8Array([
     0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e,
@@ -1133,7 +1297,8 @@ var AES256Cipher = (function AES256CipherClosure() {
     0x2d, 0xe5, 0x7a, 0x9f, 0x93, 0xc9, 0x9c, 0xef, 0xa0, 0xe0, 0x3b, 0x4d,
     0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61,
     0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63,
-    0x55, 0x21, 0x0c, 0x7d]);
+    0x55, 0x21, 0x0c, 0x7d,
+  ]);
 
   var mixCol = new Uint8Array(256);
   for (var i = 0; i < 256; i++) {
@@ -1186,10 +1351,12 @@ var AES256Cipher = (function AES256CipherClosure() {
     0x5bfb7e34, 0x55f2733f, 0x7fcd500e, 0x71c45d05, 0x63df4a18, 0x6dd64713,
     0xd731dcca, 0xd938d1c1, 0xcb23c6dc, 0xc52acbd7, 0xef15e8e6, 0xe11ce5ed,
     0xf307f2f0, 0xfd0efffb, 0xa779b492, 0xa970b999, 0xbb6bae84, 0xb562a38f,
-    0x9f5d80be, 0x91548db5, 0x834f9aa8, 0x8d4697a3]);
+    0x9f5d80be, 0x91548db5, 0x834f9aa8, 0x8d4697a3,
+  ]);
 
   function expandKey256(cipherKey) {
-    var b = 240, result = new Uint8Array(b);
+    var b = 240,
+      result = new Uint8Array(b);
     var r = 1;
 
     result.set(cipherKey);
@@ -1201,8 +1368,10 @@ var AES256Cipher = (function AES256CipherClosure() {
         t4 = s[t4];
       } else if (j % 32 === 0) {
         // RotWord
-        var t1 = result[j - 3], t2 = result[j - 2],
-          t3 = result[j - 1], t4 = result[j - 4];
+        var t1 = result[j - 3],
+          t2 = result[j - 2],
+          t3 = result[j - 1],
+          t4 = result[j - 4];
         // SubWord
         t1 = s[t1];
         t2 = s[t2];
@@ -1211,18 +1380,18 @@ var AES256Cipher = (function AES256CipherClosure() {
         // Rcon
         t1 = t1 ^ r;
         if ((r <<= 1) >= 256) {
-          r = (r ^ 0x1b) & 0xFF;
+          r = (r ^ 0x1b) & 0xff;
         }
       }
 
       for (var n = 0; n < 4; ++n) {
-        result[j] = (t1 ^= result[j - 32]);
+        result[j] = t1 ^= result[j - 32];
         j++;
-        result[j] = (t2 ^= result[j - 32]);
+        result[j] = t2 ^= result[j - 32];
         j++;
-        result[j] = (t3 ^= result[j - 32]);
+        result[j] = t3 ^= result[j - 32];
         j++;
-        result[j] = (t4 ^= result[j - 32]);
+        result[j] = t4 ^= result[j - 32];
         j++;
       }
     }
@@ -1268,14 +1437,22 @@ var AES256Cipher = (function AES256CipherClosure() {
       }
       // InvMixColumns
       for (j = 0; j < 16; j += 4) {
-        var s0 = mix[state[j]], s1 = mix[state[j + 1]],
-            s2 = mix[state[j + 2]], s3 = mix[state[j + 3]];
-        t = (s0 ^ (s1 >>> 8) ^ (s1 << 24) ^ (s2 >>> 16) ^ (s2 << 16) ^
-            (s3 >>> 24) ^ (s3 << 8));
-        state[j] = (t >>> 24) & 0xFF;
-        state[j + 1] = (t >> 16) & 0xFF;
-        state[j + 2] = (t >> 8) & 0xFF;
-        state[j + 3] = t & 0xFF;
+        var s0 = mix[state[j]],
+          s1 = mix[state[j + 1]],
+          s2 = mix[state[j + 2]],
+          s3 = mix[state[j + 3]];
+        t =
+          s0 ^
+          (s1 >>> 8) ^
+          (s1 << 24) ^
+          (s2 >>> 16) ^
+          (s2 << 16) ^
+          (s3 >>> 24) ^
+          (s3 << 8);
+        state[j] = (t >>> 24) & 0xff;
+        state[j + 1] = (t >> 16) & 0xff;
+        state[j + 2] = (t >> 8) & 0xff;
+        state[j + 3] = t & 0xff;
       }
     }
     // InvShiftRows
@@ -1341,8 +1518,10 @@ var AES256Cipher = (function AES256CipherClosure() {
       state[15] = t;
       //MixColumns
       for (var j = 0; j < 16; j += 4) {
-        var s0 = state[j + 0], s1 = state[j + 1];
-        var s2 = state[j + 2], s3 = state[j + 3];
+        var s0 = state[j + 0],
+          s1 = state[j + 1];
+        var s2 = state[j + 2],
+          s3 = state[j + 3];
         t = s0 ^ s1 ^ s2 ^ s3;
         state[j + 0] ^= t ^ mixCol[s0 ^ s1];
         state[j + 1] ^= t ^ mixCol[s1 ^ s2];
@@ -1384,7 +1563,6 @@ var AES256Cipher = (function AES256CipherClosure() {
     }
 
     return state;
-
   }
 
   function AES256Cipher(key) {
@@ -1394,9 +1572,14 @@ var AES256Cipher = (function AES256CipherClosure() {
   }
 
   function decryptBlock2(data, finalize) {
-    var i, j, ii, sourceLength = data.length,
-        buffer = this.buffer, bufferLength = this.bufferPosition,
-        result = [], iv = this.iv;
+    var i,
+      j,
+      ii,
+      sourceLength = data.length,
+      buffer = this.buffer,
+      bufferLength = this.bufferPosition,
+      result = [],
+      iv = this.iv;
 
     for (i = 0; i < sourceLength; ++i) {
       buffer[bufferLength] = data[i];
@@ -1445,20 +1628,24 @@ var AES256Cipher = (function AES256CipherClosure() {
       output.set(result[i], j);
     }
     return output;
-
   }
 
   AES256Cipher.prototype = {
     decryptBlock: function AES256Cipher_decryptBlock(data, finalize, iv) {
-      var i, sourceLength = data.length;
-      var buffer = this.buffer, bufferLength = this.bufferPosition;
+      var i,
+        sourceLength = data.length;
+      var buffer = this.buffer,
+        bufferLength = this.bufferPosition;
       // if not supplied an IV wait for IV values
       // they are at the start of the stream
       if (iv) {
         this.iv = iv;
       } else {
-        for (i = 0; bufferLength < 16 &&
-             i < sourceLength; ++i, ++bufferLength) {
+        for (
+          i = 0;
+          bufferLength < 16 && i < sourceLength;
+          ++i, ++bufferLength
+        ) {
           buffer[bufferLength] = data[i];
         }
         if (bufferLength < 16) {
@@ -1476,9 +1663,13 @@ var AES256Cipher = (function AES256CipherClosure() {
       return this.decryptBlock(data, finalize);
     },
     encrypt: function AES256Cipher_encrypt(data, iv) {
-      var i, j, ii, sourceLength = data.length,
-          buffer = this.buffer, bufferLength = this.bufferPosition,
-          result = [];
+      var i,
+        j,
+        ii,
+        sourceLength = data.length,
+        buffer = this.buffer,
+        bufferLength = this.bufferPosition,
+        result = [];
       if (!iv) {
         iv = new Uint8Array(16);
       }
@@ -1513,14 +1704,13 @@ var AES256Cipher = (function AES256CipherClosure() {
         output.set(result[i], j);
       }
       return output;
-    }
+    },
   };
 
   return AES256Cipher;
 })();
 
 var PDF17 = (function PDF17Closure() {
-
   function compareByteArrays(array1, array2) {
     if (array1.length !== array2.length) {
       return false;
@@ -1533,14 +1723,15 @@ var PDF17 = (function PDF17Closure() {
     return true;
   }
 
-  function PDF17() {
-  }
+  function PDF17() {}
 
   PDF17.prototype = {
-    checkOwnerPassword: function PDF17_checkOwnerPassword(password,
-                                                          ownerValidationSalt,
-                                                          userBytes,
-                                                          ownerPassword) {
+    checkOwnerPassword: function PDF17_checkOwnerPassword(
+      password,
+      ownerValidationSalt,
+      userBytes,
+      ownerPassword,
+    ) {
       var hashData = new Uint8Array(password.length + 56);
       hashData.set(password, 0);
       hashData.set(ownerValidationSalt, password.length);
@@ -1548,46 +1739,49 @@ var PDF17 = (function PDF17Closure() {
       var result = calculateSHA256(hashData, 0, hashData.length);
       return compareByteArrays(result, ownerPassword);
     },
-    checkUserPassword: function PDF17_checkUserPassword(password,
-                                                        userValidationSalt,
-                                                        userPassword) {
+    checkUserPassword: function PDF17_checkUserPassword(
+      password,
+      userValidationSalt,
+      userPassword,
+    ) {
       var hashData = new Uint8Array(password.length + 8);
       hashData.set(password, 0);
       hashData.set(userValidationSalt, password.length);
       var result = calculateSHA256(hashData, 0, hashData.length);
       return compareByteArrays(result, userPassword);
     },
-    getOwnerKey: function PDF17_getOwnerKey(password, ownerKeySalt, userBytes,
-                                            ownerEncryption) {
+    getOwnerKey: function PDF17_getOwnerKey(
+      password,
+      ownerKeySalt,
+      userBytes,
+      ownerEncryption,
+    ) {
       var hashData = new Uint8Array(password.length + 56);
       hashData.set(password, 0);
       hashData.set(ownerKeySalt, password.length);
       hashData.set(userBytes, password.length + ownerKeySalt.length);
       var key = calculateSHA256(hashData, 0, hashData.length);
       var cipher = new AES256Cipher(key);
-      return cipher.decryptBlock(ownerEncryption,
-                                 false,
-                                 new Uint8Array(16));
-
+      return cipher.decryptBlock(ownerEncryption, false, new Uint8Array(16));
     },
-    getUserKey: function PDF17_getUserKey(password, userKeySalt,
-                                          userEncryption) {
+    getUserKey: function PDF17_getUserKey(
+      password,
+      userKeySalt,
+      userEncryption,
+    ) {
       var hashData = new Uint8Array(password.length + 8);
       hashData.set(password, 0);
       hashData.set(userKeySalt, password.length);
       //key is the decryption key for the UE string
       var key = calculateSHA256(hashData, 0, hashData.length);
       var cipher = new AES256Cipher(key);
-      return cipher.decryptBlock(userEncryption,
-                                 false,
-                                 new Uint8Array(16));
-    }
+      return cipher.decryptBlock(userEncryption, false, new Uint8Array(16));
+    },
   };
   return PDF17;
 })();
 
 var PDF20 = (function PDF20Closure() {
-
   function concatArrays(array1, array2) {
     var t = new Uint8Array(array1.length + array2.length);
     t.set(array1, 0);
@@ -1621,18 +1815,16 @@ var PDF20 = (function PDF20Closure() {
       //modulo math byte by byte
       var remainder = 0;
       for (var z = 0; z < 16; z++) {
-        remainder *= (256 % 3);
+        remainder *= 256 % 3;
         remainder %= 3;
-        remainder += ((e[z] >>> 0) % 3);
+        remainder += (e[z] >>> 0) % 3;
         remainder %= 3;
       }
       if (remainder === 0) {
         k = calculateSHA256(e, 0, e.length);
-      }
-      else if (remainder === 1) {
+      } else if (remainder === 1) {
         k = calculateSHA384(e, 0, e.length);
-      }
-      else if (remainder === 2) {
+      } else if (remainder === 2) {
         k = calculateSHA512(e, 0, e.length);
       }
       i++;
@@ -1640,8 +1832,7 @@ var PDF20 = (function PDF20Closure() {
     return k.subarray(0, 32);
   }
 
-  function PDF20() {
-  }
+  function PDF20() {}
 
   function compareByteArrays(array1, array2) {
     if (array1.length !== array2.length) {
@@ -1659,10 +1850,12 @@ var PDF20 = (function PDF20Closure() {
     hash: function PDF20_hash(password, concatBytes, userBytes) {
       return calculatePDF20Hash(password, concatBytes, userBytes);
     },
-    checkOwnerPassword: function PDF20_checkOwnerPassword(password,
-                                                          ownerValidationSalt,
-                                                          userBytes,
-                                                          ownerPassword) {
+    checkOwnerPassword: function PDF20_checkOwnerPassword(
+      password,
+      ownerValidationSalt,
+      userBytes,
+      ownerPassword,
+    ) {
       var hashData = new Uint8Array(password.length + 56);
       hashData.set(password, 0);
       hashData.set(ownerValidationSalt, password.length);
@@ -1670,40 +1863,44 @@ var PDF20 = (function PDF20Closure() {
       var result = calculatePDF20Hash(password, hashData, userBytes);
       return compareByteArrays(result, ownerPassword);
     },
-    checkUserPassword: function PDF20_checkUserPassword(password,
-                                                        userValidationSalt,
-                                                        userPassword) {
+    checkUserPassword: function PDF20_checkUserPassword(
+      password,
+      userValidationSalt,
+      userPassword,
+    ) {
       var hashData = new Uint8Array(password.length + 8);
       hashData.set(password, 0);
       hashData.set(userValidationSalt, password.length);
       var result = calculatePDF20Hash(password, hashData, []);
       return compareByteArrays(result, userPassword);
     },
-    getOwnerKey: function PDF20_getOwnerKey(password, ownerKeySalt, userBytes,
-                                            ownerEncryption) {
+    getOwnerKey: function PDF20_getOwnerKey(
+      password,
+      ownerKeySalt,
+      userBytes,
+      ownerEncryption,
+    ) {
       var hashData = new Uint8Array(password.length + 56);
       hashData.set(password, 0);
       hashData.set(ownerKeySalt, password.length);
       hashData.set(userBytes, password.length + ownerKeySalt.length);
       var key = calculatePDF20Hash(password, hashData, userBytes);
       var cipher = new AES256Cipher(key);
-      return cipher.decryptBlock(ownerEncryption,
-                                 false,
-                                 new Uint8Array(16));
-
+      return cipher.decryptBlock(ownerEncryption, false, new Uint8Array(16));
     },
-    getUserKey: function PDF20_getUserKey(password, userKeySalt,
-                                          userEncryption) {
+    getUserKey: function PDF20_getUserKey(
+      password,
+      userKeySalt,
+      userEncryption,
+    ) {
       var hashData = new Uint8Array(password.length + 8);
       hashData.set(password, 0);
       hashData.set(userKeySalt, password.length);
       //key is the decryption key for the UE string
       var key = calculatePDF20Hash(password, hashData, []);
       var cipher = new AES256Cipher(key);
-      return cipher.decryptBlock(userEncryption,
-                                 false,
-                                 new Uint8Array(16));
-    }
+      return cipher.decryptBlock(userEncryption, false, new Uint8Array(16));
+    },
   };
   return PDF20;
 })();
@@ -1717,10 +1914,12 @@ var CipherTransform = (function CipherTransformClosure() {
   CipherTransform.prototype = {
     createStream: function CipherTransform_createStream(stream, length) {
       var cipher = new this.streamCipherConstructor();
-      return new DecryptStream(stream, length,
+      return new DecryptStream(
+        stream,
+        length,
         function cipherTransformDecryptStream(data, finalize) {
           return cipher.decryptBlock(data, finalize);
-        }
+        },
       );
     },
     decryptString: function CipherTransform_decryptString(s) {
@@ -1728,22 +1927,32 @@ var CipherTransform = (function CipherTransformClosure() {
       var data = stringToBytes(s);
       data = cipher.decryptBlock(data, true);
       return bytesToString(data);
-    }
+    },
   };
   return CipherTransform;
 })();
 
 var CipherTransformFactory = (function CipherTransformFactoryClosure() {
   var defaultPasswordBytes = new Uint8Array([
-    0x28, 0xBF, 0x4E, 0x5E, 0x4E, 0x75, 0x8A, 0x41,
-    0x64, 0x00, 0x4E, 0x56, 0xFF, 0xFA, 0x01, 0x08,
-    0x2E, 0x2E, 0x00, 0xB6, 0xD0, 0x68, 0x3E, 0x80,
-    0x2F, 0x0C, 0xA9, 0xFE, 0x64, 0x53, 0x69, 0x7A]);
+    0x28, 0xbf, 0x4e, 0x5e, 0x4e, 0x75, 0x8a, 0x41, 0x64, 0x00, 0x4e, 0x56,
+    0xff, 0xfa, 0x01, 0x08, 0x2e, 0x2e, 0x00, 0xb6, 0xd0, 0x68, 0x3e, 0x80,
+    0x2f, 0x0c, 0xa9, 0xfe, 0x64, 0x53, 0x69, 0x7a,
+  ]);
 
-  function createEncryptionKey20(revision, password, ownerPassword,
-                                 ownerValidationSalt, ownerKeySalt, uBytes,
-                                 userPassword, userValidationSalt, userKeySalt,
-                                 ownerEncryption, userEncryption, perms) {
+  function createEncryptionKey20(
+    revision,
+    password,
+    ownerPassword,
+    ownerValidationSalt,
+    ownerKeySalt,
+    uBytes,
+    userPassword,
+    userValidationSalt,
+    userKeySalt,
+    ownerEncryption,
+    userEncryption,
+    perms,
+  ) {
     if (password) {
       var passwordLength = Math.min(127, password.length);
       password = password.subarray(0, passwordLength);
@@ -1758,24 +1967,49 @@ var CipherTransformFactory = (function CipherTransformFactoryClosure() {
     }
 
     if (pdfAlgorithm) {
-      if (pdfAlgorithm.checkUserPassword(password, userValidationSalt,
-                                         userPassword)) {
+      if (
+        pdfAlgorithm.checkUserPassword(
+          password,
+          userValidationSalt,
+          userPassword,
+        )
+      ) {
         return pdfAlgorithm.getUserKey(password, userKeySalt, userEncryption);
-      } else if (pdfAlgorithm.checkOwnerPassword(password, ownerValidationSalt,
-                                                 uBytes,
-                                                 ownerPassword)) {
-        return pdfAlgorithm.getOwnerKey(password, ownerKeySalt, uBytes,
-                                        ownerEncryption);
+      } else if (
+        pdfAlgorithm.checkOwnerPassword(
+          password,
+          ownerValidationSalt,
+          uBytes,
+          ownerPassword,
+        )
+      ) {
+        return pdfAlgorithm.getOwnerKey(
+          password,
+          ownerKeySalt,
+          uBytes,
+          ownerEncryption,
+        );
       }
     }
 
     return null;
   }
 
-  function prepareKeyData(fileId, password, ownerPassword, userPassword,
-                          flags, revision, keyLength, encryptMetadata) {
+  function prepareKeyData(
+    fileId,
+    password,
+    ownerPassword,
+    userPassword,
+    flags,
+    revision,
+    keyLength,
+    encryptMetadata,
+  ) {
     var hashDataSize = 40 + ownerPassword.length + fileId.length;
-    var hashData = new Uint8Array(hashDataSize), i = 0, j, n;
+    var hashData = new Uint8Array(hashDataSize),
+      i = 0,
+      j,
+      n;
     if (password) {
       n = Math.min(32, password.length);
       for (; i < n; ++i) {
@@ -1790,18 +2024,18 @@ var CipherTransformFactory = (function CipherTransformFactoryClosure() {
     for (j = 0, n = ownerPassword.length; j < n; ++j) {
       hashData[i++] = ownerPassword[j];
     }
-    hashData[i++] = flags & 0xFF;
-    hashData[i++] = (flags >> 8) & 0xFF;
-    hashData[i++] = (flags >> 16) & 0xFF;
-    hashData[i++] = (flags >>> 24) & 0xFF;
+    hashData[i++] = flags & 0xff;
+    hashData[i++] = (flags >> 8) & 0xff;
+    hashData[i++] = (flags >> 16) & 0xff;
+    hashData[i++] = (flags >>> 24) & 0xff;
     for (j = 0, n = fileId.length; j < n; ++j) {
       hashData[i++] = fileId[j];
     }
     if (revision >= 4 && !encryptMetadata) {
-      hashData[i++] = 0xFF;
-      hashData[i++] = 0xFF;
-      hashData[i++] = 0xFF;
-      hashData[i++] = 0xFF;
+      hashData[i++] = 0xff;
+      hashData[i++] = 0xff;
+      hashData[i++] = 0xff;
+      hashData[i++] = 0xff;
     }
     var hash = calculateMD5(hashData, 0, i);
     var keyLengthInBytes = keyLength >> 3;
@@ -1823,7 +2057,8 @@ var CipherTransformFactory = (function CipherTransformFactoryClosure() {
       cipher = new ARCFourCipher(encryptionKey);
       checkData = cipher.encryptBlock(calculateMD5(hashData, 0, i));
       n = encryptionKey.length;
-      var derivedKey = new Uint8Array(n), k;
+      var derivedKey = new Uint8Array(n),
+        k;
       for (j = 1; j <= 19; ++j) {
         for (k = 0; k < n; ++k) {
           derivedKey[k] = encryptionKey[k] ^ j;
@@ -1849,7 +2084,10 @@ var CipherTransformFactory = (function CipherTransformFactoryClosure() {
   }
 
   function decodeUserPassword(password, ownerPassword, revision, keyLength) {
-    var hashData = new Uint8Array(32), i = 0, j, n;
+    var hashData = new Uint8Array(32),
+      i = 0,
+      j,
+      n;
     n = Math.min(32, password.length);
     for (; i < n; ++i) {
       hashData[i] = password[i];
@@ -1869,7 +2107,8 @@ var CipherTransformFactory = (function CipherTransformFactoryClosure() {
     var cipher, userPassword;
     if (revision >= 3) {
       userPassword = ownerPassword;
-      var derivedKey = new Uint8Array(keyLengthInBytes), k;
+      var derivedKey = new Uint8Array(keyLengthInBytes),
+        k;
       for (j = 19; j >= 0; j--) {
         for (k = 0; k < keyLengthInBytes; ++k) {
           derivedKey[k] = hash[k] ^ j;
@@ -1884,35 +2123,36 @@ var CipherTransformFactory = (function CipherTransformFactoryClosure() {
     return userPassword;
   }
 
-  var identityName = Name.get('Identity');
+  var identityName = Name.get("Identity");
 
   function CipherTransformFactory(dict, fileId, password) {
-    var filter = dict.get('Filter');
-    if (!isName(filter) || filter.name !== 'Standard') {
-      error('unknown encryption method');
+    var filter = dict.get("Filter");
+    if (!isName(filter) || filter.name !== "Standard") {
+      error("unknown encryption method");
     }
     this.dict = dict;
-    var algorithm = dict.get('V');
-    if (!isInt(algorithm) ||
-        (algorithm !== 1 && algorithm !== 2 && algorithm !== 4 &&
-        algorithm !== 5)) {
-      error('unsupported encryption algorithm');
+    var algorithm = dict.get("V");
+    if (
+      !isInt(algorithm) ||
+      (algorithm !== 1 && algorithm !== 2 && algorithm !== 4 && algorithm !== 5)
+    ) {
+      error("unsupported encryption algorithm");
     }
     this.algorithm = algorithm;
-    var keyLength = dict.get('Length') || 40;
-    if (!isInt(keyLength) ||
-        keyLength < 40 || (keyLength % 8) !== 0) {
-      error('invalid key length');
+    var keyLength = dict.get("Length") || 40;
+    if (!isInt(keyLength) || keyLength < 40 || keyLength % 8 !== 0) {
+      error("invalid key length");
     }
 
     // prepare keys
-    var ownerPassword = stringToBytes(dict.get('O')).subarray(0, 32);
-    var userPassword = stringToBytes(dict.get('U')).subarray(0, 32);
-    var flags = dict.get('P');
-    var revision = dict.get('R');
+    var ownerPassword = stringToBytes(dict.get("O")).subarray(0, 32);
+    var userPassword = stringToBytes(dict.get("U")).subarray(0, 32);
+    var flags = dict.get("P");
+    var revision = dict.get("R");
     // meaningful when V is 4 or 5
-    var encryptMetadata = ((algorithm === 4 || algorithm === 5) &&
-                           dict.get('EncryptMetadata') !== false);
+    var encryptMetadata =
+      (algorithm === 4 || algorithm === 5) &&
+      dict.get("EncryptMetadata") !== false;
     this.encryptMetadata = encryptMetadata;
 
     var fileIdBytes = stringToBytes(fileId);
@@ -1923,68 +2163,98 @@ var CipherTransformFactory = (function CipherTransformFactoryClosure() {
 
     var encryptionKey;
     if (algorithm !== 5) {
-      encryptionKey = prepareKeyData(fileIdBytes, passwordBytes,
-                                     ownerPassword, userPassword, flags,
-                                     revision, keyLength, encryptMetadata);
-    }
-    else {
-      var ownerValidationSalt = stringToBytes(dict.get('O')).subarray(32, 40);
-      var ownerKeySalt = stringToBytes(dict.get('O')).subarray(40, 48);
-      var uBytes = stringToBytes(dict.get('U')).subarray(0, 48);
-      var userValidationSalt = stringToBytes(dict.get('U')).subarray(32, 40);
-      var userKeySalt = stringToBytes(dict.get('U')).subarray(40, 48);
-      var ownerEncryption = stringToBytes(dict.get('OE'));
-      var userEncryption = stringToBytes(dict.get('UE'));
-      var perms = stringToBytes(dict.get('Perms'));
-      encryptionKey =
-        createEncryptionKey20(revision, passwordBytes,
-          ownerPassword, ownerValidationSalt,
-          ownerKeySalt, uBytes,
-          userPassword, userValidationSalt,
-          userKeySalt, ownerEncryption,
-          userEncryption, perms);
+      encryptionKey = prepareKeyData(
+        fileIdBytes,
+        passwordBytes,
+        ownerPassword,
+        userPassword,
+        flags,
+        revision,
+        keyLength,
+        encryptMetadata,
+      );
+    } else {
+      var ownerValidationSalt = stringToBytes(dict.get("O")).subarray(32, 40);
+      var ownerKeySalt = stringToBytes(dict.get("O")).subarray(40, 48);
+      var uBytes = stringToBytes(dict.get("U")).subarray(0, 48);
+      var userValidationSalt = stringToBytes(dict.get("U")).subarray(32, 40);
+      var userKeySalt = stringToBytes(dict.get("U")).subarray(40, 48);
+      var ownerEncryption = stringToBytes(dict.get("OE"));
+      var userEncryption = stringToBytes(dict.get("UE"));
+      var perms = stringToBytes(dict.get("Perms"));
+      encryptionKey = createEncryptionKey20(
+        revision,
+        passwordBytes,
+        ownerPassword,
+        ownerValidationSalt,
+        ownerKeySalt,
+        uBytes,
+        userPassword,
+        userValidationSalt,
+        userKeySalt,
+        ownerEncryption,
+        userEncryption,
+        perms,
+      );
     }
     if (!encryptionKey && !password) {
-      throw new PasswordException('No password given',
-                                  PasswordResponses.NEED_PASSWORD);
+      throw new PasswordException(
+        "No password given",
+        PasswordResponses.NEED_PASSWORD,
+      );
     } else if (!encryptionKey && password) {
       // Attempting use the password as an owner password
-      var decodedPassword = decodeUserPassword(passwordBytes, ownerPassword,
-                                               revision, keyLength);
-      encryptionKey = prepareKeyData(fileIdBytes, decodedPassword,
-                                     ownerPassword, userPassword, flags,
-                                     revision, keyLength, encryptMetadata);
+      var decodedPassword = decodeUserPassword(
+        passwordBytes,
+        ownerPassword,
+        revision,
+        keyLength,
+      );
+      encryptionKey = prepareKeyData(
+        fileIdBytes,
+        decodedPassword,
+        ownerPassword,
+        userPassword,
+        flags,
+        revision,
+        keyLength,
+        encryptMetadata,
+      );
     }
 
     if (!encryptionKey) {
-      throw new PasswordException('Incorrect Password',
-                                  PasswordResponses.INCORRECT_PASSWORD);
+      throw new PasswordException(
+        "Incorrect Password",
+        PasswordResponses.INCORRECT_PASSWORD,
+      );
     }
 
     this.encryptionKey = encryptionKey;
 
     if (algorithm >= 4) {
-      this.cf = dict.get('CF');
-      this.stmf = dict.get('StmF') || identityName;
-      this.strf = dict.get('StrF') || identityName;
-      this.eff = dict.get('EFF') || this.strf;
+      this.cf = dict.get("CF");
+      this.stmf = dict.get("StmF") || identityName;
+      this.strf = dict.get("StrF") || identityName;
+      this.eff = dict.get("EFF") || this.strf;
     }
   }
 
   function buildObjectKey(num, gen, encryptionKey, isAes) {
-    var key = new Uint8Array(encryptionKey.length + 9), i, n;
+    var key = new Uint8Array(encryptionKey.length + 9),
+      i,
+      n;
     for (i = 0, n = encryptionKey.length; i < n; ++i) {
       key[i] = encryptionKey[i];
     }
-    key[i++] = num & 0xFF;
-    key[i++] = (num >> 8) & 0xFF;
-    key[i++] = (num >> 16) & 0xFF;
-    key[i++] = gen & 0xFF;
-    key[i++] = (gen >> 8) & 0xFF;
+    key[i++] = num & 0xff;
+    key[i++] = (num >> 8) & 0xff;
+    key[i++] = (num >> 16) & 0xff;
+    key[i++] = gen & 0xff;
+    key[i++] = (gen >> 8) & 0xff;
     if (isAes) {
       key[i++] = 0x73;
       key[i++] = 0x41;
-      key[i++] = 0x6C;
+      key[i++] = 0x6c;
       key[i++] = 0x54;
     }
     var hash = calculateMD5(key, 0, i);
@@ -1995,48 +2265,59 @@ var CipherTransformFactory = (function CipherTransformFactoryClosure() {
     var cryptFilter = cf.get(name.name);
     var cfm;
     if (cryptFilter !== null && cryptFilter !== undefined) {
-      cfm = cryptFilter.get('CFM');
+      cfm = cryptFilter.get("CFM");
     }
-    if (!cfm || cfm.name === 'None') {
+    if (!cfm || cfm.name === "None") {
       return function cipherTransformFactoryBuildCipherConstructorNone() {
         return new NullCipher();
       };
     }
-    if ('V2' === cfm.name) {
+    if ("V2" === cfm.name) {
       return function cipherTransformFactoryBuildCipherConstructorV2() {
         return new ARCFourCipher(buildObjectKey(num, gen, key, false));
       };
     }
-    if ('AESV2' === cfm.name) {
+    if ("AESV2" === cfm.name) {
       return function cipherTransformFactoryBuildCipherConstructorAESV2() {
         return new AES128Cipher(buildObjectKey(num, gen, key, true));
       };
     }
-    if ('AESV3' === cfm.name) {
+    if ("AESV3" === cfm.name) {
       return function cipherTransformFactoryBuildCipherConstructorAESV3() {
         return new AES256Cipher(key);
       };
     }
-    error('Unknown crypto method');
+    error("Unknown crypto method");
   }
 
   CipherTransformFactory.prototype = {
     createCipherTransform:
       function CipherTransformFactory_createCipherTransform(num, gen) {
-      if (this.algorithm === 4 || this.algorithm === 5) {
-        return new CipherTransform(
-          buildCipherConstructor(this.cf, this.stmf,
-                                 num, gen, this.encryptionKey),
-          buildCipherConstructor(this.cf, this.strf,
-                                 num, gen, this.encryptionKey));
-      }
-      // algorithms 1 and 2
-      var key = buildObjectKey(num, gen, this.encryptionKey, false);
-      var cipherConstructor = function buildCipherCipherConstructor() {
-        return new ARCFourCipher(key);
-      };
-      return new CipherTransform(cipherConstructor, cipherConstructor);
-    }
+        if (this.algorithm === 4 || this.algorithm === 5) {
+          return new CipherTransform(
+            buildCipherConstructor(
+              this.cf,
+              this.stmf,
+              num,
+              gen,
+              this.encryptionKey,
+            ),
+            buildCipherConstructor(
+              this.cf,
+              this.strf,
+              num,
+              gen,
+              this.encryptionKey,
+            ),
+          );
+        }
+        // algorithms 1 and 2
+        var key = buildObjectKey(num, gen, this.encryptionKey, false);
+        var cipherConstructor = function buildCipherCipherConstructor() {
+          return new ARCFourCipher(key);
+        };
+        return new CipherTransform(cipherConstructor, cipherConstructor);
+      },
   };
 
   return CipherTransformFactory;

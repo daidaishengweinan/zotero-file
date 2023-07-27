@@ -1,6 +1,6 @@
 {
   "name": "zotero-file",
-  "version": "0.2.0",
+  "version": "0.0.1",
   "description": "Zotero File",
   "config": {
     "addonName": "Zotero File",
@@ -8,8 +8,8 @@
     "addonRef": "zoterofile",
     "addonInstance": "ZoteroFile",
     "prefsPrefix": "extensions.zotero.zoterofile",
-    "releasepage": "https://github.com/windingwind/zotero-addon-template/releases/latest/download/zotero-addon-template.xpi",
-    "updaterdf": "https://raw.githubusercontent.com/windingwind/zotero-addon-template/main/update.json"
+    "releasepage": "https://github.com/muisedestiny/zotero-file/releases/latest/download/zotero-file.xpi",
+    "updaterdf": "https://raw.githubusercontent.com/muisedestiny/zotero-file/main/update.json"
   },
   "main": "src/index.ts",
   "scripts": {
@@ -32,14 +32,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/windingwind/zotero-addon-template.git"
+    "url": "git+https://github.com/muisedestiny/zotero-file.git"
   },
   "author": "Polygon",
   "license": "AGPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/windingwind/zotero-addon-template/issues"
+    "url": "https://github.com/muisedestiny/zotero-file/issues"
   },
-  "homepage": "https://github.com/windingwind/zotero-addon-template#readme",
+  "homepage": "https://github.com/muisedestiny/zotero-file#readme",
   "dependencies": {
     "zotero-plugin-toolkit": "^2.1.5"
   },

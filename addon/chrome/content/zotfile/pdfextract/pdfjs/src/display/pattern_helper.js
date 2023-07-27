@@ -17,7 +17,7 @@
 /* globals CanvasGraphics, CachedCanvases, ColorSpace, Util, error, info,
            isArray, makeCssRgb, WebGLUtils */
 
-'use strict';
+"use strict";
 
 var ShadingIRs = {};
 
@@ -30,12 +30,12 @@ ShadingIRs.RadialAxial = {
     var r0 = raw[5];
     var r1 = raw[6];
     return {
-      type: 'Pattern',
+      type: "Pattern",
       getPattern: function RadialAxial_getPattern(ctx) {
         var grad;
-        if (type === 'axial') {
+        if (type === "axial") {
           grad = ctx.createLinearGradient(p0[0], p0[1], p1[0], p1[1]);
-        } else if (type === 'radial') {
+        } else if (type === "radial") {
           grad = ctx.createRadialGradient(p0[0], p0[1], r0, p1[0], p1[1], r1);
         }
 
@@ -44,25 +44,42 @@ ShadingIRs.RadialAxial = {
           grad.addColorStop(c[0], c[1]);
         }
         return grad;
-      }
+      },
     };
-  }
+  },
 };
 
 var createMeshCanvas = (function createMeshCanvasClosure() {
   function drawTriangle(data, context, p1, p2, p3, c1, c2, c3) {
     // Very basic Gouraud-shaded triangle rasterization algorithm.
-    var coords = context.coords, colors = context.colors;
-    var bytes = data.data, rowSize = data.width * 4;
+    var coords = context.coords,
+      colors = context.colors;
+    var bytes = data.data,
+      rowSize = data.width * 4;
     var tmp;
     if (coords[p1 + 1] > coords[p2 + 1]) {
-      tmp = p1; p1 = p2; p2 = tmp; tmp = c1; c1 = c2; c2 = tmp;
+      tmp = p1;
+      p1 = p2;
+      p2 = tmp;
+      tmp = c1;
+      c1 = c2;
+      c2 = tmp;
     }
     if (coords[p2 + 1] > coords[p3 + 1]) {
-      tmp = p2; p2 = p3; p3 = tmp; tmp = c2; c2 = c3; c3 = tmp;
+      tmp = p2;
+      p2 = p3;
+      p3 = tmp;
+      tmp = c2;
+      c2 = c3;
+      c3 = tmp;
     }
     if (coords[p1 + 1] > coords[p2 + 1]) {
-      tmp = p1; p1 = p2; p2 = tmp; tmp = c1; c1 = c2; c2 = tmp;
+      tmp = p1;
+      p1 = p2;
+      p2 = tmp;
+      tmp = c1;
+      c1 = c2;
+      c2 = tmp;
     }
     var x1 = (coords[p1] + context.offsetX) * context.scaleX;
     var y1 = (coords[p1 + 1] + context.offsetY) * context.scaleY;
@@ -73,11 +90,18 @@ var createMeshCanvas = (function createMeshCanvasClosure() {
     if (y1 >= y3) {
       return;
     }
-    var c1r = colors[c1], c1g = colors[c1 + 1], c1b = colors[c1 + 2];
-    var c2r = colors[c2], c2g = colors[c2 + 1], c2b = colors[c2 + 2];
-    var c3r = colors[c3], c3g = colors[c3 + 1], c3b = colors[c3 + 2];
+    var c1r = colors[c1],
+      c1g = colors[c1 + 1],
+      c1b = colors[c1 + 2];
+    var c2r = colors[c2],
+      c2g = colors[c2 + 1],
+      c2b = colors[c2 + 2];
+    var c3r = colors[c3],
+      c3g = colors[c3 + 1],
+      c3b = colors[c3 + 2];
 
-    var minY = Math.round(y1), maxY = Math.round(y3);
+    var minY = Math.round(y1),
+      maxY = Math.round(y3);
     var xa, car, cag, cab;
     var xb, cbr, cbg, cbb;
     var k;
@@ -119,37 +143,64 @@ var createMeshCanvas = (function createMeshCanvasClosure() {
     var cs = figure.colors;
     var i, ii;
     switch (figure.type) {
-      case 'lattice':
+      case "lattice":
         var verticesPerRow = figure.verticesPerRow;
         var rows = Math.floor(ps.length / verticesPerRow) - 1;
         var cols = verticesPerRow - 1;
         for (i = 0; i < rows; i++) {
           var q = i * verticesPerRow;
           for (var j = 0; j < cols; j++, q++) {
-            drawTriangle(data, context,
-              ps[q], ps[q + 1], ps[q + verticesPerRow],
-              cs[q], cs[q + 1], cs[q + verticesPerRow]);
-            drawTriangle(data, context,
-              ps[q + verticesPerRow + 1], ps[q + 1], ps[q + verticesPerRow],
-              cs[q + verticesPerRow + 1], cs[q + 1], cs[q + verticesPerRow]);
+            drawTriangle(
+              data,
+              context,
+              ps[q],
+              ps[q + 1],
+              ps[q + verticesPerRow],
+              cs[q],
+              cs[q + 1],
+              cs[q + verticesPerRow],
+            );
+            drawTriangle(
+              data,
+              context,
+              ps[q + verticesPerRow + 1],
+              ps[q + 1],
+              ps[q + verticesPerRow],
+              cs[q + verticesPerRow + 1],
+              cs[q + 1],
+              cs[q + verticesPerRow],
+            );
           }
         }
         break;
-      case 'triangles':
+      case "triangles":
         for (i = 0, ii = ps.length; i < ii; i += 3) {
-          drawTriangle(data, context,
-            ps[i], ps[i + 1], ps[i + 2],
-            cs[i], cs[i + 1], cs[i + 2]);
+          drawTriangle(
+            data,
+            context,
+            ps[i],
+            ps[i + 1],
+            ps[i + 2],
+            cs[i],
+            cs[i + 1],
+            cs[i + 2],
+          );
         }
         break;
       default:
-        error('illigal figure');
+        error("illigal figure");
         break;
     }
   }
 
-  function createMeshCanvas(bounds, combinesScale, coords, colors, figures,
-                            backgroundColor) {
+  function createMeshCanvas(
+    bounds,
+    combinesScale,
+    coords,
+    colors,
+    figures,
+    backgroundColor,
+  ) {
     // we will increase scale on some weird factor to let antialiasing take
     // care of "rough" edges
     var EXPECTED_SCALE = 1.1;
@@ -161,10 +212,14 @@ var createMeshCanvas = (function createMeshCanvasClosure() {
     var boundsWidth = Math.ceil(bounds[2]) - offsetX;
     var boundsHeight = Math.ceil(bounds[3]) - offsetY;
 
-    var width = Math.min(Math.ceil(Math.abs(boundsWidth * combinesScale[0] *
-      EXPECTED_SCALE)), MAX_PATTERN_SIZE);
-    var height = Math.min(Math.ceil(Math.abs(boundsHeight * combinesScale[1] *
-      EXPECTED_SCALE)), MAX_PATTERN_SIZE);
+    var width = Math.min(
+      Math.ceil(Math.abs(boundsWidth * combinesScale[0] * EXPECTED_SCALE)),
+      MAX_PATTERN_SIZE,
+    );
+    var height = Math.min(
+      Math.ceil(Math.abs(boundsHeight * combinesScale[1] * EXPECTED_SCALE)),
+      MAX_PATTERN_SIZE,
+    );
     var scaleX = boundsWidth / width;
     var scaleY = boundsHeight / height;
 
@@ -174,20 +229,25 @@ var createMeshCanvas = (function createMeshCanvasClosure() {
       offsetX: -offsetX,
       offsetY: -offsetY,
       scaleX: 1 / scaleX,
-      scaleY: 1 / scaleY
+      scaleY: 1 / scaleY,
     };
 
     var canvas, tmpCanvas, i, ii;
     if (WebGLUtils.isEnabled) {
-      canvas = WebGLUtils.drawFigures(width, height, backgroundColor,
-                                      figures, context);
+      canvas = WebGLUtils.drawFigures(
+        width,
+        height,
+        backgroundColor,
+        figures,
+        context,
+      );
 
       // https://bugzilla.mozilla.org/show_bug.cgi?id=972126
-      tmpCanvas = CachedCanvases.getCanvas('mesh', width, height, false);
+      tmpCanvas = CachedCanvases.getCanvas("mesh", width, height, false);
       tmpCanvas.context.drawImage(canvas, 0, 0);
       canvas = tmpCanvas.canvas;
     } else {
-      tmpCanvas = CachedCanvases.getCanvas('mesh', width, height, false);
+      tmpCanvas = CachedCanvases.getCanvas("mesh", width, height, false);
       var tmpCtx = tmpCanvas.context;
 
       var data = tmpCtx.createImageData(width, height);
@@ -207,8 +267,13 @@ var createMeshCanvas = (function createMeshCanvasClosure() {
       canvas = tmpCanvas.canvas;
     }
 
-    return {canvas: canvas, offsetX: offsetX, offsetY: offsetY,
-            scaleX: scaleX, scaleY: scaleY};
+    return {
+      canvas: canvas,
+      offsetX: offsetX,
+      offsetY: offsetY,
+      scaleX: scaleX,
+      scaleY: scaleY,
+    };
   }
   return createMeshCanvas;
 })();
@@ -224,7 +289,7 @@ ShadingIRs.Mesh = {
     //var bbox = raw[7];
     var background = raw[8];
     return {
-      type: 'Pattern',
+      type: "Pattern",
       getPattern: function Mesh_getPattern(ctx, owner, shadingFill) {
         var scale;
         if (shadingFill) {
@@ -234,16 +299,20 @@ ShadingIRs.Mesh = {
           scale = Util.singularValueDecompose2dScale(owner.baseTransform);
           if (matrix) {
             var matrixScale = Util.singularValueDecompose2dScale(matrix);
-            scale = [scale[0] * matrixScale[0],
-                     scale[1] * matrixScale[1]];
+            scale = [scale[0] * matrixScale[0], scale[1] * matrixScale[1]];
           }
         }
 
-
         // Rasterizing on the main thread since sending/queue large canvases
         // might cause OOM.
-        var temporaryPatternCanvas = createMeshCanvas(bounds, scale, coords,
-          colors, figures, shadingFill ? null : background);
+        var temporaryPatternCanvas = createMeshCanvas(
+          bounds,
+          scale,
+          coords,
+          colors,
+          figures,
+          shadingFill ? null : background,
+        );
 
         if (!shadingFill) {
           ctx.setTransform.apply(ctx, owner.baseTransform);
@@ -252,32 +321,33 @@ ShadingIRs.Mesh = {
           }
         }
 
-        ctx.translate(temporaryPatternCanvas.offsetX,
-                      temporaryPatternCanvas.offsetY);
-        ctx.scale(temporaryPatternCanvas.scaleX,
-                  temporaryPatternCanvas.scaleY);
+        ctx.translate(
+          temporaryPatternCanvas.offsetX,
+          temporaryPatternCanvas.offsetY,
+        );
+        ctx.scale(temporaryPatternCanvas.scaleX, temporaryPatternCanvas.scaleY);
 
-        return ctx.createPattern(temporaryPatternCanvas.canvas, 'no-repeat');
-      }
+        return ctx.createPattern(temporaryPatternCanvas.canvas, "no-repeat");
+      },
     };
-  }
+  },
 };
 
 ShadingIRs.Dummy = {
   fromIR: function Dummy_fromIR() {
     return {
-      type: 'Pattern',
+      type: "Pattern",
       getPattern: function Dummy_fromIR_getPattern() {
-        return 'hotpink';
-      }
+        return "hotpink";
+      },
     };
-  }
+  },
 };
 
 function getShadingPatternFromIR(raw) {
   var shadingIR = ShadingIRs[raw[0]];
   if (!shadingIR) {
-    error('Unknown IR type: ' + raw[0]);
+    error("Unknown IR type: " + raw[0]);
   }
   return shadingIR.fromIR(raw);
 }
@@ -285,7 +355,7 @@ function getShadingPatternFromIR(raw) {
 var TilingPattern = (function TilingPatternClosure() {
   var PaintType = {
     COLORED: 1,
-    UNCOLORED: 2
+    UNCOLORED: 2,
   };
 
   var MAX_PATTERN_SIZE = 3000; // 10in @ 300dpi shall be enough
@@ -302,7 +372,7 @@ var TilingPattern = (function TilingPatternClosure() {
     this.objs = objs;
     this.commonObjs = commonObjs;
     this.baseTransform = baseTransform;
-    this.type = 'Pattern';
+    this.type = "Pattern";
     this.ctx = ctx;
   }
 
@@ -318,9 +388,12 @@ var TilingPattern = (function TilingPatternClosure() {
       var objs = this.objs;
       var commonObjs = this.commonObjs;
 
-      info('TilingType: ' + tilingType);
+      info("TilingType: " + tilingType);
 
-      var x0 = bbox[0], y0 = bbox[1], x1 = bbox[2], y1 = bbox[3];
+      var x0 = bbox[0],
+        y0 = bbox[1],
+        x1 = bbox[2],
+        y1 = bbox[3];
 
       var topLeft = [x0, y0];
       // we want the canvas to be as large as the step size
@@ -332,21 +405,28 @@ var TilingPattern = (function TilingPatternClosure() {
       // Obtain scale from matrix and current transformation matrix.
       var matrixScale = Util.singularValueDecompose2dScale(this.matrix);
       var curMatrixScale = Util.singularValueDecompose2dScale(
-        this.baseTransform);
-      var combinedScale = [matrixScale[0] * curMatrixScale[0],
-        matrixScale[1] * curMatrixScale[1]];
+        this.baseTransform,
+      );
+      var combinedScale = [
+        matrixScale[0] * curMatrixScale[0],
+        matrixScale[1] * curMatrixScale[1],
+      ];
 
       // MAX_PATTERN_SIZE is used to avoid OOM situation.
       // Use width and height values that are as close as possible to the end
       // result when the pattern is used. Too low value makes the pattern look
       // blurry. Too large value makes it look too crispy.
-      width = Math.min(Math.ceil(Math.abs(width * combinedScale[0])),
-        MAX_PATTERN_SIZE);
+      width = Math.min(
+        Math.ceil(Math.abs(width * combinedScale[0])),
+        MAX_PATTERN_SIZE,
+      );
 
-      height = Math.min(Math.ceil(Math.abs(height * combinedScale[1])),
-        MAX_PATTERN_SIZE);
+      height = Math.min(
+        Math.ceil(Math.abs(height * combinedScale[1])),
+        MAX_PATTERN_SIZE,
+      );
 
-      var tmpCanvas = CachedCanvases.getCanvas('pattern', width, height, true);
+      var tmpCanvas = CachedCanvases.getCanvas("pattern", width, height, true);
       var tmpCtx = tmpCanvas.context;
       var graphics = new CanvasGraphics(tmpCtx, commonObjs, objs);
       graphics.groupLevel = owner.groupLevel;
@@ -391,23 +471,26 @@ var TilingPattern = (function TilingPatternClosure() {
       }
     },
 
-    setFillAndStrokeStyleToContext:
-      function setFillAndStrokeStyleToContext(context, paintType, color) {
-        switch (paintType) {
-          case PaintType.COLORED:
-            var ctx = this.ctx;
-            context.fillStyle = ctx.fillStyle;
-            context.strokeStyle = ctx.strokeStyle;
-            break;
-          case PaintType.UNCOLORED:
-            var cssColor = Util.makeCssRgb(color);
-            context.fillStyle = cssColor;
-            context.strokeStyle = cssColor;
-            break;
-          default:
-            error('Unsupported paint type: ' + paintType);
-        }
-      },
+    setFillAndStrokeStyleToContext: function setFillAndStrokeStyleToContext(
+      context,
+      paintType,
+      color,
+    ) {
+      switch (paintType) {
+        case PaintType.COLORED:
+          var ctx = this.ctx;
+          context.fillStyle = ctx.fillStyle;
+          context.strokeStyle = ctx.strokeStyle;
+          break;
+        case PaintType.UNCOLORED:
+          var cssColor = Util.makeCssRgb(color);
+          context.fillStyle = cssColor;
+          context.strokeStyle = cssColor;
+          break;
+        default:
+          error("Unsupported paint type: " + paintType);
+      }
+    },
 
     getPattern: function TilingPattern_getPattern(ctx, owner) {
       var temporaryPatternCanvas = this.createPatternCanvas(owner);
@@ -417,8 +500,8 @@ var TilingPattern = (function TilingPatternClosure() {
       ctx.transform.apply(ctx, this.matrix);
       this.scaleToContext();
 
-      return ctx.createPattern(temporaryPatternCanvas, 'repeat');
-    }
+      return ctx.createPattern(temporaryPatternCanvas, "repeat");
+    },
   };
 
   return TilingPattern;

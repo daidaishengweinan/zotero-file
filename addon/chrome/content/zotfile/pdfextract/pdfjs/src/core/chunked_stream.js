@@ -17,7 +17,7 @@
 /* globals assert, MissingDataException, isInt, NetworkManager, Promise,
            isEmptyObj, createPromiseCapability */
 
-'use strict';
+"use strict";
 
 var ChunkedStream = (function ChunkedStreamClosure() {
   function ChunkedStream(length, chunkSize, manager) {
@@ -31,13 +31,12 @@ var ChunkedStream = (function ChunkedStreamClosure() {
     this.numChunks = Math.ceil(length / chunkSize);
     this.manager = manager;
     this.progressiveDataLength = 0;
-    this.lastSuccessfulEnsureByteChunk = -1;  // a single-entry cache
+    this.lastSuccessfulEnsureByteChunk = -1; // a single-entry cache
   }
 
   // required methods for a stream. if a particular stream does not
   // implement these, an error should be thrown
   ChunkedStream.prototype = {
-
     getMissingChunks: function ChunkedStream_getMissingChunks() {
       var chunks = [];
       for (var chunk = 0, n = this.numChunks; chunk < n; ++chunk) {
@@ -59,12 +58,14 @@ var ChunkedStream = (function ChunkedStreamClosure() {
     onReceiveData: function ChunkedStream_onReceiveData(begin, chunk) {
       var end = begin + chunk.byteLength;
 
-      assert(begin % this.chunkSize === 0, 'Bad begin offset: ' + begin);
+      assert(begin % this.chunkSize === 0, "Bad begin offset: " + begin);
       // Using this.length is inaccurate here since this.start can be moved
       // See ChunkedStream.moveStart()
       var length = this.bytes.length;
-      assert(end % this.chunkSize === 0 || end === length,
-             'Bad end offset: ' + end);
+      assert(
+        end % this.chunkSize === 0 || end === length,
+        "Bad end offset: " + end,
+      );
 
       this.bytes.set(new Uint8Array(chunk), begin);
       var chunkSize = this.chunkSize;
@@ -80,16 +81,19 @@ var ChunkedStream = (function ChunkedStreamClosure() {
       }
     },
 
-    onReceiveProgressiveData:
-        function ChunkedStream_onReceiveProgressiveData(data) {
+    onReceiveProgressiveData: function ChunkedStream_onReceiveProgressiveData(
+      data,
+    ) {
       var position = this.progressiveDataLength;
       var beginChunk = Math.floor(position / this.chunkSize);
 
       this.bytes.set(new Uint8Array(data), position);
       position += data.byteLength;
       this.progressiveDataLength = position;
-      var endChunk = position >= this.end ? this.numChunks :
-                     Math.floor(position / this.chunkSize);
+      var endChunk =
+        position >= this.end
+          ? this.numChunks
+          : Math.floor(position / this.chunkSize);
       var curChunk;
       for (curChunk = beginChunk; curChunk < endChunk; ++curChunk) {
         if (!this.loadedChunks[curChunk]) {
@@ -240,7 +244,7 @@ var ChunkedStream = (function ChunkedStreamClosure() {
 
       function ChunkedStreamSubstream() {}
       ChunkedStreamSubstream.prototype = Object.create(this);
-      ChunkedStreamSubstream.prototype.getMissingChunks = function() {
+      ChunkedStreamSubstream.prototype.getMissingChunks = function () {
         var chunkSize = this.chunkSize;
         var beginChunk = Math.floor(this.start / chunkSize);
         var endChunk = Math.floor((this.end - 1) / chunkSize) + 1;
@@ -259,46 +263,44 @@ var ChunkedStream = (function ChunkedStreamClosure() {
       return subStream;
     },
 
-    isStream: true
+    isStream: true,
   };
 
   return ChunkedStream;
 })();
 
 var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
-
   function ChunkedStreamManager(length, chunkSize, url, args) {
     this.stream = new ChunkedStream(length, chunkSize, this);
     this.length = length;
     this.chunkSize = chunkSize;
     this.url = url;
     this.disableAutoFetch = args.disableAutoFetch;
-    var msgHandler = this.msgHandler = args.msgHandler;
+    var msgHandler = (this.msgHandler = args.msgHandler);
 
     if (args.chunkedViewerLoading) {
-      msgHandler.on('OnDataRange', this.onReceiveData.bind(this));
-      msgHandler.on('OnDataProgress', this.onProgress.bind(this));
+      msgHandler.on("OnDataRange", this.onReceiveData.bind(this));
+      msgHandler.on("OnDataProgress", this.onProgress.bind(this));
       this.sendRequest = function ChunkedStreamManager_sendRequest(begin, end) {
-        msgHandler.send('RequestDataRange', { begin: begin, end: end });
+        msgHandler.send("RequestDataRange", { begin: begin, end: end });
       };
     } else {
-
       var getXhr = function getXhr() {
-//#if B2G
-//      return new XMLHttpRequest({ mozSystem: true });
-//#else
+        //#if B2G
+        //      return new XMLHttpRequest({ mozSystem: true });
+        //#else
         return new XMLHttpRequest();
-//#endif
+        //#endif
       };
       this.networkManager = new NetworkManager(this.url, {
         getXhr: getXhr,
         httpHeaders: args.httpHeaders,
-        withCredentials: args.withCredentials
+        withCredentials: args.withCredentials,
       });
       this.sendRequest = function ChunkedStreamManager_sendRequest(begin, end) {
         this.networkManager.requestRange(begin, end, {
           onDone: this.onReceiveData.bind(this),
-          onProgress: this.onProgress.bind(this)
+          onProgress: this.onProgress.bind(this),
         });
       };
     }
@@ -313,7 +315,7 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
     this._loadedStreamCapability = createPromiseCapability();
 
     if (args.initialData) {
-      this.onReceiveData({chunk: args.initialData});
+      this.onReceiveData({ chunk: args.initialData });
     }
   }
 
@@ -330,8 +332,10 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
       return this._loadedStreamCapability.promise;
     },
 
-    requestChunks: function ChunkedStreamManager_requestChunks(chunks,
-                                                               callback) {
+    requestChunks: function ChunkedStreamManager_requestChunks(
+      chunks,
+      callback,
+    ) {
       var requestId = this.currRequestId++;
 
       var chunksNeeded;
@@ -382,8 +386,10 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
 
     // Loads any chunks in the requested range that are not yet loaded
     requestRange: function ChunkedStreamManager_requestRange(
-                      begin, end, callback) {
-
+      begin,
+      end,
+      callback,
+    ) {
       end = Math.min(end, this.length);
 
       var beginChunk = this.getBeginChunk(begin);
@@ -397,8 +403,10 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
       this.requestChunks(chunks, callback);
     },
 
-    requestRanges: function ChunkedStreamManager_requestRanges(ranges,
-                                                               callback) {
+    requestRanges: function ChunkedStreamManager_requestRanges(
+      ranges,
+      callback,
+    ) {
       ranges = ranges || [];
       var chunksToRequest = [];
 
@@ -412,7 +420,9 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
         }
       }
 
-      chunksToRequest.sort(function(a, b) { return a - b; });
+      chunksToRequest.sort(function (a, b) {
+        return a - b;
+      });
       this.requestChunks(chunksToRequest, callback);
     },
 
@@ -430,13 +440,14 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
         }
 
         if (prevChunk >= 0 && prevChunk + 1 !== chunk) {
-          groupedChunks.push({ beginChunk: beginChunk,
-                               endChunk: prevChunk + 1 });
+          groupedChunks.push({
+            beginChunk: beginChunk,
+            endChunk: prevChunk + 1,
+          });
           beginChunk = chunk;
         }
         if (i + 1 === chunks.length) {
-          groupedChunks.push({ beginChunk: beginChunk,
-                               endChunk: chunk + 1 });
+          groupedChunks.push({ beginChunk: beginChunk, endChunk: chunk + 1 });
         }
 
         prevChunk = chunk;
@@ -445,11 +456,11 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
     },
 
     onProgress: function ChunkedStreamManager_onProgress(args) {
-      var bytesLoaded = (this.stream.numChunksLoaded * this.chunkSize +
-                         args.loaded);
-      this.msgHandler.send('DocProgress', {
+      var bytesLoaded =
+        this.stream.numChunksLoaded * this.chunkSize + args.loaded;
+      this.msgHandler.send("DocProgress", {
         loaded: bytesLoaded,
-        total: this.length
+        total: this.length,
       });
     },
 
@@ -460,8 +471,10 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
       var end = begin + chunk.byteLength;
 
       var beginChunk = Math.floor(begin / this.chunkSize);
-      var endChunk = end < this.length ? Math.floor(end / this.chunkSize) :
-                                         Math.ceil(end / this.chunkSize);
+      var endChunk =
+        end < this.length
+          ? Math.floor(end / this.chunkSize)
+          : Math.ceil(end / this.chunkSize);
 
       if (isProgressive) {
         this.stream.onReceiveProgressiveData(chunk);
@@ -525,9 +538,9 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
         }
       }
 
-      this.msgHandler.send('DocProgress', {
+      this.msgHandler.send("DocProgress", {
         loaded: this.stream.numChunksLoaded * this.chunkSize,
-        total: this.length
+        total: this.length,
       });
     },
 
@@ -552,9 +565,8 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
       // 101 -> 2
       var chunk = Math.floor((end - 1) / this.chunkSize) + 1;
       return chunk;
-    }
+    },
   };
 
   return ChunkedStreamManager;
 })();
-

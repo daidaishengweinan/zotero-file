@@ -18,8 +18,7 @@
 // NOTE: Be careful what goes in this file, as it is also used from the context
 // of the addon. So using warn/error in here will break the addon.
 
-'use strict';
-
+"use strict";
 
 //#if (FIREFOX || MOZCENTRAL)
 //
@@ -38,7 +37,6 @@
 //#endif
 
 var NetworkManager = (function NetworkManagerClosure() {
-
   var OK_RESPONSE = 200;
   var PARTIAL_CONTENT_RESPONSE = 206;
 
@@ -48,13 +46,14 @@ var NetworkManager = (function NetworkManagerClosure() {
     this.isHttp = /^https?:/i.test(url);
     this.httpHeaders = (this.isHttp && args.httpHeaders) || {};
     this.withCredentials = args.withCredentials || false;
-    this.getXhr = args.getXhr ||
+    this.getXhr =
+      args.getXhr ||
       function NetworkManager_getXhr() {
-//#if B2G
-//      return new XMLHttpRequest({ mozSystem: true });
-//#else
+        //#if B2G
+        //      return new XMLHttpRequest({ mozSystem: true });
+        //#else
         return new XMLHttpRequest();
-//#endif
+        //#endif
       };
 
     this.currXhrId = 0;
@@ -64,13 +63,13 @@ var NetworkManager = (function NetworkManagerClosure() {
 
   function getArrayBuffer(xhr) {
     var data = xhr.response;
-    if (typeof data !== 'string') {
+    if (typeof data !== "string") {
       return data;
     }
     var length = data.length;
     var array = new Uint8Array(length);
     for (var i = 0; i < length; i++) {
-      array[i] = data.charCodeAt(i) & 0xFF;
+      array[i] = data.charCodeAt(i) & 0xff;
     }
     return array.buffer;
   }
@@ -79,7 +78,7 @@ var NetworkManager = (function NetworkManagerClosure() {
     requestRange: function NetworkManager_requestRange(begin, end, listeners) {
       var args = {
         begin: begin,
-        end: end
+        end: end,
       };
       for (var prop in listeners) {
         args[prop] = listeners[prop];
@@ -94,41 +93,41 @@ var NetworkManager = (function NetworkManagerClosure() {
     request: function NetworkManager_request(args) {
       var xhr = this.getXhr();
       var xhrId = this.currXhrId++;
-      var pendingRequest = this.pendingRequests[xhrId] = {
-        xhr: xhr
-      };
+      var pendingRequest = (this.pendingRequests[xhrId] = {
+        xhr: xhr,
+      });
 
-      xhr.open('GET', this.url);
+      xhr.open("GET", this.url);
       xhr.withCredentials = this.withCredentials;
       for (var property in this.httpHeaders) {
         var value = this.httpHeaders[property];
-        if (typeof value === 'undefined') {
+        if (typeof value === "undefined") {
           continue;
         }
         xhr.setRequestHeader(property, value);
       }
-      if (this.isHttp && 'begin' in args && 'end' in args) {
-        var rangeStr = args.begin + '-' + (args.end - 1);
-        xhr.setRequestHeader('Range', 'bytes=' + rangeStr);
+      if (this.isHttp && "begin" in args && "end" in args) {
+        var rangeStr = args.begin + "-" + (args.end - 1);
+        xhr.setRequestHeader("Range", "bytes=" + rangeStr);
         pendingRequest.expectedStatus = 206;
       } else {
         pendingRequest.expectedStatus = 200;
       }
 
       if (args.onProgressiveData) {
-        xhr.responseType = 'moz-chunked-arraybuffer';
-        if (xhr.responseType === 'moz-chunked-arraybuffer') {
+        xhr.responseType = "moz-chunked-arraybuffer";
+        if (xhr.responseType === "moz-chunked-arraybuffer") {
           pendingRequest.onProgressiveData = args.onProgressiveData;
           pendingRequest.mozChunked = true;
         } else {
-          xhr.responseType = 'arraybuffer';
+          xhr.responseType = "arraybuffer";
         }
       } else {
-        xhr.responseType = 'arraybuffer';
+        xhr.responseType = "arraybuffer";
       }
 
       if (args.onError) {
-        xhr.onerror = function(evt) {
+        xhr.onerror = function (evt) {
           args.onError(xhr.status);
         };
       }
@@ -201,11 +200,13 @@ var NetworkManager = (function NetworkManagerClosure() {
       // "A server MAY ignore the Range header". This means it's possible to
       // get a 200 rather than a 206 response from a range request.
       var ok_response_on_range_request =
-          xhrStatus === OK_RESPONSE &&
-          pendingRequest.expectedStatus === PARTIAL_CONTENT_RESPONSE;
+        xhrStatus === OK_RESPONSE &&
+        pendingRequest.expectedStatus === PARTIAL_CONTENT_RESPONSE;
 
-      if (!ok_response_on_range_request &&
-          xhrStatus !== pendingRequest.expectedStatus) {
+      if (
+        !ok_response_on_range_request &&
+        xhrStatus !== pendingRequest.expectedStatus
+      ) {
         if (pendingRequest.onError) {
           pendingRequest.onError(xhr.status);
         }
@@ -216,19 +217,19 @@ var NetworkManager = (function NetworkManagerClosure() {
 
       var chunk = getArrayBuffer(xhr);
       if (xhrStatus === PARTIAL_CONTENT_RESPONSE) {
-        var rangeHeader = xhr.getResponseHeader('Content-Range');
+        var rangeHeader = xhr.getResponseHeader("Content-Range");
         var matches = /bytes (\d+)-(\d+)\/(\d+)/.exec(rangeHeader);
         var begin = parseInt(matches[1], 10);
         pendingRequest.onDone({
           begin: begin,
-          chunk: chunk
+          chunk: chunk,
         });
       } else if (pendingRequest.onProgressiveData) {
         pendingRequest.onDone(null);
       } else {
         pendingRequest.onDone({
           begin: 0,
-          chunk: chunk
+          chunk: chunk,
         });
       }
     },
@@ -245,7 +246,7 @@ var NetworkManager = (function NetworkManagerClosure() {
     },
 
     isStreamingRequest: function NetworkManager_isStreamingRequest(xhrId) {
-      return !!(this.pendingRequests[xhrId].onProgressiveData);
+      return !!this.pendingRequests[xhrId].onProgressiveData;
     },
 
     isPendingRequest: function NetworkManager_isPendingRequest(xhrId) {
@@ -266,9 +267,8 @@ var NetworkManager = (function NetworkManagerClosure() {
       var xhr = this.pendingRequests[xhrId].xhr;
       delete this.pendingRequests[xhrId];
       xhr.abort();
-    }
+    },
   };
 
   return NetworkManager;
 })();
-
