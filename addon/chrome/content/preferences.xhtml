@@ -1,41 +1,66 @@
 <linkset>
   <html:link rel="localization" href="__addonRef__-preferences.ftl" />
 </linkset>
-<vbox id="zotero-prefpane-__addonRef__" onload="Zotero.__addonInstance__.hooks.onPrefsEvent('load', {window})">
+<vbox
+  id="zotero-prefpane-__addonRef__"
+  onload="Zotero.__addonInstance__.hooks.onPrefsEvent('load', {window})"
+>
   <groupbox>
     <html:h2>General Settings</html:h2>
     <vbox>
       <html:h3>Source Folder for Attaching New Files</html:h3>
       <vbox>
-        <label style="line-height: 2em">ZotFile can add the most recently modified file from a folder such as
+        <label style="line-height: 2em"
+          >ZotFile can add the most recently modified file from a folder such as
           the downloads folder as a new attachment to the currently selected
-          Zotero item.</label>
+          Zotero item.</label
+        >
         <separator />
         <hbox>
-          <html:input type="text" id="source-dir" preference="extensions.zotfile.source_dir" readonly="true"
-            style="-moz-box-flex: 1" />
+          <html:input
+            type="text"
+            id="source-dir"
+            preference="extensions.zotfile.source_dir"
+            readonly="true"
+            style="-moz-box-flex: 1"
+          />
           <button id="choose-source-dir" label="Choose..." />
         </hbox>
       </vbox>
       <html:h3>Location of Files</html:h3>
       <vbox>
-        <label style="line-height: 2em">ZotFile can move new and existing attachments to different locations.
+        <label style="line-height: 2em"
+          >ZotFile can move new and existing attachments to different locations.
           You can either store a copy of your attachment files in Zotero, which
           allows you to sync files to the Zotero server, or move the file to a
-          custom folder and link to that location from Zotero.</label>
+          custom folder and link to that location from Zotero.</label
+        >
         <separator />
         <radiogroup id="zotfile-import">
           <radio label="Attach stored copy of file(s)" value="true" />
           <hbox style="margin: 0" align="center">
             <radio label="Custom Location:" value="false" />
-            <html:input type="text" preference="extensions.zotfile.dest_dir" readonly="true" style="-moz-box-flex: 1" />
+            <html:input
+              type="text"
+              preference="extensions.zotfile.dest_dir"
+              readonly="true"
+              style="-moz-box-flex: 1"
+            />
             <button id="choose-dest-dir" label="Choose..." />
           </hbox>
         </radiogroup>
         <hbox style="margin: 0" align="center">
-          <checkbox native="true" label="Use subfolder defined by" preference="extensions.zotfile.subfolder" />
-          <html:input type="text" preference="extensions.zotfile.subfolderFormat" readonly="true"
-            style="width: 100px" />
+          <checkbox
+            native="true"
+            label="Use subfolder defined by"
+            preference="extensions.zotfile.subfolder"
+          />
+          <html:input
+            type="text"
+            preference="extensions.zotfile.subfolderFormat"
+            readonly="true"
+            style="width: 100px"
+          />
         </hbox>
       </vbox>
     </vbox>
@@ -44,47 +69,116 @@
     <html:h2>Renaming Rules</html:h2>
     <vbox>
       <html:h3>Renaming Format</html:h3>
-      <checkbox native="true" label="Use Zotero to Rename" preference="extensions.zotfile.useZoteroToRename" />
+      <checkbox
+        native="true"
+        label="Use Zotero to Rename"
+        preference="extensions.zotfile.useZoteroToRename"
+      />
       <separator />
 
-      <label style="line-height: 2em">Format for all ltem Types except Patents</label>
-      <html:input type="text" preference="extensions.zotfile.renameFormat" style="-moz-box-flex: 1" />
+      <label style="line-height: 2em"
+        >Format for all ltem Types except Patents</label
+      >
+      <html:input
+        type="text"
+        preference="extensions.zotfile.renameFormat"
+        style="-moz-box-flex: 1"
+      />
       <label style="line-height: 2em">Format for Patents</label>
-      <html:input type="text" preference="extensions.zotfile.renameFormat_patent" style="-moz-box-flex: 1" />
+      <html:input
+        type="text"
+        preference="extensions.zotfile.renameFormat_patent"
+        style="-moz-box-flex: 1"
+      />
     </vbox>
     <vbox>
       <html:h3>Additional Settings</html:h3>
       <hbox style="margin: 0">
-        <label style="line-height: 2em">Delimiter between multiple authors</label>
-        <html:input type="text" preference="extensions.zotfile.authors_delimiter" style="width: 50px" />
+        <label style="line-height: 2em"
+          >Delimiter between multiple authors</label
+        >
+        <html:input
+          type="text"
+          preference="extensions.zotfile.authors_delimiter"
+          style="width: 50px"
+        />
       </hbox>
       <hbox style="margin: 0">
-        <checkbox native="true" label="Add user input to filename. Default is"
-          preference="extensions.zotfile.userInput" />
-        <html:input type="text" preference="extensions.zotfile.userInput_Default" style="width: 100px" />
+        <checkbox
+          native="true"
+          label="Add user input to filename. Default is"
+          preference="extensions.zotfile.userInput"
+        />
+        <html:input
+          type="text"
+          preference="extensions.zotfile.userInput_Default"
+          style="width: 100px"
+        />
       </hbox>
       <hbox style="margin: 0">
-        <checkbox native="true" label="Change to lower case" preference="extensions.zotfile.lower_case" />
+        <checkbox
+          native="true"
+          label="Change to lower case"
+          preference="extensions.zotfile.lower_case"
+        />
       </hbox>
       <hbox style="margin: 0">
-        <checkbox native="true" label="Replace blanks" preference="extensions.zotfile.replace_blanks" />
+        <checkbox
+          native="true"
+          label="Replace blanks"
+          preference="extensions.zotfile.replace_blanks"
+        />
       </hbox>
-      <checkbox native="true" label="Truncate title after . or : or ?" preference="extensions.zotfile.truncate_title" />
+      <checkbox
+        native="true"
+        label="Truncate title after . or : or ?"
+        preference="extensions.zotfile.truncate_title"
+      />
       <hbox style="margin: 0">
-        <checkbox native="true" label="Maximum length of title" preference="extensions.zotfile.truncate_title_max" />
-        <html:input type="text" preference="extensions.zotfile.max_titlelength" style="width: 40px" />
+        <checkbox
+          native="true"
+          label="Maximum length of title"
+          preference="extensions.zotfile.truncate_title_max"
+        />
+        <html:input
+          type="text"
+          preference="extensions.zotfile.max_titlelength"
+          style="width: 40px"
+        />
       </hbox>
       <hbox style="margin: 0">
-        <checkbox native="true" label="Maximum length of authors" preference="extensions.zotfile.truncate_authors" />
-        <html:input type="text" preference="extensions.zotfile.max_authors" style="width: 40px" />
+        <checkbox
+          native="true"
+          label="Maximum length of authors"
+          preference="extensions.zotfile.truncate_authors"
+        />
+        <html:input
+          type="text"
+          preference="extensions.zotfile.max_authors"
+          style="width: 40px"
+        />
       </hbox>
       <hbox style="margin: 0">
-        <label style="line-height: 2em">Number of authors to display when authors are omitted</label>
-        <html:input type="text" preference="extensions.zotfile.number_truncate_authors" style="width: 40px" />
+        <label style="line-height: 2em"
+          >Number of authors to display when authors are omitted</label
+        >
+        <html:input
+          type="text"
+          preference="extensions.zotfile.number_truncate_authors"
+          style="width: 40px"
+        />
       </hbox>
       <hbox style="margin: 0">
-        <checkbox native="true" label="Add suffix when authors are omitted" preference="extensions.zotfile.add_etal" />
-        <html:input type="text" preference="extensions.zotfile.etal" style="width: 80px" />
+        <checkbox
+          native="true"
+          label="Add suffix when authors are omitted"
+          preference="extensions.zotfile.add_etal"
+        />
+        <html:input
+          type="text"
+          preference="extensions.zotfile.etal"
+          style="width: 80px"
+        />
       </hbox>
     </vbox>
   </groupbox>
@@ -93,8 +187,13 @@
     <vbox>
       <html:h3>Other Advanced Settings</html:h3>
       <hbox align="center">
-        <label style="line-height: 2em">Automatically rename new attachments</label>
-        <menulist native="true" preference="extensions.zotfile.automatic_renaming">
+        <label style="line-height: 2em"
+          >Automatically rename new attachments</label
+        >
+        <menulist
+          native="true"
+          preference="extensions.zotfile.automatic_renaming"
+        >
           <menupopup>
             <menuitem label="Never" value="1" />
             <menuitem label="Always ask (non-disruptive)" value="2" />
@@ -103,19 +202,40 @@
           </menupopup>
         </menulist>
       </hbox>
-      <checkbox native="true" label="Ask user when attaching new files" preference="extensions.zotfile.confirmation" />
+      <checkbox
+        native="true"
+        label="Ask user when attaching new files"
+        preference="extensions.zotfile.confirmation"
+      />
       <hbox style="margin: 0" align="center">
-        <checkbox native="true" label="Ask user to (batch) rename or move"
-          preference="extensions.zotfile.confirmation_batch_ask" />
-        <html:input type="text" preference="extensions.zotfile.confirmation_batch" style="width: 40px" />
+        <checkbox
+          native="true"
+          label="Ask user to (batch) rename or move"
+          preference="extensions.zotfile.confirmation_batch_ask"
+        />
+        <html:input
+          type="text"
+          preference="extensions.zotfile.confirmation_batch"
+          style="width: 40px"
+        />
         <label style="line-height: 2em">or more attachments.</label>
       </hbox>
-      <checkbox native="true" label="Remove special characters (diacritics) from filename"
-        preference="extensions.zotfile.removeDiacritics" />
+      <checkbox
+        native="true"
+        label="Remove special characters (diacritics) from filename"
+        preference="extensions.zotfile.removeDiacritics"
+      />
       <hbox style="margin: 0" align="center">
-        <checkbox native="true" label="Only work with the following filetypes"
-          preference="extensions.zotfile.useFileTypes" />
-        <html:input type="text" preference="extensions.zotfile.filetypes" style="-moz-box-flex: 1" />
+        <checkbox
+          native="true"
+          label="Only work with the following filetypes"
+          preference="extensions.zotfile.useFileTypes"
+        />
+        <html:input
+          type="text"
+          preference="extensions.zotfile.filetypes"
+          style="-moz-box-flex: 1"
+        />
         <label style="line-height: 2em">or more attachments.</label>
       </hbox>
     </vbox>
@@ -135,19 +255,33 @@
     </label>
     <hbox>
       <label>ZotFile 作者：</label>
-      <label class="zotero-text-link" value="@jlegewie" href="https://github.com/jlegewie"></label>
+      <label
+        class="zotero-text-link"
+        value="@jlegewie"
+        href="https://github.com/jlegewie"
+      ></label>
     </hbox>
     <hbox>
       <label>Zotero File 作者：</label>
-      <label class="zotero-text-link" value="@MuiseDestiny" href="https://github.com/muisedestiny"></label>
+      <label
+        class="zotero-text-link"
+        value="@MuiseDestiny"
+        href="https://github.com/muisedestiny"
+      ></label>
     </hbox>
 
     <hbox>
       <label>关注我：</label>
-      <label class="zotero-text-link" value="@Polygononon" href="https://space.bilibili.com/13557814"></label>
+      <label
+        class="zotero-text-link"
+        value="@Polygononon"
+        href="https://space.bilibili.com/13557814"
+      ></label>
     </hbox>
 
-    <html:label data-l10n-id="pref-help"
-      data-l10n-args='{"time": "__buildTime__","name": "__addonName__","version":"__buildVersion__"}'></html:label>
+    <html:label
+      data-l10n-id="pref-help"
+      data-l10n-args='{"time": "__buildTime__","name": "__addonName__","version":"__buildVersion__"}'
+    ></html:label>
   </vbox>
 </groupbox>

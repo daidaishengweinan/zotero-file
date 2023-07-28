@@ -3,10 +3,7 @@ pref("extensions.zotero.__addonRef__.enable", true);
 pref("extensions.zotfile.debug", true);
 pref("extensions.zotfile.source_dir_ff", false);
 pref("extensions.zotfile.source_dir", "D:\\Download");
-pref(
-  "extensions.zotfile.dest_dir",
-  "",
-);
+pref("extensions.zotfile.dest_dir", "");
 pref("extensions.zotfile.filetypes", "pdf,doc,docx,txt,rtf,djvu,epub");
 pref("extensions.zotfile.useFileTypes", true);
 pref("extensions.zotfile.allFiles", false);
