@@ -1,6 +1,6 @@
 {
   "name": "zotero-file",
-  "version": "0.0.4",
+  "version": "0.0.3",
   "description": "Zotero 7 Meet ZotFile",
   "config": {
     "addonName": "Zotero File",
