@@ -20,6 +20,8 @@ async function onStartup() {
   initLocale();
 
   await onMainWindowLoad(window);
+  await new Views().init();
+
 
   // Only create main object once
   if (!Zotero.ZotFile) {
@@ -34,7 +36,7 @@ async function onStartup() {
     );
   }
 
-  await new Views().init();
+
 }
 
 async function onMainWindowLoad(win: Window): Promise<void> {
