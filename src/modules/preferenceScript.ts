@@ -24,24 +24,28 @@ async function updatePrefsUI() {
   const renderLock = ztoolkit.getGlobal("Zotero").Promise.defer();
   if (addon.data.prefs?.window == undefined) return;
   const doc = addon.data.prefs?.window.document;
-  doc.querySelector("#choose-source-dir")?.addEventListener("command", async () => {
-    const sourceDir = await new ztoolkit.FilePicker(
-      "Select Source Dir",
-      "folder",
-    ).open();
-    if (sourceDir) {
-      Zotero.Prefs.set("extensions.zotfile.source_dir", sourceDir, true)
-    }
-  })
-  doc.querySelector("#choose-dest-dir")?.addEventListener("command", async () => {
-    const destDir = await new ztoolkit.FilePicker(
-      "Select Dest Dir",
-      "folder",
-    ).open();
-    if (destDir) {
-      Zotero.Prefs.set("extensions.zotfile.dest_dir", destDir, true)
-    }
-  })
+  doc
+    .querySelector("#choose-source-dir")
+    ?.addEventListener("command", async () => {
+      const sourceDir = await new ztoolkit.FilePicker(
+        "Select Source Dir",
+        "folder",
+      ).open();
+      if (sourceDir) {
+        Zotero.Prefs.set("extensions.zotfile.source_dir", sourceDir, true);
+      }
+    });
+  doc
+    .querySelector("#choose-dest-dir")
+    ?.addEventListener("command", async () => {
+      const destDir = await new ztoolkit.FilePicker(
+        "Select Dest Dir",
+        "folder",
+      ).open();
+      if (destDir) {
+        Zotero.Prefs.set("extensions.zotfile.dest_dir", destDir, true);
+      }
+    });
 }
 
 function bindPrefEvents() {

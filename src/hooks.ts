@@ -22,7 +22,6 @@ async function onStartup() {
   await onMainWindowLoad(window);
   await new Views().init();
 
-
   // Only create main object once
   if (!Zotero.ZotFile) {
     ztoolkit.UI.appendElement(
@@ -35,8 +34,6 @@ async function onStartup() {
       document.documentElement,
     );
   }
-
-
 }
 
 async function onMainWindowLoad(win: Window): Promise<void> {

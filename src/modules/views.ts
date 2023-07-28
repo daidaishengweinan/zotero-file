@@ -1,6 +1,6 @@
 import { config } from "../../package.json";
 export default class Views {
-  constructor() { }
+  constructor() {}
 
   public async init() {
     await this.registerItemMenu();
@@ -10,16 +10,18 @@ export default class Views {
   private async registerItemMenu() {
     ztoolkit.Menu.register("item", {
       tag: "menuseparator",
-    })
+    });
     const menuIcon = `chrome://${config.addonRef}/content/icons/favicon@0.5x.png`;
     // item menuitem with icon
-    ztoolkit.Menu.register("item", {
-      tag: "menuitem",
-      id: "id-zotfile-attach-file",
-      label: "Attach New File",
-      commandListener: (ev) => Zotero.ZotFile.attachFileFromSourceDirectory(),
-      icon: menuIcon,
-    },
+    ztoolkit.Menu.register(
+      "item",
+      {
+        tag: "menuitem",
+        id: "id-zotfile-attach-file",
+        label: "Attach New File",
+        commandListener: (ev) => Zotero.ZotFile.attachFileFromSourceDirectory(),
+        icon: menuIcon,
+      },
       "after",
       // 不可用
       // Zotero.getMainWindow().document.querySelector(
