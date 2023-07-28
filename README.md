@@ -6,7 +6,7 @@
 
 ## 目标
 
-让 ZotFile 核心功能可以在 Zotero 7 运行
+让 ZotFile 核心功能可以在 Zotero 7 运行，让 ZotFile 继续发挥它的光芒！
 
 ## 已实现
 
