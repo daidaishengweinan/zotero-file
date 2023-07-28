@@ -46,6 +46,9 @@ async function update() {
       }
     });
 
-  doc.querySelectorAll(".zotero-text-link")
-    .forEach((e: any) => e.onclick = () => Zotero.launchURL(e.getAttribute("href")))
+  doc
+    .querySelectorAll(".zotero-text-link")
+    .forEach(
+      (e: any) => (e.onclick = () => Zotero.launchURL(e.getAttribute("href"))),
+    );
 }

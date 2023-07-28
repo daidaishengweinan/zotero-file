@@ -125,7 +125,8 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
   this.addDescription = _deferUntilWindowLoad(function addDescription(text) {
     var newHB = _progressWindow.document.createXULElement("hbox");
     newHB.setAttribute("class", "zotero-progress-item-hbox");
-    var newDescription = _progressWindow.document.createXULElement("description");
+    var newDescription =
+      _progressWindow.document.createXULElement("description");
 
     var parts = Zotero.Utilities.parseMarkup(text);
     for (let part of parts) {
@@ -196,7 +197,7 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
 
     try {
       _progressWindow.close();
-    } catch (ex) { }
+    } catch (ex) {}
   };
 
   /**
@@ -219,7 +220,7 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
       this._image.style.height = "16px";
       this._image.style.backgroundRepeat = "no-repeat";
       this._image.style.backgroundSize = "contain";
-      this._image.style.backgroundPosition = "center"
+      this._image.style.backgroundPosition = "center";
       this.setIcon(iconSrc);
 
       this._hbox = _progressWindow.document.createXULElement("hbox");
@@ -351,7 +352,7 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
     // causing the popup to remain
     try {
       _progressWindow.clearTimeout(_timeoutID);
-    } catch (e) { }
+    } catch (e) {}
     _timeoutID = false;
   }
 

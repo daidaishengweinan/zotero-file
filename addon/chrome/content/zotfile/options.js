@@ -219,7 +219,7 @@ var checkRenameFormat = function (which) {
           "",
           rename_format,
         );
-  } catch (err) { }
+  } catch (err) {}
   // alert user
   if (this.messages_error.length > 0) {
     alert(this.messages_error.join("\n\n"));
@@ -559,7 +559,7 @@ var deleteSelectedSubfolder = function () {
       if (!treechildren.childNodes[index])
         tree.view.selection.select(index - 1);
     }
-  } catch (err) { }
+  } catch (err) {}
 }.bind(Zotero.ZotFile);
 
 var deleteSubfolder = Zotero.Promise.coroutine(
@@ -589,13 +589,13 @@ var deleteSubfolder = Zotero.Promise.coroutine(
           } catch (e) {
             this.messages_fatalError.push(
               e.name +
-              ": " +
-              e.message +
-              " \n(" +
-              e.fileName +
-              ", " +
-              e.lineNumber +
-              ")",
+                ": " +
+                e.message +
+                " \n(" +
+                e.fileName +
+                ", " +
+                e.lineNumber +
+                ")",
             );
           }
         }
