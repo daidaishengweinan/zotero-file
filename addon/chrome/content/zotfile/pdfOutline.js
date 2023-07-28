@@ -4,7 +4,7 @@
  */
 Zotero.ZotFile.pdfOutline = new (function () {
   this.atts = [];
-  this.toc_url = "chrome://zotfile/content/pdfextract/toc.html";
+  this.toc_url = "chrome://zoterofile/content/zotfile/pdfextract/toc.html";
   this.progressWin = null;
   this.itemProgress = [];
 

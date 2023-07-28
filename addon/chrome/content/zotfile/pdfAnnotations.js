@@ -23,7 +23,7 @@ Zotero.ZotFile.pdfAnnotations = new (function () {
   this.errorExtractingAnnotations = false;
   // The hidden browser where PDFs get rendered by pdf.js
   this.pdfHiddenBrowser = null;
-  this.PDF_EXTRACT_URL = "chrome://zotfile/content/pdfextract/extract.html";
+  this.PDF_EXTRACT_URL = "chrome://zoterofile/content/zotfile/pdfextract/extract.html";
 
   this.popplerExtractorSetPath = function () {
     // extractor filename
@@ -284,8 +284,8 @@ Zotero.ZotFile.pdfAnnotations = new (function () {
       ),
       cite = this.getPref("pdfExtraction.NoteFullCite")
         ? this.Wildcards.replaceWildcard(item, "%a %y:")
-            .replace(/_(?!.*_)/, " and ")
-            .replace(/_/g, ", ")
+          .replace(/_(?!.*_)/, " and ")
+          .replace(/_/g, ", ")
         : "p. ",
       repl = JSON.parse(this.getPref("pdfExtraction.replacements")),
       reg = repl.map(function (obj) {
@@ -309,9 +309,9 @@ Zotero.ZotFile.pdfAnnotations = new (function () {
     }
 
     var title = this.Utils.str_format(format_title, {
-        title: str_title,
-        date: date_str,
-      }),
+      title: str_title,
+      date: date_str,
+    }),
       note = title;
     if (this.getPref("pdfExtraction.UsePDFJSandPoppler")) {
       note += " " + method;
@@ -340,7 +340,7 @@ Zotero.ZotFile.pdfAnnotations = new (function () {
                 : itemPages;
             page = isNaN(page_parsed) ? page : page_parsed + page - 1;
           }
-        } catch (err) {}
+        } catch (err) { }
       }
       // link
       var link = '<a href="' + uri + '">' + cite + page + "</a>",

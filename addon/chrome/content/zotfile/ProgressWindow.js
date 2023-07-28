@@ -38,14 +38,16 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
 
     if (_window) {
       _progressWindow = _window.openDialog(
-        "chrome://zotero/content/progressWindow.xul",
+        // "chrome://zotero/content/progressWindow.xhtml",
+        "chrome://zoterofile/content/zotfile/progressWindow.xul",
         "",
         "chrome,dialog=no,titlebar=no,popup=yes",
       );
     } else {
       _progressWindow = ww.openWindow(
         null,
-        "chrome://zotero/content/progressWindow.xul",
+        // "chrome://zotero/content/progressWindow.xhtml",
+        "chrome://zoterofile/content/zotfile/progressWindow.xul",
         "",
         "chrome,dialog=no,titlebar=no,popup=yes",
         null,
@@ -76,13 +78,13 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
       while (headline.hasChildNodes())
         headline.removeChild(headline.firstChild);
 
-      var preNode = doc.createElement("label");
+      var preNode = doc.createXULElement("label");
       preNode.setAttribute("value", text);
       preNode.setAttribute("crop", "end");
       headline.appendChild(preNode);
 
       if (icon) {
-        var img = doc.createElement("image");
+        var img = doc.createXULElement("image");
         img.width = 16;
         img.height = 16;
         img.setAttribute("src", icon);
@@ -90,7 +92,7 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
       }
 
       if (postText) {
-        var postNode = doc.createElement("label");
+        var postNode = doc.createXULElement("label");
         postNode.style.marginLeft = 0;
         postNode.setAttribute("value", " " + postText);
         postNode.setAttribute("crop", "end");
@@ -121,16 +123,16 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
    * <a> elements are turned into XUL links
    */
   this.addDescription = _deferUntilWindowLoad(function addDescription(text) {
-    var newHB = _progressWindow.document.createElement("hbox");
+    var newHB = _progressWindow.document.createXULElement("hbox");
     newHB.setAttribute("class", "zotero-progress-item-hbox");
-    var newDescription = _progressWindow.document.createElement("description");
+    var newDescription = _progressWindow.document.createXULElement("description");
 
     var parts = Zotero.Utilities.parseMarkup(text);
     for (let part of parts) {
       if (part.type == "text") {
         var elem = _progressWindow.document.createTextNode(part.text);
       } else if (part.type == "link") {
-        var elem = _progressWindow.document.createElement("label");
+        var elem = _progressWindow.document.createXULElement("label");
         elem.setAttribute("value", part.text);
         elem.setAttribute("class", "zotero-text-link");
         for (var i in part.attributes) {
@@ -194,7 +196,7 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
 
     try {
       _progressWindow.close();
-    } catch (ex) {}
+    } catch (ex) { }
   };
 
   /**
@@ -203,21 +205,24 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
    */
   this.ItemProgress = _deferUntilWindowLoad(
     function (iconSrc, title, parentItemProgress) {
-      this._itemText = _progressWindow.document.createElement("description");
+      this._itemText = _progressWindow.document.createXULElement("description");
       this._itemText.appendChild(
         _progressWindow.document.createTextNode(title),
       );
       this._itemText.setAttribute("class", "zotero-progress-item-label");
       this._itemText.setAttribute("crop", "end");
 
-      this._image = _progressWindow.document.createElement("hbox");
+      this._image = _progressWindow.document.createXULElement("hbox");
       this._image.setAttribute("class", "zotero-progress-item-icon");
       this._image.setAttribute("flex", 0);
       this._image.style.width = "16px";
+      this._image.style.height = "16px";
       this._image.style.backgroundRepeat = "no-repeat";
+      this._image.style.backgroundSize = "contain";
+      this._image.style.backgroundPosition = "center"
       this.setIcon(iconSrc);
 
-      this._hbox = _progressWindow.document.createElement("hbox");
+      this._hbox = _progressWindow.document.createXULElement("hbox");
       this._hbox.setAttribute("class", "zotero-progress-item-hbox");
       if (parentItemProgress) {
         this._hbox.style.marginLeft = "16px";
@@ -346,7 +351,7 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
     // causing the popup to remain
     try {
       _progressWindow.clearTimeout(_timeoutID);
-    } catch (e) {}
+    } catch (e) { }
     _timeoutID = false;
   }
 

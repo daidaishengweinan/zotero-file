@@ -10,7 +10,7 @@
 <!--	onload="sizeToContent();" -->
 	
 	<script src="chrome://zotero/content/include.js"/>
-	<script src="chrome://zotfile/content/include.js"/>
+	<script src="chrome://zoterofile/content/zotfile/include.js"/>
 	<script src="options.js"/> 		
 
 	
