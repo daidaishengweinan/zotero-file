@@ -5,7 +5,7 @@ pref("extensions.zotfile.source_dir_ff", false);
 pref("extensions.zotfile.source_dir", "D:\\Download");
 pref(
   "extensions.zotfile.dest_dir",
-  "E:\\OneDrive\\OneDrive - junblue\\Zotero\\JRST",
+  "",
 );
 pref("extensions.zotfile.filetypes", "pdf,doc,docx,txt,rtf,djvu,epub");
 pref("extensions.zotfile.useFileTypes", true);

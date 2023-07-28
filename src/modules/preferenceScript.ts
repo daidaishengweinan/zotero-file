@@ -51,4 +51,17 @@ async function update() {
     .forEach(
       (e: any) => (e.onclick = () => Zotero.launchURL(e.getAttribute("href"))),
     );
+  doc
+    .querySelectorAll(".zotero-text-link")
+    .forEach(
+      (e: any) => (e.onclick = () => Zotero.launchURL(e.getAttribute("href"))),
+    );
+  doc.querySelectorAll("radiogroup#zotfile-import radio").forEach((radio: any) => {
+    if (String(Zotero.Prefs.get("extensions.zotfile.import", true)) == radio.getAttribute("value")) {
+      radio.click();
+    }
+    radio.addEventListener("click", () => {
+      Zotero.Prefs.set("extensions.zotfile.import", radio.getAttribute("value") == "true", true)
+    })
+  })
 }
