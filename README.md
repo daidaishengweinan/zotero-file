@@ -2,7 +2,9 @@
 
 > 当前版本持续开发中
 
-<img src="https://github.com/MuiseDestiny/zotero-file/assets/51939531/b4704f31-3d05-4dd6-87dd-02664e381917" width="200px"/>
+```diff
+! 当前版本：可尝鲜
+```
 
 ## 目标
 
