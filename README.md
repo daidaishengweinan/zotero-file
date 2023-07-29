@@ -11,6 +11,7 @@
 ![Downloads latest release](https://img.shields.io/github/downloads/l0o0/jasminum/latest/total?color=yellow)
 ![Downloads latest release](https://img.shields.io/github/downloads/jlegewie/zotfile/latest/total?color=yellow)
 ![Downloads latest release](https://img.shields.io/github/downloads/windingwind/zotero-pdf-translate/latest/total?color=yellow)
+![Downloads latest release](https://img.shields.io/github/downloads/windingwind/zotero-better-notes/latest/total?color=yellow)
 
 
 提高
