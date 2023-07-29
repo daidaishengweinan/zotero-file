@@ -1,6 +1,6 @@
 import { config } from "../../package.json";
 export default class Views {
-  constructor() { }
+  constructor() {}
 
   public async init() {
     await this.registerItemMenu();
@@ -18,7 +18,10 @@ export default class Views {
         tag: "menuitem",
         id: "id-zotfile-attach-file",
         label: "Attach New File",
-        getVisibility: () => ZoteroPane.getSelectedItems().some(item => item.isAttachment() || item.isRegularItem()),
+        getVisibility: () =>
+          ZoteroPane.getSelectedItems().some(
+            (item) => item.isAttachment() || item.isRegularItem(),
+          ),
         commandListener: (ev) => Zotero.ZotFile.attachFileFromSourceDirectory(),
         icon: `chrome://${config.addonRef}/content/icons/attachNewFile.png`,
       },
@@ -34,14 +37,15 @@ export default class Views {
       {
         tag: "menuitem",
         label: "Rename and Move",
-        getVisibility: () => ZoteroPane.getSelectedItems().some(item => item.isAttachment() || item.isRegularItem()),
+        getVisibility: () =>
+          ZoteroPane.getSelectedItems().some(
+            (item) => item.isAttachment() || item.isRegularItem(),
+          ),
         commandListener: (ev) => Zotero.ZotFile.renameSelectedAttachments(),
         icon: `chrome://${config.addonRef}/content/icons/renameAndMove.png`,
       },
       "after",
     );
-
-
   }
 
   private async registerPreferencePane() {
