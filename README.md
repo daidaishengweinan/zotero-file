@@ -1,5 +1,3 @@
-![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/83dcf13f-e0b7-4d6a-b46f-5ca189cc3b6d)
-
 # Zotero File
 > 让 ZotFile 在 Zotero 7 继续使用
 
