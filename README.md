@@ -8,6 +8,13 @@
 ![Release Date](https://img.shields.io/github/release-date/MuiseDestiny/zotero-file?color=9cf)
 [![License](https://img.shields.io/github/license/MuiseDestiny/zotero-file)](https://github.com/MuiseDestiny/zotero-file/blob/master/LICENSE)
 ![Downloads latest release](https://img.shields.io/github/downloads/MuiseDestiny/zotero-file/latest/total?color=yellow)
+![Downloads latest release](https://img.shields.io/github/downloads/l0o0/jasminum/latest/total?color=yellow)
+![Downloads latest release](https://img.shields.io/github/downloads/jlegewie/zotfile/latest/total?color=yellow)
+
+
+
+提高
+
 
 **最新版本状态：🟢建议使用**
 
