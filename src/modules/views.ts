@@ -1,6 +1,6 @@
 import { config } from "../../package.json";
 export default class Views {
-  constructor() {}
+  constructor() { }
 
   public async init() {
     await this.registerItemMenu();
@@ -11,16 +11,16 @@ export default class Views {
     ztoolkit.Menu.register("item", {
       tag: "menuseparator",
     });
-    const menuIcon = `chrome://${config.addonRef}/content/icons/favicon@0.5x.png`;
-    // item menuitem with icon
+    // Attach New File
     ztoolkit.Menu.register(
       "item",
       {
         tag: "menuitem",
         id: "id-zotfile-attach-file",
         label: "Attach New File",
+        getVisibility: () => ZoteroPane.getSelectedItems().some(item => item.isAttachment() || item.isRegularItem()),
         commandListener: (ev) => Zotero.ZotFile.attachFileFromSourceDirectory(),
-        icon: menuIcon,
+        icon: `chrome://${config.addonRef}/content/icons/attachNewFile.png`,
       },
       "after",
       // 不可用
@@ -28,6 +28,20 @@ export default class Views {
       //   "#zotero-itemmenu .zotero-menuitem-create-note-from-annotations"
       // ) as XUL.Element
     );
+    // renameAndMove.png
+    ztoolkit.Menu.register(
+      "item",
+      {
+        tag: "menuitem",
+        label: "Rename and Move",
+        getVisibility: () => ZoteroPane.getSelectedItems().some(item => item.isAttachment() || item.isRegularItem()),
+        commandListener: (ev) => Zotero.ZotFile.renameSelectedAttachments(),
+        icon: `chrome://${config.addonRef}/content/icons/renameAndMove.png`,
+      },
+      "after",
+    );
+
+
   }
 
   private async registerPreferencePane() {
