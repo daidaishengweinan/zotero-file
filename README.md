@@ -6,6 +6,12 @@
 
 **最新版本状态：🟢建议使用**
 
+## 注意
+
+如果你是`Zotero 6 + ZotFile`用户，升级 `Zotero 7` 后安装本插件，你不需要重新设置。因为`Zotero File`会读取你在`Zotero 6 + ZotFile`里对`ZotFile`的所有配置。
+
+你可以在 Zotero 6 和 7 之间无缝切换。
+
 ## 目标
 
 让 ZotFile 核心功能可以在 Zotero 7 运行，让 ZotFile 继续发挥它的光芒！
