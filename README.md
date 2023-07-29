@@ -22,7 +22,8 @@
 
 ![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/936fd6ab-c1c6-4b35-b20b-5500b59a9798)
 
-![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/644550cb-0f0d-4f8b-8dc1-4235e896ccc0)
+![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/9c7a3be2-6776-448d-94f8-adf28559e3a3)
+
 
 ## 赞助
 
