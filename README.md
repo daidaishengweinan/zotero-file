@@ -38,7 +38,7 @@
 - [x] 自动移动附件
 - [x] 设置界面
 
-![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/3c0dba64-0b78-40b5-aba1-d4bdf494a70f)
+![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/e9d9f9ba-ec08-4ca6-a1f6-29e4098ee902)
 
 ![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/03018858-5f38-44ca-b5dc-0024d6d96143)
 
