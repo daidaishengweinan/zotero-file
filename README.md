@@ -1,4 +1,5 @@
 # Zotero File
+
 > 让 ZotFile 在 Zotero 7 继续使用
 
 <img src="addon/chrome/content/icons/favicon.png" width="36px" height="36px">
@@ -13,9 +14,7 @@
 ![Downloads latest release](https://img.shields.io/github/downloads/windingwind/zotero-pdf-translate/latest/total?color=yellow)
 ![Downloads latest release](https://img.shields.io/github/downloads/windingwind/zotero-better-notes/latest/total?color=yellow)
 
-
 提高
-
 
 **最新版本状态：🟢建议使用**
 
