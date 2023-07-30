@@ -475,30 +475,30 @@ Zotero.ZotFile.Wildcards = new (function () {
       // if it is a collectionPath field. we need to select one element from the array.
       if (lookup && Array.isArray(lookup)) {
         var getCollectionPathFromTable = function () {
-          var selectFromList = function (items, message, title) {
-            var prompts = Components.classes[
-              "@mozilla.org/embedcomp/prompt-service;1"
-            ].getService(Components.interfaces.nsIPromptService);
-            var selected = {};
-            var result = prompts.select(
-              null,
-              title,
-              message,
-              items.length,
-              items,
-              selected,
-            );
-            if (!result) return -1;
+          // var selectFromList = function (items, message, title) {
+          //   var prompts = Components.classes[
+          //     "@mozilla.org/embedcomp/prompt-service;1"
+          //   ].getService(Components.interfaces.nsIPromptService);
+          //   var selected = {};
+          //   var result = prompts.select(
+          //     null,
+          //     title,
+          //     message,
+          //     items.length,
+          //     items,
+          //     selected,
+          //   );
+          //   if (!result) return -1;
 
-            return selected.value;
-          };
+          //   return selected.value;
+          // };
 
           var collectionPaths = lookup;
           if (collectionPaths.length === 0)
             return _this.emptyCollectionPlaceholder;
           if (collectionPaths.length === 1) return collectionPaths[0];
 
-          var title = table["%t"];
+          // var title = table["%t"];
           // var idx = selectFromList(collectionPaths, title);
           // #8 https://github.com/MuiseDestiny/zotero-file/issues/8
           var idx = collectionPaths.indexOf(
