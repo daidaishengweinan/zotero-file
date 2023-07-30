@@ -38,15 +38,18 @@
 - [x] 自动移动附件
 - [x] 设置界面
 
-![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/3c0dba64-0b78-40b5-aba1-d4bdf494a70f)
+
+## 预览
+
+![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/85988b3a-e626-4418-8d61-1a7d37431ae7)
 
 ![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/03018858-5f38-44ca-b5dc-0024d6d96143)
 
-![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/936fd6ab-c1c6-4b35-b20b-5500b59a9798)
+![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/cf078acb-6f5b-4fc1-b1ab-5677a9c75257)
 
 ![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/9c7a3be2-6776-448d-94f8-adf28559e3a3)
 
-## 赞助
+## 捐赠
 
 <img src="https://user-images.githubusercontent.com/51939531/227145474-ca165a93-fcf2-4b47-baf4-ea6b29f43d99.png" width="50%" height="50%">
 
