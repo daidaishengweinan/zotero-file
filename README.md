@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/github/license/MuiseDestiny/zotero-file)](https://github.com/MuiseDestiny/zotero-file/blob/master/LICENSE)
 ![Downloads latest release](https://img.shields.io/github/downloads/MuiseDestiny/zotero-file/latest/total?color=yellow)
 
-**最新版本状态：🟢建议使用**
+**最新版本状态：🟢稳定使用**
 
 ## 说明
 
