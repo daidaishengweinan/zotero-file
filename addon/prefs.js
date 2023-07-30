@@ -34,7 +34,7 @@ pref("extensions.zotfile.disable_renaming", false);
 pref("extensions.zotfile.replace_blanks", false);
 pref("extensions.zotfile.lower_case", false);
 pref("extensions.zotfile.subfolder", false);
-pref("extensions.zotfile.subfolderFormat", "/%w/%y");
+pref("extensions.zotfile.subfolderFormat", "/%c");
 pref("extensions.zotfile.userInput", false);
 pref("extensions.zotfile.userInput_Default", "Paper");
 pref("extensions.zotfile.version", "5.1.2");
