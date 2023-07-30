@@ -1,8 +1,21 @@
-![image](https://github.com/MuiseDestiny/zotero-file/assets/51939531/83dcf13f-e0b7-4d6a-b46f-5ca189cc3b6d)
-
 # Zotero File
+> 让 ZotFile 在 Zotero 7 继续使用
 
-> 持续开发中...
+<img src="addon/chrome/content/icons/favicon.png" width="36px" height="36px">
+
+[![Using Zotero Plugin Template](https://img.shields.io/badge/Using-Zotero%20Plugin%20Template-blue?style=flat-round&logo=github)](https://github.com/windingwind/zotero-plugin-template)
+[![Latest release](https://img.shields.io/github/v/release/MuiseDestiny/zotero-file)](https://github.com/MuiseDestiny/zotero-file/releases)
+![Release Date](https://img.shields.io/github/release-date/MuiseDestiny/zotero-file?color=9cf)
+[![License](https://img.shields.io/github/license/MuiseDestiny/zotero-file)](https://github.com/MuiseDestiny/zotero-file/blob/master/LICENSE)
+![Downloads latest release](https://img.shields.io/github/downloads/MuiseDestiny/zotero-file/latest/total?color=yellow)
+![Downloads latest release](https://img.shields.io/github/downloads/l0o0/jasminum/latest/total?color=yellow)
+![Downloads latest release](https://img.shields.io/github/downloads/jlegewie/zotfile/latest/total?color=yellow)
+![Downloads latest release](https://img.shields.io/github/downloads/windingwind/zotero-pdf-translate/latest/total?color=yellow)
+![Downloads latest release](https://img.shields.io/github/downloads/windingwind/zotero-better-notes/latest/total?color=yellow)
+
+
+提高
+
 
 **最新版本状态：🟢建议使用**
 
