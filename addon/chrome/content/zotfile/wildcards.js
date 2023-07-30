@@ -500,11 +500,6 @@ Zotero.ZotFile.Wildcards = new (function () {
 
           var title = table["%t"];
           var idx = selectFromList(collectionPaths, title);
-          // #8 - https://github.com/MuiseDestiny/zotero-file/issues/8
-          // #12 - https://github.com/MuiseDestiny/zotero-file/issues/12
-          // var idx = collectionPaths.indexOf(
-          //   ZoteroPane.getSelectedCollection().name,
-          // );
           if (idx >= 0) return collectionPaths[idx];
 
           throw {
