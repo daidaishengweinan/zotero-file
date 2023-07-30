@@ -9,14 +9,18 @@
 ![Release Date](https://img.shields.io/github/release-date/MuiseDestiny/zotero-file?color=9cf)
 [![License](https://img.shields.io/github/license/MuiseDestiny/zotero-file)](https://github.com/MuiseDestiny/zotero-file/blob/master/LICENSE)
 ![Downloads latest release](https://img.shields.io/github/downloads/MuiseDestiny/zotero-file/latest/total?color=yellow)
-![Downloads latest release](https://img.shields.io/github/downloads/l0o0/jasminum/latest/total?color=yellow)
-![Downloads latest release](https://img.shields.io/github/downloads/jlegewie/zotfile/latest/total?color=yellow)
-![Downloads latest release](https://img.shields.io/github/downloads/windingwind/zotero-pdf-translate/latest/total?color=yellow)
-![Downloads latest release](https://img.shields.io/github/downloads/windingwind/zotero-better-notes/latest/total?color=yellow)
-
-提高
 
 **最新版本状态：🟢建议使用**
+
+## 说明
+
+本插件是在 [@jlegewie](https://github.com/jlegewie) 的 [ZotFile插件](https://github.com/jlegewie/zotfile) 的基础上编写的。这是因为 [作者明确表示](https://github.com/jlegewie/zotfile/issues/655#issuecomment-1595364307) 不会适配 Zotero 7，且官方实现 ZotFile 的功能仍需要一定时间。
+
+在此向 @jlegewie 作者表示感谢，感谢编写了如此好用的插件。这些代码的光芒不应该因为 Zotero 的升级而暗淡。本插件将使得 ZotFile 继续发光发热。
+
+在此向 [@windingwind](https://github.com/windingwind) 表示感谢，在 @windingwind 的 [插件模板](https://github.com/windingwind/zotero-plugin-template) 的基础上，让本插件的实现变得简单且高效。
+
+本插件将逐步迁移 ZotFile 的核心功能 （不包含平板同步功能），如果喜欢本项目，欢迎 ⭐Star。
 
 ## 注意
 
