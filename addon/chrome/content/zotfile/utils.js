@@ -64,13 +64,17 @@ Zotero.ZotFile.Utils = new (function () {
 
       return OS.Path.normalize(
         getCollectionPath(collection.parentID) +
-          Zotero.ZotFile.folderSep +
-          collection.name,
+        Zotero.ZotFile.folderSep +
+        collection.name,
       );
     };
 
     // return item.getCollections().map(getCollectionPath);
-    return [ZoteroPane.getSelectedCollection().id].map(getCollectionPath);
+    try {
+      return [ZoteroPane.getSelectedCollection().id].map(getCollectionPath);
+    } catch {
+      return item.getCollections().map(getCollectionPath).slice(0, 1);
+    }
   }.bind(Zotero.ZotFile);
 
   /**
@@ -175,7 +179,7 @@ Zotero.ZotFile.Utils = new (function () {
       try {
         wrk.open(tryKeys[i].root, tryKeys[i].path, wrk.ACCESS_READ);
         progId = wrk.readStringValue(tryKeys[i].value);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     if (!progId) {
@@ -187,7 +191,7 @@ Zotero.ZotFile.Utils = new (function () {
     try {
       wrk.open(wrk.ROOT_KEY_CLASSES_ROOT, progId + "\\CurVer", wrk.ACCESS_READ);
       progId = wrk.readStringValue("") || progId;
-    } catch (e) {}
+    } catch (e) { }
 
     //get command
     var success = false;
@@ -199,7 +203,7 @@ Zotero.ZotFile.Utils = new (function () {
       try {
         wrk.open(wrk.ROOT_KEY_CLASSES_ROOT, tryKeys[i], wrk.ACCESS_READ);
         success = true;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     if (!success) {
