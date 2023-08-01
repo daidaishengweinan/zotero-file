@@ -3,7 +3,7 @@
     "zoterofile@polygon.org": {
       "updates": [
         {
-          "version": "0.0.7",
+          "version": "0.0.8",
           "update_link": "https://github.com/muisedestiny/zotero-file/releases/latest/download/zotero-file.xpi",
           "applications": {
             "zotero": {
