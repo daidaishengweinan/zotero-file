@@ -91,9 +91,9 @@ Zotero.ZotFile = new (function () {
       if (!Zotero.isStandalone)
         this.futureRun(
           () =>
-          (gBrowser.selectedTab = gBrowser.addTab(
-            Zotero.ZotFile.changelogURL,
-          )),
+            (gBrowser.selectedTab = gBrowser.addTab(
+              Zotero.ZotFile.changelogURL,
+            )),
         );
       if (Zotero.isStandalone)
         this.futureRun(() =>
@@ -191,7 +191,7 @@ Zotero.ZotFile = new (function () {
     // add event listener for selecting items in zotero tree
     if (this.getPref("tablet")) {
       var pane =
-        Services.wm.getMostRecentWindow("navigator:browser").ZoteroPane,
+          Services.wm.getMostRecentWindow("navigator:browser").ZoteroPane,
         tree = pane.document.getElementById("zotero-items-tree");
       tree.removeEventListener(
         "select",
@@ -250,14 +250,14 @@ Zotero.ZotFile = new (function () {
     // User selection
     var prompt = this.promptUser(
       "ZotFile is not compatible with Zotero 7, which will be released later this year. " +
-      "You currently have " +
-      atts.length +
-      " attachments on the tablet. After updating to Zotero 7, " +
-      "these files will be inaccessible from Zotero. I strongly suggest that you " +
-      "remove the attachments from the tablet. This assistant can help you in the process:\n\n" +
-      '1) "Get attachments from tablet" will replace the Zotero attachment with the file on the tablet and remove all files from your tablet folder.\n\n' +
-      '2) "Create linked attachment in Zotero" will create linked attachments in Zotero for all tablet files. Your files will remain in the tablet folder and you can access them from Zotero BUT you will end up with many duplicate attachments.\n\n' +
-      'You can access this assistant anytime under "Tools -> ZotFile Transition to Zotero 7"',
+        "You currently have " +
+        atts.length +
+        " attachments on the tablet. After updating to Zotero 7, " +
+        "these files will be inaccessible from Zotero. I strongly suggest that you " +
+        "remove the attachments from the tablet. This assistant can help you in the process:\n\n" +
+        '1) "Get attachments from tablet" will replace the Zotero attachment with the file on the tablet and remove all files from your tablet folder.\n\n' +
+        '2) "Create linked attachment in Zotero" will create linked attachments in Zotero for all tablet files. Your files will remain in the tablet folder and you can access them from Zotero BUT you will end up with many duplicate attachments.\n\n' +
+        'You can access this assistant anytime under "Tools -> ZotFile Transition to Zotero 7"',
       "Cancel", // 0
       "Create linked attachment in Zotero", // 1
       "Get attachments from tablet", // 2
@@ -303,8 +303,8 @@ Zotero.ZotFile = new (function () {
           tablet_status = 1;
         // get modification times for files
         let time_tablet = path_tablet
-          ? Date.parse((yield OS.File.stat(path_tablet)).lastModificationDate)
-          : 0,
+            ? Date.parse((yield OS.File.stat(path_tablet)).lastModificationDate)
+            : 0,
           time_saved = parseInt(this.Tablet.getInfo(att, "lastmod"), 10),
           time_zotero = path_zotero
             ? Date.parse((yield OS.File.stat(path_zotero)).lastModificationDate)
@@ -608,8 +608,8 @@ Zotero.ZotFile = new (function () {
       fileName = e.fileName
         ? e.fileName
         : e.filename
-          ? e.filename
-          : "undefined file",
+        ? e.filename
+        : "undefined file",
       lineNumber = e.lineNumber ? e.lineNumber : "undefined line number";
     return name + ": " + message + " \n(" + fileName + ", " + lineNumber + ")";
   };
@@ -697,13 +697,13 @@ Zotero.ZotFile = new (function () {
 
     // extension
     progressWin.ItemProgress.prototype.complete = function (title, icon) {
-      console.log(this)
+      console.log(this);
       this.setProgress(100);
       this._itemText.textContent = title;
       this.setIcon(icon);
-    }
+    };
 
-    return progressWin
+    return progressWin;
   };
 
   this.promptUser = function (message, but_0, but_1_cancel, but_2, title) {
@@ -978,9 +978,9 @@ Zotero.ZotFile = new (function () {
       // source and destination path
       sourcePath = OS.Path.normalize(sourcePath);
       var destPath =
-        filename === undefined
-          ? target
-          : this.Utils.joinPath(target, filename),
+          filename === undefined
+            ? target
+            : this.Utils.joinPath(target, filename),
         destDir = OS.Path.dirname(destPath);
       if (sourcePath == destPath) return sourcePath;
       // add suffix if target path exists
@@ -1379,8 +1379,8 @@ Zotero.ZotFile = new (function () {
         return att;
       // get filename and location
       var filename = rename
-        ? this.getFilename(item, att.attachmentFilename)
-        : att.attachmentFilename,
+          ? this.getFilename(item, att.attachmentFilename)
+          : att.attachmentFilename,
         location = this.getLocation(folder, item, subfolder);
       // (a) linked to imported attachment
       if (imported && linkmode == Zotero.Attachments.LINK_MODE_LINKED_FILE) {
