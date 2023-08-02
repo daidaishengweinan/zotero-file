@@ -196,7 +196,7 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
 
     try {
       _progressWindow.close();
-    } catch (ex) { }
+    } catch (ex) {}
   };
 
   /**
@@ -351,7 +351,7 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
     // causing the popup to remain
     try {
       _progressWindow.clearTimeout(_timeoutID);
-    } catch (e) { }
+    } catch (e) {}
     _timeoutID = false;
   }
 
