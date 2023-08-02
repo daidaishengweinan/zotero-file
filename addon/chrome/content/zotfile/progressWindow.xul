@@ -14,5 +14,5 @@
     </hbox>
     <!-- Include the main extension logic -->
     <script src="chrome://zotero/content/include.js"/>
-    <script src="chrome://zotfile/content/include.js"/>
+    <script src="chrome://zoterofile/content/zotfile/include.js"/>
 </window>

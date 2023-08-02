@@ -1,6 +1,6 @@
 import { config } from "../../package.json";
 export default class Views {
-  constructor() {}
+  constructor() { }
 
   public async init() {
     await this.registerItemMenu();
@@ -24,12 +24,7 @@ export default class Views {
           ),
         commandListener: (ev) => Zotero.ZotFile.attachFileFromSourceDirectory(),
         icon: `chrome://${config.addonRef}/content/icons/attachNewFile.png`,
-      },
-      "after",
-      // 不可用
-      // Zotero.getMainWindow().document.querySelector(
-      //   "#zotero-itemmenu .zotero-menuitem-create-note-from-annotations"
-      // ) as XUL.Element
+      }
     );
     // renameAndMove.png
     ztoolkit.Menu.register(
@@ -43,8 +38,7 @@ export default class Views {
           ),
         commandListener: (ev) => Zotero.ZotFile.renameSelectedAttachments(),
         icon: `chrome://${config.addonRef}/content/icons/renameAndMove.png`,
-      },
-      "after",
+      }
     );
   }
 

@@ -26,14 +26,8 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
       return false;
     }
 
-    var ww = Components.classes[
-      "@mozilla.org/embedcomp/window-watcher;1"
-    ].getService(Components.interfaces.nsIWindowWatcher);
-
     if (!_window) {
-      _window = Components.classes["@mozilla.org/appshell/window-mediator;1"]
-        .getService(Components.interfaces.nsIWindowMediator)
-        .getMostRecentWindow("navigator:browser");
+      _window = Zotero.getMainWindow();
     }
 
     if (_window) {
@@ -42,14 +36,19 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
         "chrome://zoterofile/content/zotfile/progressWindow.xul",
         "",
         "chrome,dialog=no,titlebar=no,popup=yes",
+        // "chrome,dialog=no,titlebar=no,alwaysontop=yes"
       );
     } else {
+      var ww = Components.classes[
+        "@mozilla.org/embedcomp/window-watcher;1"
+      ].getService(Components.interfaces.nsIWindowWatcher);
       _progressWindow = ww.openWindow(
         null,
         // "chrome://zotero/content/progressWindow.xhtml",
         "chrome://zoterofile/content/zotfile/progressWindow.xul",
         "",
         "chrome,dialog=no,titlebar=no,popup=yes",
+        // "chrome,dialog=no,titlebar=no,alwaysontop=yes",
         null,
       );
     }
@@ -197,7 +196,7 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
 
     try {
       _progressWindow.close();
-    } catch (ex) {}
+    } catch (ex) { }
   };
 
   /**
@@ -352,7 +351,7 @@ Zotero.ZotFile.ProgressWindow = function (_window) {
     // causing the popup to remain
     try {
       _progressWindow.clearTimeout(_timeoutID);
-    } catch (e) {}
+    } catch (e) { }
     _timeoutID = false;
   }
 
